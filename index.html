@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI-Assisted Poems: Connected/Disconnected</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600&display=swap');
+
         * {
             margin: 0;
             padding: 0;
@@ -13,73 +15,48 @@
 
         body {
             font-family: 'Courier New', monospace;
-            background: #0a0a0a;
-            overflow-x: hidden;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 25%, #16213e 50%, #1a1a2e 75%, #0a0a0a 100%);
+            background-size: 400% 400%;
+            animation: backgroundShift 15s ease infinite;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
         }
 
-        /* Tab navigation */
-        .tab-navigation {
-            position: fixed;
+        @keyframes backgroundShift {
+            0%, 100% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+        }
+
+        .main-container {
+            max-width: 900px;
+            width: 100%;
+            background: rgba(10, 10, 10, 0.9);
+            padding: 60px 40px;
+            border: 2px solid #00d4ff;
+            box-shadow: 0 0 40px rgba(0, 212, 255, 0.4), 0 0 80px rgba(255, 0, 110, 0.3);
+            position: relative;
+        }
+
+        .main-container::before {
+            content: '';
+            position: absolute;
             top: 0;
             left: 0;
             right: 0;
-            background: linear-gradient(180deg, rgba(10, 10, 10, 0.98) 0%, rgba(10, 10, 10, 0.95) 100%);
-            backdrop-filter: blur(10px);
-            border-bottom: 2px solid #00d4ff;
-            z-index: 1000;
-            padding: 0;
-            box-shadow: 0 4px 20px rgba(0, 212, 255, 0.3);
+            height: 4px;
+            background: linear-gradient(90deg, #00d4ff, #7b2cbf, #ff006e, #00d4ff);
+            background-size: 200% 100%;
+            animation: gradientSlide 3s linear infinite;
         }
 
-        .tabs {
-            display: flex;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .tab {
-            flex: 1;
-            padding: 20px 30px;
-            background: transparent;
-            border: none;
-            color: #888;
-            font-family: 'Courier New', monospace;
-            font-size: 1em;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            cursor: pointer;
-            position: relative;
-            transition: all 0.3s ease;
-            border-right: 1px solid rgba(0, 212, 255, 0.2);
-        }
-
-        .tab:last-child {
-            border-right: none;
-        }
-
-        .tab:hover {
-            background: rgba(0, 212, 255, 0.05);
-            color: #00d4ff;
-        }
-
-        .tab.active {
-            color: #00d4ff;
-            background: rgba(0, 212, 255, 0.1);
-            text-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
-        }
-
-        .tab.active::after {
-            content: '';
-            position: absolute;
-            bottom: -2px;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, #00d4ff, #ff006e, #00d4ff, transparent);
-            animation: slideGradient 3s linear infinite;
-        }
-
-        @keyframes slideGradient {
+        @keyframes gradientSlide {
             0% {
                 background-position: 0% 0%;
             }
@@ -88,129 +65,199 @@
             }
         }
 
-        /* Content container */
-        .content-container {
-            margin-top: 70px;
-            width: 100%;
-            height: calc(100vh - 70px);
-        }
-
-        .tab-content {
-            display: none;
-            width: 100%;
-            height: 100%;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
-
-        /* Project title - subtle header */
-        .project-header {
-            position: fixed;
-            top: 70px;
-            left: 0;
-            right: 0;
+        h1 {
+            font-family: 'Cinzel', serif;
             text-align: center;
-            padding: 15px;
-            background: rgba(10, 10, 10, 0.9);
-            color: #7b2cbf;
-            font-size: 0.85em;
-            letter-spacing: 3px;
+            color: #00d4ff;
+            font-size: 2.5em;
+            letter-spacing: 6px;
+            text-shadow: 0 0 20px rgba(0, 212, 255, 0.6);
+            margin-bottom: 20px;
             text-transform: uppercase;
-            border-bottom: 1px solid rgba(123, 44, 191, 0.3);
-            z-index: 999;
-            text-shadow: 0 0 5px rgba(123, 44, 191, 0.5);
         }
 
-        .content-with-header {
-            margin-top: 115px;
-            height: calc(100vh - 115px);
+        .subtitle {
+            text-align: center;
+            color: #7b2cbf;
+            font-size: 1.1em;
+            letter-spacing: 3px;
+            text-shadow: 0 0 10px rgba(123, 44, 191, 0.5);
+            margin-bottom: 50px;
+            text-transform: uppercase;
         }
 
-        /* Loading animation */
-        @keyframes pulse {
-            0%, 100% {
-                opacity: 0.3;
+        .artist-statement {
+            color: #e0e0e0;
+            font-size: 1em;
+            line-height: 1.8;
+            margin-bottom: 50px;
+            padding: 30px;
+            background: rgba(0, 212, 255, 0.05);
+            border-left: 3px solid #7b2cbf;
+        }
+
+        .artist-statement h2 {
+            color: #7b2cbf;
+            font-size: 1.2em;
+            margin-bottom: 20px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            text-shadow: 0 0 10px rgba(123, 44, 191, 0.5);
+        }
+
+        .artist-statement p {
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+
+        .poems-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .poem-card {
+            background: rgba(0, 212, 255, 0.05);
+            border: 2px solid rgba(0, 212, 255, 0.3);
+            padding: 40px 30px;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .poem-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(0, 212, 255, 0.1), transparent);
+            transform: rotate(45deg);
+            transition: all 0.5s ease;
+        }
+
+        .poem-card:hover::before {
+            animation: shimmer 1.5s infinite;
+        }
+
+        @keyframes shimmer {
+            0% {
+                transform: translateX(-100%) translateY(-100%) rotate(45deg);
             }
-            50% {
-                opacity: 1;
+            100% {
+                transform: translateX(100%) translateY(100%) rotate(45deg);
             }
         }
 
-        .loading {
-            animation: pulse 2s ease-in-out infinite;
+        .poem-card:hover {
+            border-color: #00d4ff;
+            box-shadow: 0 0 30px rgba(0, 212, 255, 0.5);
+            transform: translateY(-5px);
         }
 
-        /* Responsive design */
+        .poem-card h3 {
+            color: #ff006e;
+            font-size: 1.5em;
+            letter-spacing: 2px;
+            margin-bottom: 15px;
+            text-shadow: 0 0 10px rgba(255, 0, 110, 0.5);
+            position: relative;
+            z-index: 1;
+        }
+
+        .poem-card .poem-type {
+            color: #7b2cbf;
+            font-size: 0.9em;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .poem-card a {
+            display: inline-block;
+            padding: 15px 40px;
+            background: linear-gradient(135deg, #00d4ff, #7b2cbf);
+            color: #fff;
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: bold;
+            border: none;
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 1;
+            box-shadow: 0 4px 15px rgba(0, 212, 255, 0.3);
+        }
+
+        .poem-card a:hover {
+            box-shadow: 0 6px 25px rgba(0, 212, 255, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .footer {
+            margin-top: 60px;
+            text-align: center;
+            color: #888;
+            font-size: 0.85em;
+            font-style: italic;
+        }
+
         @media (max-width: 768px) {
-            .tab {
-                padding: 15px 10px;
-                font-size: 0.85em;
-                letter-spacing: 1px;
+            h1 {
+                font-size: 1.8em;
+                letter-spacing: 3px;
             }
 
-            .project-header {
-                font-size: 0.75em;
-                padding: 10px;
+            .subtitle {
+                font-size: 0.9em;
+            }
+
+            .main-container {
+                padding: 40px 25px;
+            }
+
+            .poems-grid {
+                grid-template-columns: 1fr;
             }
         }
     </style>
 </head>
 <body>
-    <nav class="tab-navigation">
-        <div class="tabs">
-            <button class="tab active" onclick="switchTab(0)">Erasure Poem</button>
-            <button class="tab" onclick="switchTab(1)">Visual Poem</button>
-        </div>
-    </nav>
+    <div class="main-container">
+        <h1>Connected/Disconnected</h1>
+        <div class="subtitle">AI-Assisted Poems Portfolio</div>
 
-    <div class="project-header">
-        AI-Assisted Poems Portfolio
+        <div class="artist-statement">
+            <h2>Artist Statement</h2>
+            <p>Anthropic's recent launch of Claude Code in October 2025 is a coding assistant for various individuals, groups, and entities. With the increasing attention of scholars grappling with how the ongoing advancements of AI fit into their field and determining how authorship, credibility, and ethics play a role in the agentic elements of these tools I argue that AI can be a digital companion to creative works. This explores agentic AI as a digital companion to rhetoric and creative scholarship.</p>
+
+            <p>I advocate for the human thought to remain central at the forefront of work that is displayed through prompting detailed and strategic messaging and debugging alongside AI. This talk will analyze the portfolio of code I created through Claude Code and my journey through ongoing shifts between the advancements and implications of AI and its capabilities in various ways. My example will explore "Connected/Disconnected." Each poem presented a different type of poem, including visual, erasure, and interactive.</p>
+
+            <p>Pushing the boundaries of AI developments, I argue that agentic AI offers digital capabilities that invite participants to the benefits of code and digital media-centered works, which will be seen through interactive elements, and digital design. This will demonstrate various ways to keep human thought at the forefront and demonstrate how specific prompting and understanding of Claude Code impacts the final work.</p>
+        </div>
+
+        <div class="poems-grid">
+            <div class="poem-card">
+                <h3>Connected/Disconnected</h3>
+                <div class="poem-type">Erasure Poem</div>
+                <a href="erasure_poem (1).html">View Poem →</a>
+            </div>
+
+            <div class="poem-card">
+                <h3>Songs of Digital Innocence Lost</h3>
+                <div class="poem-type">Visual Poem</div>
+                <a href="visual_poem.html">View Poem →</a>
+            </div>
+        </div>
+
+        <div class="footer">
+            Created with Claude Code • Digital Poetry Exploration
+        </div>
     </div>
-
-    <div class="content-container content-with-header">
-        <div class="tab-content active">
-            <iframe src="erasure_poem (1).html" title="Connected/Disconnected - Erasure Poem"></iframe>
-        </div>
-        <div class="tab-content">
-            <iframe src="visual_poem.html" title="Songs of Digital Innocence Lost - Visual Poem"></iframe>
-        </div>
-    </div>
-
-    <script>
-        function switchTab(index) {
-            // Get all tabs and content
-            const tabs = document.querySelectorAll('.tab');
-            const contents = document.querySelectorAll('.tab-content');
-
-            // Remove active class from all
-            tabs.forEach(tab => tab.classList.remove('active'));
-            contents.forEach(content => content.classList.remove('active'));
-
-            // Add active class to selected
-            tabs[index].classList.add('active');
-            contents[index].classList.add('active');
-        }
-
-        // Keyboard navigation
-        document.addEventListener('keydown', (e) => {
-            const activeTab = document.querySelector('.tab.active');
-            const tabs = Array.from(document.querySelectorAll('.tab'));
-            const currentIndex = tabs.indexOf(activeTab);
-
-            if (e.key === 'ArrowLeft' && currentIndex > 0) {
-                switchTab(currentIndex - 1);
-            } else if (e.key === 'ArrowRight' && currentIndex < tabs.length - 1) {
-                switchTab(currentIndex + 1);
-            }
-        });
-    </script>
 </body>
 </html>
