@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Connected/Disconnected - An erasure poem exploring digital technology's impact on human connection. Features cyberpunk aesthetics with Matrix-style background and phone interface. Hover over faded text to reveal the original source material.">
+    <meta name="author" content="AI-Assisted Poetry Portfolio">
     <title>Erasure Poem: Connected/Disconnected</title>
     <style>
         @keyframes backgroundShift {
@@ -420,44 +422,91 @@
             margin-bottom: 15px;
             text-align: justify;
         }
+
+        /* Screen reader only text */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border-width: 0;
+        }
+
+        /* Skip to content link */
+        .skip-link {
+            position: fixed;
+            top: -40px;
+            left: 0;
+            background: #00d4ff;
+            color: #000;
+            padding: 8px;
+            text-decoration: none;
+            z-index: 1000;
+            font-weight: bold;
+        }
+
+        .skip-link:focus {
+            top: 0;
+        }
+
+        /* Improved focus visibility */
+        *:focus {
+            outline: 3px solid #00d4ff;
+            outline-offset: 3px;
+        }
     </style>
 </head>
 <body>
-    <div class="grid-overlay"></div>
-    <canvas class="matrix-bg" id="matrix"></canvas>
-    <div class="digital-noise"></div>
-    
-    <div class="container">
-        <div class="pixel-corners top-left"></div>
-        <div class="pixel-corners top-right"></div>
-        <div class="pixel-corners bottom-left"></div>
-        <div class="pixel-corners bottom-right"></div>
-        
-        <div class="data-stream" style="top: 15%; left: 0;">01001000 01010101 01001101 01000001 01001110</div>
-        <div class="data-stream" style="top: 50%; left: 0; animation-delay: 5s;">11000011 01001111 01001110 01001110 01000101 01000011 01010100</div>
-        <div class="data-stream" style="top: 85%; left: 0; animation-delay: 10s;">01000100 01001001 01010011 01000011 01001111 01001110 01001110</div>
-        
-        <h1>CONNECTED / DISCONNECTED</h1>
+    <a href="#main-content" class="skip-link">Skip to poem content</a>
 
-        <div class="artist-statement">
-            <h2>Artist Statement</h2>
+    <!-- Decorative background elements -->
+    <div class="grid-overlay" aria-hidden="true"></div>
+    <canvas class="matrix-bg" id="matrix" aria-hidden="true" role="presentation"></canvas>
+    <div class="digital-noise" aria-hidden="true"></div>
+
+    <main class="container" id="main-content" role="main">
+        <!-- Decorative corner elements -->
+        <div class="pixel-corners top-left" aria-hidden="true"></div>
+        <div class="pixel-corners top-right" aria-hidden="true"></div>
+        <div class="pixel-corners bottom-left" aria-hidden="true"></div>
+        <div class="pixel-corners bottom-right" aria-hidden="true"></div>
+
+        <!-- Decorative data streams -->
+        <div class="data-stream" style="top: 15%; left: 0;" aria-hidden="true">01001000 01010101 01001101 01000001 01001110</div>
+        <div class="data-stream" style="top: 50%; left: 0; animation-delay: 5s;" aria-hidden="true">11000011 01001111 01001110 01001110 01000101 01000011 01010100</div>
+        <div class="data-stream" style="top: 85%; left: 0; animation-delay: 10s;" aria-hidden="true">01000100 01001001 01010011 01000011 01001111 01001110 01001110</div>
+
+        <header>
+            <h1>CONNECTED / DISCONNECTED</h1>
+            <p class="sr-only">An erasure poem exploring themes of digital technology and human connection</p>
+        </header>
+
+        <section class="artist-statement" aria-labelledby="statement-heading">
+            <h2 id="statement-heading">Artist Statement</h2>
             <p>Anthropic's recent launch of Claude Code in October 2025 is a coding assistant for various individuals, groups, and entities. With the increasing attention of scholars grappling with how the ongoing advancements of AI fit into their field and determining how authorship, credibility, and ethics play a role in the agentic elements of these tools I argue that AI can be a digital companion to creative works. This explores agentic AI as a digital companion to rhetoric and creative scholarship.</p>
 
             <p>I advocate for the human thought to remain central at the forefront of work that is displayed through prompting detailed and strategic messaging and debugging alongside AI. This talk will analyze the portfolio of code I created through Claude Code and my journey through ongoing shifts between the advancements and implications of AI and its capabilities in various ways. My example will explore "Connected/Disconnected." Each poem presented a different type of poem, including visual, erasure, and interactive.</p>
 
             <p>Pushing the boundaries of AI developments, I argue that agentic AI offers digital capabilities that invite participants to the benefits of code and digital media-centered works, which will be seen through interactive elements, and digital design. This will demonstrate various ways to keep human thought at the forefront and demonstrate how specific prompting and understanding of Claude Code impacts the final work.</p>
-        </div>
+        </section>
 
-        <div class="poem">
-            <!-- Phone top bezel -->
-            <div class="stanza" style="text-align: center; margin-bottom: 10px;">
+        <article class="poem" role="article" aria-labelledby="poem-title">
+            <h2 class="sr-only" id="poem-title">Erasure Poem: Connected/Disconnected</h2>
+            <p class="sr-only">This poem is displayed within a phone-shaped interface. The kept words appear in glowing magenta text, representing the extracted essence of the original text. The original source text appears below in faded, strikethrough format.</p>
+
+            <!-- Phone top bezel (decorative) -->
+            <div class="stanza" style="text-align: center; margin-bottom: 10px;" aria-hidden="true">
                 <span style="display: inline-block; width: 300px; height: 20px; border: 3px solid #00d4ff; border-bottom: none; border-radius: 20px 20px 0 0; position: relative;">
                     <span style="position: absolute; top: 5px; left: 50%; transform: translateX(-50%); width: 60px; height: 6px; background: #404040; border-radius: 3px;"></span>
                 </span>
             </div>
-            
+
             <!-- Phone screen content -->
-            <div style="display: inline-block; border-left: 3px solid #00d4ff; border-right: 3px solid #00d4ff; padding: 30px 40px; min-width: 300px; max-width: 300px; margin: 0 auto; position: relative; left: 50%; transform: translateX(-50%);">
+            <div style="display: inline-block; border-left: 3px solid #00d4ff; border-right: 3px solid #00d4ff; padding: 30px 40px; min-width: 300px; max-width: 300px; margin: 0 auto; position: relative; left: 50%; transform: translateX(-50%);" role="region" aria-label="Poem text within phone interface">
                 
                 <div class="stanza" style="text-align: center; margin-bottom: 25px;">
                     <span class="kept" style="font-size: 1.8em;">screens</span>
@@ -521,27 +570,29 @@
                 </div>
                 
             </div>
-            
-            <!-- Phone bottom bezel with home button -->
-            <div class="stanza" style="text-align: center; margin-top: 10px;">
+
+            <!-- Phone bottom bezel with home button (decorative) -->
+            <div class="stanza" style="text-align: center; margin-top: 10px;" aria-hidden="true">
                 <span style="display: inline-block; width: 300px; height: 40px; border: 3px solid #00d4ff; border-top: none; border-radius: 0 0 20px 20px; position: relative;">
                     <span style="position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); width: 50px; height: 50px; border: 2px solid #00d4ff; border-radius: 50%; background: rgba(0, 212, 255, 0.1); box-shadow: 0 0 10px rgba(0, 212, 255, 0.5); animation: homeButtonPulse 2s ease-in-out infinite;"></span>
                 </span>
             </div>
-            
+
             <!-- Erased context below the phone -->
-            <div style="margin-top: 60px; max-width: 600px; margin-left: auto; margin-right: auto; text-align: center; font-size: 0.9em; line-height: 1.8;">
-                <span class="erased">We were promised that the screens would bring us closer together, that every notification was a hand reaching across the void, but we have become experts at being alone together, sitting in the same room, eyes fixed on different worlds. Touch has been replaced by the cold glass surface, where our fingers scroll endlessly through lives we'll never live, hungry for something we cannot name, feeding on light that never satisfies, leaving us more empty.</span>
+            <section style="margin-top: 60px; max-width: 600px; margin-left: auto; margin-right: auto; text-align: center; font-size: 0.9em; line-height: 1.8;" role="region" aria-label="Original source text">
+                <h3 class="sr-only">Original Text (Source Material)</h3>
+                <p class="sr-only">The following text shows the original source material with strikethrough formatting. Hover or focus on the text to reveal it more clearly.</p>
+                <span class="erased" role="text">We were promised that the screens would bring us closer together, that every notification was a hand reaching across the void, but we have become experts at being alone together, sitting in the same room, eyes fixed on different worlds. Touch has been replaced by the cold glass surface, where our fingers scroll endlessly through lives we'll never live, hungry for something we cannot name, feeding on light that never satisfies, leaving us more empty.</span>
                 
                 <br><br>
-                
-                <span class="erased">They said information would free us, but we drown in the endless stream of noise, forgetting how to listen, forgetting how to speak in voices that are truly our own, not echoes of algorithms. Remember when we used to look up at the stars and wonder? Now we stare at artificial constellations, pixels arranged in patterns designed to hold us, captive in a universe of our own making.</span>
-                
+
+                <span class="erased" role="text">They said information would free us, but we drown in the endless stream of noise, forgetting how to listen, forgetting how to speak in voices that are truly our own, not echoes of algorithms. Remember when we used to look up at the stars and wonder? Now we stare at artificial constellations, pixels arranged in patterns designed to hold us, captive in a universe of our own making.</span>
+
                 <br><br>
-                
-                <span class="erased">But somewhere beneath the blue light, buried under layers of data and distance, we are still human, still capable of turning away, of remembering what it means to truly see.</span>
-            </div>
-        </div>
+
+                <span class="erased" role="text">But somewhere beneath the blue light, buried under layers of data and distance, we are still human, still capable of turning away, of remembering what it means to truly see.</span>
+            </section>
+        </article>
         
         <style>
             @keyframes homeButtonPulse {
@@ -553,11 +604,12 @@
                 }
             }
         </style>
-        
-        <div class="footer">
-            Hover over the faded text to see what was erased
-        </div>
-    </div>
+
+        <footer class="footer" role="contentinfo">
+            <p>Hover over the faded text to see what was erased</p>
+            <p class="sr-only">Use your mouse to hover over faded strikethrough text, or use keyboard navigation to focus on it to reveal the original source material more clearly.</p>
+        </footer>
+    </main>
     
     <script>
         // Matrix rain effect

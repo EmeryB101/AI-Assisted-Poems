@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="AI-Assisted Poems: A creative portfolio exploring AI as a digital companion to poetry and rhetoric. Features erasure and visual poems created through collaboration with Claude Code.">
+    <meta name="author" content="AI-Assisted Poetry Portfolio">
     <title>AI-Assisted Poems: Connected/Disconnected</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600&display=swap');
@@ -194,9 +196,42 @@
             box-shadow: 0 4px 15px rgba(0, 212, 255, 0.3);
         }
 
-        .poem-card a:hover {
+        .poem-card a:hover,
+        .poem-card a:focus {
             box-shadow: 0 6px 25px rgba(0, 212, 255, 0.5);
             transform: translateY(-2px);
+            outline: 3px solid #00d4ff;
+            outline-offset: 3px;
+        }
+
+        /* Screen reader only text */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border-width: 0;
+        }
+
+        /* Skip to content link */
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 0;
+            background: #00d4ff;
+            color: #000;
+            padding: 8px;
+            text-decoration: none;
+            z-index: 100;
+            font-weight: bold;
+        }
+
+        .skip-link:focus {
+            top: 0;
         }
 
         .footer {
@@ -228,36 +263,48 @@
     </style>
 </head>
 <body>
-    <div class="main-container">
-        <h1>Connected/Disconnected</h1>
-        <div class="subtitle">AI-Assisted Poems Portfolio</div>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
 
-        <div class="artist-statement">
-            <h2>Artist Statement</h2>
+    <main class="main-container" id="main-content" role="main">
+        <header>
+            <h1>Connected/Disconnected</h1>
+            <p class="subtitle">AI-Assisted Poems Portfolio</p>
+        </header>
+
+        <section class="artist-statement" aria-labelledby="statement-heading">
+            <h2 id="statement-heading">Artist Statement</h2>
             <p>Anthropic's recent launch of Claude Code in October 2025 is a coding assistant for various individuals, groups, and entities. With the increasing attention of scholars grappling with how the ongoing advancements of AI fit into their field and determining how authorship, credibility, and ethics play a role in the agentic elements of these tools I argue that AI can be a digital companion to creative works. This explores agentic AI as a digital companion to rhetoric and creative scholarship.</p>
 
             <p>I advocate for the human thought to remain central at the forefront of work that is displayed through prompting detailed and strategic messaging and debugging alongside AI. This talk will analyze the portfolio of code I created through Claude Code and my journey through ongoing shifts between the advancements and implications of AI and its capabilities in various ways. My example will explore "Connected/Disconnected." Each poem presented a different type of poem, including visual, erasure, and interactive.</p>
 
             <p>Pushing the boundaries of AI developments, I argue that agentic AI offers digital capabilities that invite participants to the benefits of code and digital media-centered works, which will be seen through interactive elements, and digital design. This will demonstrate various ways to keep human thought at the forefront and demonstrate how specific prompting and understanding of Claude Code impacts the final work.</p>
-        </div>
+        </section>
 
-        <div class="poems-grid">
-            <div class="poem-card">
+        <nav class="poems-grid" aria-label="Poetry collection navigation">
+            <article class="poem-card">
                 <h3>Connected/Disconnected</h3>
-                <div class="poem-type">Erasure Poem</div>
-                <a href="erasure_poem (1).html">View Poem →</a>
-            </div>
+                <p class="poem-type">Erasure Poem</p>
+                <a href="erasure_poem (1).html" aria-label="View Connected/Disconnected erasure poem - explore themes of digital technology and human connection">
+                    View Poem
+                    <span aria-hidden="true"> →</span>
+                    <span class="sr-only"> - Connected/Disconnected</span>
+                </a>
+            </article>
 
-            <div class="poem-card">
+            <article class="poem-card">
                 <h3>Songs of Digital Innocence Lost</h3>
-                <div class="poem-type">Visual Poem</div>
-                <a href="visual_poem.html">View Poem →</a>
-            </div>
-        </div>
+                <p class="poem-type">Visual Poem</p>
+                <a href="visual_poem.html" aria-label="View Songs of Digital Innocence Lost visual poem - a William Blake inspired work on digital age innocence">
+                    View Poem
+                    <span aria-hidden="true"> →</span>
+                    <span class="sr-only"> - Songs of Digital Innocence Lost</span>
+                </a>
+            </article>
+        </nav>
 
-        <div class="footer">
-            Created with Claude Code • Digital Poetry Exploration
-        </div>
-    </div>
+        <footer class="footer" role="contentinfo">
+            <p>Created with Claude Code <span aria-hidden="true">•</span> Digital Poetry Exploration</p>
+        </footer>
+    </main>
 </body>
 </html>
