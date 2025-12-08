@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-AI-Assisted-Poems is a creative/artistic portfolio exploring AI as a digital companion to creative works. The project showcases multiple poem types (erasure and visual) created through collaboration with Claude Code. This is NOT a traditional software application - it's a collection of self-contained HTML files with embedded CSS animations and JavaScript visual effects.
+AI-Assisted-Poems is a creative/artistic portfolio exploring AI as a digital companion to creative works. The project showcases three distinct poem types (erasure, visual, and interactive/kinetic) created through collaboration with Claude Code. This is NOT a traditional software application - it's a collection of self-contained HTML files with embedded CSS animations and JavaScript visual effects.
 
 ## Project Structure
 
@@ -13,6 +13,7 @@ AI-Assisted-Poems/
 ├── index.html               # Landing page with artist statement and poem navigation
 ├── erasure_poem (1).html    # "Connected/Disconnected" erasure poem (cyberpunk theme)
 ├── visual_poem.html         # "Songs of Digital Innocence Lost" visual poem (vintage theme)
+├── interactive_poem.html    # "When Pixels Cry" interactive/kinetic poem (terminal theme)
 └── README.md                # Project title only
 ```
 
@@ -53,6 +54,21 @@ AI-Assisted-Poems/
 - **External Font**: Uses Google Fonts (Cinzel, Crimson Text)
 - **Animation**: CSS-based falling leaf animation with staggered delays
 - **Accessibility**: Full WCAG 2.1 AA compliance with SVG descriptions, ARIA labels, semantic HTML
+
+### interactive_poem.html - Interactive/Kinetic Poem
+- **Theme**: "When Pixels Cry" - childhood and technology, digital disconnection
+- **Design**: Terminal/command line aesthetic with dark navy background
+- **Structure**:
+  - ASCII art crying emoji face
+  - Sequential text reveal animations (lines appear one by one)
+  - Color-coded keywords: blue-light (cyan), corrupted/emptiness (red), love (yellow)
+  - Loading bar animations and cursor effects
+  - Glitch effects on hover
+  - Final error message: "Connection.exe has failed."
+- **External Font**: Uses Google Fonts (Courier Prime)
+- **Animation**: JavaScript-driven sequential reveals, CSS loading bars, glitch effects, cursor blinking
+- **Interactivity**: Lines appear in timed sequence, hover triggers glitch effects
+- **Accessibility**: Full WCAG 2.1 AA compliance with ARIA labels, semantic HTML, screen reader descriptions
 
 ## Development Workflow
 
@@ -97,6 +113,14 @@ No automated tests exist. To verify changes:
    - Ensure fonts load correctly
    - Test on different screen sizes
 
+4. **Interactive Poem**:
+   - Verify lines appear sequentially with correct timing
+   - Test loading bar animations
+   - Check cursor blinking effect
+   - Hover over text to test glitch effects
+   - Ensure color-coded keywords display correctly
+   - Verify final error message appears after all lines
+
 ### Accessibility Testing
 
 All pages meet WCAG 2.1 AA standards for electronic literature submission. Test with:
@@ -134,6 +158,7 @@ All pages meet WCAG 2.1 AA standards for electronic literature submission. Test 
 ### JavaScript
 - **Erasure Poem**: Canvas-based Matrix rain effect (binary + Japanese katakana)
 - **Visual Poem**: Pure CSS animations (no JavaScript)
+- **Interactive Poem**: Sequential text reveal animations using DOM manipulation and setTimeout
 - **Landing Page**: No JavaScript required
 
 ## Making Changes
@@ -156,16 +181,25 @@ All pages meet WCAG 2.1 AA standards for electronic literature submission. Test 
 - **Falling Leaves**: Search for `<div class="leaf"` (adjust count by adding/removing)
 - **Quote**: Search for `<blockquote class="quote"`
 
+### Modifying the Interactive Poem
+- **Poem Lines**: Search for `<div class="line"` (each line has a data-delay attribute)
+- **Animation Timing**: Modify `data-delay` attributes to adjust when lines appear
+- **Color Keywords**: Search for class names: `blue-text`, `red-text`, `yellow-text`, `highlight`
+- **ASCII Emoji**: Search for `<div class="emoji-face"`
+- **Error Message**: Search for `<footer class="error-message"`
+- **JavaScript**: Sequential animation logic at bottom in `<script>` tag
+
 ### Color Scheme Changes
 - **Erasure Poem**: Search for hex codes: `#00d4ff` (cyan), `#ff006e` (magenta), `#7b2cbf` (purple)
 - **Visual Poem**: Search for hex codes: `#8b7355` (brown), `#b8a489` (tan), `#5a4a3a` (dark brown)
+- **Interactive Poem**: Search for hex codes: `#5dade2` (cyan/blue), `#e74c3c` (red), `#f1c40f` (yellow/gold)
 
 ## Git Workflow
 
 When committing changes:
 ```bash
 # Add files (use quotes for the erasure poem filename)
-git add index.html "erasure_poem (1).html" visual_poem.html
+git add index.html "erasure_poem (1).html" visual_poem.html interactive_poem.html
 
 # Commit with descriptive message
 git commit -m "Your descriptive message"
