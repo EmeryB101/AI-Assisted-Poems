@@ -39,23 +39,20 @@ AI-Assisted-Poems/
   - Full original text below in faded strikethrough (hover to reveal)
   - Matrix rain background effect (Canvas API)
   - Multiple animated decorative elements
-- **Artist Statement**: Now includes the artist statement at the top
-- **Lines of Interest**:
-  - CSS: lines 7-422
-  - Artist Statement: lines 415-422
-  - Poem Content: lines 424-508
-  - JavaScript (Matrix effect): lines 526-572
+- **Note**: Artist statement appears ONLY on index.html, not on this page
+- **Accessibility**: Full WCAG 2.1 AA compliance with ARIA labels, semantic HTML, skip links
 
 ### visual_poem.html - Visual Poem
 - **Theme**: "Songs of Digital Innocence Lost" - William Blake inspired, digital age commentary
 - **Design**: Vintage parchment aesthetic with ornate borders
 - **Structure**:
   - Ornate corner decorations with circular accents
-  - Central empty swing as metaphor (SVG)
+  - Central empty swing as metaphor (SVG with proper title/desc tags)
   - Animated falling leaves
   - Quote: "In every cry of every Man, In every Infant's cry of fear..."
 - **External Font**: Uses Google Fonts (Cinzel, Crimson Text)
 - **Animation**: CSS-based falling leaf animation with staggered delays
+- **Accessibility**: Full WCAG 2.1 AA compliance with SVG descriptions, ARIA labels, semantic HTML
 
 ## Development Workflow
 
@@ -100,6 +97,27 @@ No automated tests exist. To verify changes:
    - Ensure fonts load correctly
    - Test on different screen sizes
 
+### Accessibility Testing
+
+All pages meet WCAG 2.1 AA standards for electronic literature submission. Test with:
+
+1. **Keyboard Navigation**:
+   - Press Tab to navigate through interactive elements
+   - Skip-to-content link appears on first Tab press
+   - All links have visible focus indicators (cyan/brown outlines)
+   - Enter key activates links
+
+2. **Screen Reader Testing**:
+   - Use NVDA (Windows), JAWS (Windows), or VoiceOver (Mac)
+   - All images and visual elements have descriptive labels
+   - Decorative elements are properly hidden (aria-hidden="true")
+   - Semantic HTML provides clear document structure
+
+3. **What You'll See vs. What's Hidden**:
+   - **Visible**: Focus outlines when tabbing, same visual design
+   - **Hidden to sighted users**: Skip links (until focused), screen-reader-only descriptions
+   - **For screen readers**: Descriptive text explaining visual elements, poem structure, interaction instructions
+
 ## Technical Architecture
 
 ### Shared Design Philosophy
@@ -121,22 +139,22 @@ No automated tests exist. To verify changes:
 ## Making Changes
 
 ### Modifying the Landing Page (index.html)
-- **Artist Statement**: lines 235-242
-- **Poem Cards**: lines 244-256
-- **Styling**: Inline in `<style>` tag, lines 7-228
+- **Artist Statement**: Search for `<section class="artist-statement"`
+- **Poem Cards**: Search for `<article class="poem-card">`
+- **Styling**: All styles in the `<style>` tag in `<head>`
 
 ### Modifying the Erasure Poem
-- **Artist Statement**: lines 415-422
-- **Poem Text**: lines 426-486 (inside phone screen container)
-- **Erased Context**: lines 497-507 (below phone)
-- **Animations**: Look for `@keyframes` definitions
-- **Matrix Effect**: Modify `drawMatrix()` function (lines 543-564)
+- **Poem Text**: Search for `<div style="display: inline-block; border-left: 3px solid #00d4ff"` (phone screen container)
+- **Erased Context**: Search for `<section style="margin-top: 60px"` (below phone)
+- **Animations**: Look for `@keyframes` definitions in the `<style>` section
+- **Matrix Effect**: Modify `drawMatrix()` function in the `<script>` tag
+- **Note**: Do NOT add artist statement to this page - it should only appear on index.html
 
 ### Modifying the Visual Poem
-- **Main Content**: lines 232-257 (title, word "AGAIN?", swing, quote)
-- **Swing SVG**: lines 248-253
-- **Falling Leaves**: lines 237-241 (adjust count by adding/removing `<div class="leaf"></div>`)
-- **Ornate Borders**: lines 233-235 (corner decorations)
+- **Main Content**: Search for `<article class="main-content"`
+- **Swing SVG**: Search for `<svg class="swing"`
+- **Falling Leaves**: Search for `<div class="leaf"` (adjust count by adding/removing)
+- **Quote**: Search for `<blockquote class="quote"`
 
 ### Color Scheme Changes
 - **Erasure Poem**: Search for hex codes: `#00d4ff` (cyan), `#ff006e` (magenta), `#7b2cbf` (purple)
