@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Songs of Digital Innocence Lost</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Crimson+Text:ital@0;1&display=swap');
+
+        body {
+            margin: 0;
+            padding: 40px;
+            background: linear-gradient(135deg, #f5f0e8 0%, #e8dcc8 50%, #f5f0e8 100%);
+            font-family: 'Crimson Text', serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .page {
+            width: 90%;
+            max-width: 900px;
+            aspect-ratio: 1.2;
+            background: #faf7f0;
+            border: 3px solid #8b7355;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2), inset 0 0 50px rgba(139, 115, 85, 0.1);
+            position: relative;
+            padding: 60px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        /* Ornate corner decorations */
+        .corner {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            border: 3px solid #8b7355;
+        }
+
+        .corner::before,
+        .corner::after {
+            content: '';
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background: #8b7355;
+            border-radius: 50%;
+        }
+
+        .corner.top-left {
+            top: 15px;
+            left: 15px;
+            border-right: none;
+            border-bottom: none;
+            border-radius: 0 0 0 8px;
+        }
+
+        .corner.top-left::before {
+            top: -6px;
+            left: -6px;
+        }
+
+        .corner.top-right {
+            top: 15px;
+            right: 15px;
+            border-left: none;
+            border-bottom: none;
+            border-radius: 0 0 0 8px;
+            transform: scaleX(-1);
+        }
+
+        .corner.top-right::before {
+            top: -6px;
+            left: -6px;
+        }
+
+        .corner.bottom-left {
+            bottom: 15px;
+            left: 15px;
+            border-right: none;
+            border-top: none;
+            border-radius: 0 0 0 8px;
+            transform: scaleY(-1);
+        }
+
+        .corner.bottom-left::before {
+            top: -6px;
+            left: -6px;
+        }
+
+        .corner.bottom-right {
+            bottom: 15px;
+            right: 15px;
+            border-left: none;
+            border-top: none;
+            border-radius: 0 0 0 8px;
+            transform: scale(-1);
+        }
+
+        .corner.bottom-right::before {
+            top: -6px;
+            left: -6px;
+        }
+
+        .title {
+            font-family: 'Cinzel', serif;
+            font-size: 2.5em;
+            text-align: center;
+            color: #5a4a3a;
+            letter-spacing: 8px;
+            margin-bottom: 40px;
+            text-transform: uppercase;
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .main-word {
+            font-family: 'Cinzel', serif;
+            font-size: 6em;
+            font-weight: 600;
+            color: #3a2a1a;
+            letter-spacing: 12px;
+            margin-bottom: 80px;
+        }
+
+        /* Swing SVG container */
+        .swing-container {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            margin-bottom: 60px;
+        }
+
+        .swing {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .rope {
+            stroke: #b8a489;
+            stroke-width: 2;
+            fill: none;
+        }
+
+        .seat {
+            fill: none;
+            stroke: #b8a489;
+            stroke-width: 3;
+        }
+
+        /* Falling leaves */
+        .leaf {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: radial-gradient(circle, #d4c4a8, #b8a489);
+            border-radius: 50% 0;
+            opacity: 0.4;
+            animation: fall linear infinite;
+        }
+
+        .leaf:nth-child(1) {
+            left: 15%;
+            animation-duration: 8s;
+            animation-delay: 0s;
+        }
+
+        .leaf:nth-child(2) {
+            left: 65%;
+            top: 20%;
+            animation-duration: 10s;
+            animation-delay: 2s;
+            transform: rotate(45deg);
+        }
+
+        .leaf:nth-child(3) {
+            left: 45%;
+            top: 10%;
+            animation-duration: 12s;
+            animation-delay: 4s;
+            transform: rotate(-30deg);
+        }
+
+        .leaf:nth-child(4) {
+            left: 85%;
+            animation-duration: 9s;
+            animation-delay: 1s;
+            transform: rotate(60deg);
+        }
+
+        .leaf:nth-child(5) {
+            left: 25%;
+            top: 50%;
+            animation-duration: 11s;
+            animation-delay: 3s;
+        }
+
+        @keyframes fall {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.6;
+            }
+            90% {
+                opacity: 0.6;
+            }
+            100% {
+                transform: translateY(400px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .shadow {
+            position: absolute;
+            bottom: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 15px;
+            background: radial-gradient(ellipse, rgba(90, 74, 58, 0.2), transparent);
+        }
+
+        .quote {
+            font-family: 'Crimson Text', serif;
+            font-style: italic;
+            text-align: center;
+            color: #8b7355;
+            font-size: 1.2em;
+            line-height: 1.6;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .quote-attribution {
+            display: block;
+            margin-top: 8px;
+            font-size: 0.95em;
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <div class="corner top-left"></div>
+        <div class="corner top-right"></div>
+        <div class="corner bottom-left"></div>
+        <div class="corner bottom-right"></div>
+
+        <div class="title">Songs of Digital Innocence Lost</div>
+
+        <div class="main-content">
+            <div class="main-word">AGAIN?</div>
+
+            <div class="swing-container">
+                <!-- Falling leaves -->
+                <div class="leaf"></div>
+                <div class="leaf"></div>
+                <div class="leaf"></div>
+                <div class="leaf"></div>
+                <div class="leaf"></div>
+
+                <!-- Swing SVG -->
+                <svg class="swing" width="200" height="220" viewBox="0 0 200 220">
+                    <!-- Left rope -->
+                    <line class="rope" x1="40" y1="0" x2="55" y2="160" />
+                    <!-- Right rope -->
+                    <line class="rope" x1="160" y1="0" x2="145" y2="160" />
+                    <!-- Swing seat - trapezoid shape -->
+                    <path class="seat" d="M 55 160 L 145 160 L 135 175 L 65 175 Z" />
+                </svg>
+
+                <div class="shadow"></div>
+            </div>
+        </div>
+
+        <div class="quote">
+            <span>"In every cry of every Man,<br>
+            In every Infant's cry of fear..."</span>
+            <span class="quote-attribution">— Illuminated in the Digital Age —</span>
+        </div>
+    </div>
+</body>
+</html>
