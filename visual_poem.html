@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Songs of Digital Innocence Lost - A visual poem inspired by William Blake's work, exploring themes of lost innocence in the digital age. Features an empty swing metaphor with falling leaves and parchment aesthetic.">
+    <meta name="author" content="AI-Assisted Poetry Portfolio">
     <title>Songs of Digital Innocence Lost</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Crimson+Text:ital@0;1&display=swap');
@@ -250,30 +252,76 @@
             margin-top: 8px;
             font-size: 0.95em;
         }
+
+        /* Screen reader only text */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border-width: 0;
+        }
+
+        /* Skip to content link */
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 0;
+            background: #8b7355;
+            color: #fff;
+            padding: 8px;
+            text-decoration: none;
+            z-index: 100;
+            font-weight: bold;
+        }
+
+        .skip-link:focus {
+            top: 0;
+        }
+
+        /* Improved focus visibility */
+        *:focus {
+            outline: 3px solid #8b7355;
+            outline-offset: 3px;
+        }
     </style>
 </head>
 <body>
-    <div class="page">
-        <div class="corner top-left"></div>
-        <div class="corner top-right"></div>
-        <div class="corner bottom-left"></div>
-        <div class="corner bottom-right"></div>
+    <a href="#main-content" class="skip-link">Skip to poem content</a>
 
-        <div class="title">Songs of Digital Innocence Lost</div>
+    <main class="page" id="main-content" role="main">
+        <!-- Decorative ornate corners -->
+        <div class="corner top-left" aria-hidden="true"></div>
+        <div class="corner top-right" aria-hidden="true"></div>
+        <div class="corner bottom-left" aria-hidden="true"></div>
+        <div class="corner bottom-right" aria-hidden="true"></div>
 
-        <div class="main-content">
-            <div class="main-word">AGAIN?</div>
+        <header>
+            <h1 class="title">Songs of Digital Innocence Lost</h1>
+            <p class="sr-only">A visual poem exploring lost innocence in the digital age, inspired by William Blake's work</p>
+        </header>
 
-            <div class="swing-container">
-                <!-- Falling leaves -->
-                <div class="leaf"></div>
-                <div class="leaf"></div>
-                <div class="leaf"></div>
-                <div class="leaf"></div>
-                <div class="leaf"></div>
+        <article class="main-content" role="article" aria-labelledby="poem-title">
+            <h2 class="sr-only" id="poem-title">Visual Poem Content</h2>
+
+            <div class="main-word" role="text" aria-label="Central question: Again?">AGAIN?</div>
+
+            <div class="swing-container" role="img" aria-label="An empty swing with falling leaves, symbolizing lost childhood innocence">
+                <!-- Falling leaves (decorative) -->
+                <div class="leaf" aria-hidden="true"></div>
+                <div class="leaf" aria-hidden="true"></div>
+                <div class="leaf" aria-hidden="true"></div>
+                <div class="leaf" aria-hidden="true"></div>
+                <div class="leaf" aria-hidden="true"></div>
 
                 <!-- Swing SVG -->
-                <svg class="swing" width="200" height="220" viewBox="0 0 200 220">
+                <svg class="swing" width="200" height="220" viewBox="0 0 200 220" role="img" aria-label="Empty swing with two ropes and wooden seat">
+                    <title>Empty Swing</title>
+                    <desc>A simple swing with two ropes hanging down to a wooden seat, representing absence and lost innocence</desc>
                     <!-- Left rope -->
                     <line class="rope" x1="40" y1="0" x2="55" y2="160" />
                     <!-- Right rope -->
@@ -282,15 +330,15 @@
                     <path class="seat" d="M 55 160 L 145 160 L 135 175 L 65 175 Z" />
                 </svg>
 
-                <div class="shadow"></div>
+                <div class="shadow" aria-hidden="true"></div>
             </div>
-        </div>
+        </article>
 
-        <div class="quote">
-            <span>"In every cry of every Man,<br>
-            In every Infant's cry of fear..."</span>
-            <span class="quote-attribution">— Illuminated in the Digital Age —</span>
-        </div>
-    </div>
+        <blockquote class="quote" cite="William Blake">
+            <p>"In every cry of every Man,<br>
+            In every Infant's cry of fear..."</p>
+            <footer class="quote-attribution">— Illuminated in the Digital Age —</footer>
+        </blockquote>
+    </main>
 </body>
 </html>
