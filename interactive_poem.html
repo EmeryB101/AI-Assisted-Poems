@@ -7,7 +7,7 @@
     <meta name="author" content="AI-Assisted Poetry Portfolio">
     <title>When Pixels Cry - Interactive Poem</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap');
 
         * {
             margin: 0;
@@ -16,9 +16,9 @@
         }
 
         body {
-            background: linear-gradient(135deg, #0a0e27 0%, #1a1d3e 50%, #0a0e27 100%);
-            color: #e0e0e0;
-            font-family: 'Courier Prime', 'Courier New', monospace;
+            background: #000;
+            color: #fff;
+            font-family: 'Crimson Text', 'Times New Roman', serif;
             min-height: 100vh;
             display: flex;
             justify-content: center;
@@ -28,7 +28,7 @@
         }
 
         .container {
-            max-width: 900px;
+            max-width: 800px;
             width: 100%;
             text-align: center;
             position: relative;
@@ -37,39 +37,34 @@
         h1 {
             font-size: 3em;
             color: #5dade2;
-            margin-bottom: 60px;
+            margin-bottom: 80px;
             font-weight: 400;
-            letter-spacing: 3px;
-            text-shadow: 0 0 20px rgba(93, 173, 226, 0.6);
-            animation: titleGlow 3s ease-in-out infinite;
-        }
-
-        @keyframes titleGlow {
-            0%, 100% { text-shadow: 0 0 20px rgba(93, 173, 226, 0.6); }
-            50% { text-shadow: 0 0 30px rgba(93, 173, 226, 0.9), 0 0 40px rgba(93, 173, 226, 0.5); }
+            font-style: italic;
+            letter-spacing: 2px;
         }
 
         .emoji-face {
-            font-size: 2em;
-            margin: 40px 0;
+            font-size: 1.8em;
+            margin: 60px 0 80px 0;
             opacity: 0;
             animation: fadeIn 1s ease-out 0.5s forwards;
+            font-family: 'Courier New', monospace;
+            line-height: 1.4;
         }
 
         .emoji-face .eyes {
             color: #f1c40f;
-            font-weight: bold;
         }
 
         .poem {
-            font-size: 1.4em;
-            line-height: 2.2;
-            max-width: 700px;
+            font-size: 1.6em;
+            line-height: 2.5;
+            max-width: 750px;
             margin: 0 auto;
         }
 
         .line {
-            margin: 30px 0;
+            margin: 35px 0;
             opacity: 0;
             transform: translateY(20px);
         }
@@ -90,13 +85,12 @@
         }
 
         .highlight {
-            background: rgba(93, 173, 226, 0.2);
-            padding: 2px 8px;
-            border-radius: 3px;
-            color: #85c1e9;
-            font-family: 'Courier Prime', monospace;
-            position: relative;
-            box-shadow: 0 0 10px rgba(93, 173, 226, 0.3);
+            background: rgba(60, 80, 100, 0.6);
+            padding: 4px 12px;
+            border-radius: 4px;
+            color: #7db8d9;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
         }
 
         .blue-text {
@@ -106,8 +100,6 @@
 
         .red-text {
             color: #e74c3c;
-            font-weight: bold;
-            text-shadow: 0 0 10px rgba(231, 76, 60, 0.5);
         }
 
         .yellow-text {
@@ -117,42 +109,35 @@
 
         .loading-bar {
             display: inline-block;
-            width: 100px;
-            height: 3px;
-            background: rgba(93, 173, 226, 0.3);
+            width: 2px;
+            height: 2.2em;
+            background: #5dade2;
             position: relative;
             vertical-align: middle;
-            margin: 0 10px;
-            border-radius: 2px;
-            overflow: hidden;
-        }
-
-        .loading-bar::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            height: 100%;
-            width: 0%;
-            background: linear-gradient(90deg, #5dade2, #85c1e9);
-            animation: loading 2s ease-in-out infinite;
-            box-shadow: 0 0 10px rgba(93, 173, 226, 0.8);
-        }
-
-        @keyframes loading {
-            0%, 100% { width: 0%; left: 0%; }
-            50% { width: 100%; left: 0%; }
-            51% { width: 100%; left: 100%; }
+            margin-left: 8px;
+            animation: blink 1s step-end infinite;
         }
 
         .cursor {
             display: inline-block;
             width: 2px;
-            height: 1.2em;
+            height: 1.8em;
             background: #5dade2;
             margin-left: 5px;
             animation: blink 1s step-end infinite;
             vertical-align: text-bottom;
+        }
+
+        .cursor-left {
+            display: inline-block;
+            width: 2px;
+            height: 1.8em;
+            background: #5dade2;
+            margin-right: 10px;
+            animation: blink 1s step-end infinite;
+            vertical-align: text-bottom;
+            position: absolute;
+            left: 10%;
         }
 
         @keyframes blink {
@@ -161,54 +146,12 @@
         }
 
         .error-message {
-            margin-top: 80px;
-            font-size: 1.3em;
+            margin-top: 100px;
+            font-size: 1.4em;
             color: #f1c40f;
             font-style: italic;
             opacity: 0;
             animation: fadeIn 1s ease-out 8s forwards;
-        }
-
-        .glitch-line {
-            position: relative;
-        }
-
-        .glitch-line::before,
-        .glitch-line::after {
-            content: attr(data-text);
-            position: absolute;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            opacity: 0;
-        }
-
-        .glitch-line:hover::before {
-            color: #e74c3c;
-            animation: glitch1 0.3s infinite;
-        }
-
-        .glitch-line:hover::after {
-            color: #5dade2;
-            animation: glitch2 0.3s infinite;
-        }
-
-        @keyframes glitch1 {
-            0% { clip-path: inset(40% 0 61% 0); transform: translate(-2px, -2px); opacity: 0.8; }
-            20% { clip-path: inset(92% 0 1% 0); transform: translate(2px, 2px); opacity: 0.8; }
-            40% { clip-path: inset(43% 0 1% 0); transform: translate(-2px, 2px); opacity: 0.8; }
-            60% { clip-path: inset(25% 0 58% 0); transform: translate(2px, -2px); opacity: 0.8; }
-            80% { clip-path: inset(54% 0 7% 0); transform: translate(-2px, 2px); opacity: 0.8; }
-            100% { clip-path: inset(58% 0 43% 0); transform: translate(2px, -2px); opacity: 0.8; }
-        }
-
-        @keyframes glitch2 {
-            0% { clip-path: inset(54% 0 7% 0); transform: translate(2px, 2px); opacity: 0.8; }
-            20% { clip-path: inset(25% 0 58% 0); transform: translate(-2px, -2px); opacity: 0.8; }
-            40% { clip-path: inset(43% 0 1% 0); transform: translate(2px, -2px); opacity: 0.8; }
-            60% { clip-path: inset(92% 0 1% 0); transform: translate(-2px, 2px); opacity: 0.8; }
-            80% { clip-path: inset(40% 0 61% 0); transform: translate(2px, -2px); opacity: 0.8; }
-            100% { clip-path: inset(58% 0 43% 0); transform: translate(-2px, 2px); opacity: 0.8; }
         }
 
         /* Screen reader only text */
@@ -230,7 +173,7 @@
             top: -40px;
             left: 0;
             background: #5dade2;
-            color: #0a0e27;
+            color: #000;
             padding: 8px;
             text-decoration: none;
             z-index: 100;
@@ -250,12 +193,12 @@
         @media (max-width: 768px) {
             h1 {
                 font-size: 2em;
-                margin-bottom: 40px;
+                margin-bottom: 50px;
             }
 
             .poem {
-                font-size: 1.1em;
-                line-height: 2;
+                font-size: 1.2em;
+                line-height: 2.2;
             }
 
             .error-message {
@@ -277,13 +220,13 @@
             <h2 class="sr-only" id="poem-title">Interactive Poem: When Pixels Cry</h2>
 
             <div class="emoji-face" aria-label="Crying emoji face made of text characters">
-                <span class="eyes">◉</span>     <span class="eyes">◉</span><br>
-                <span>  (   ___   )</span><br>
-                <span>   ^^^</span>
+                <span class="eyes">●</span>     <span class="eyes">●</span><br>
+                <span>(  ___  )</span><br>
+                <span> ^^^</span>
             </div>
 
             <div class="line" data-delay="1000">
-                <span class="glitch-line" data-text="Small hands on glass screens,">Small hands on <span class="highlight">glass screens</span>,</span>
+                Small hands on <span class="highlight">glass screens</span>,
             </div>
 
             <div class="line" data-delay="2000">
@@ -291,7 +234,7 @@
             </div>
 
             <div class="line" data-delay="3000">
-                <span class="glitch-line" data-text="Your laughter buffering ...">Your laughter <span class="highlight">buffering</span> <span class="loading-bar" aria-hidden="true"></span></span>
+                Your laughter <span class="highlight">buffering</span> ...<span class="loading-bar" aria-hidden="true"></span>
             </div>
 
             <div class="line" data-delay="4000">
@@ -303,11 +246,11 @@
             </div>
 
             <div class="line" data-delay="6000">
-                Searching for what <span class="yellow-text">love</span> feels like.
+                <span class="cursor-left" aria-hidden="true"></span>Searching for what <span class="yellow-text">love</span> feels like.
             </div>
 
             <div class="line" data-delay="7000">
-                <span class="glitch-line" data-text="But the network cannot reach">But the <span class="highlight">network</span> cannot reach</span>
+                But the <span class="highlight">network</span> cannot reach
             </div>
 
             <div class="line" data-delay="8000">
