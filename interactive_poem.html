@@ -43,11 +43,24 @@
             letter-spacing: 2px;
         }
 
+        /* Tears canvas background */
+        .tears-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.6;
+        }
+
         .emoji-container {
             position: relative;
             margin: 60px auto 120px auto;
             width: 300px;
             height: 200px;
+            z-index: 1;
         }
 
         .emoji-face {
@@ -58,7 +71,7 @@
             line-height: 1.4;
             letter-spacing: 0.15em;
             position: relative;
-            z-index: 2;
+            z-index: 1;
         }
 
         .emoji-face .eyes {
@@ -72,65 +85,7 @@
             display: inline-block;
         }
 
-        /* Animated tear drops */
-        .tear {
-            position: absolute;
-            width: 16px;
-            height: 24px;
-            background: linear-gradient(135deg, #5dade2, #3498db);
-            border-radius: 50% 50% 50% 0;
-            transform: rotate(45deg);
-            opacity: 0;
-            box-shadow: 0 0 20px rgba(93, 173, 226, 0.8), 0 0 40px rgba(93, 173, 226, 0.4);
-        }
-
-        .tear-left-1 {
-            left: 75px;
-            top: 60px;
-            animation: tearFall 2.5s ease-in 0.5s infinite;
-        }
-
-        .tear-left-2 {
-            left: 80px;
-            top: 60px;
-            animation: tearFall 2.5s ease-in 1.2s infinite;
-        }
-
-        .tear-right-1 {
-            right: 75px;
-            top: 60px;
-            animation: tearFall 2.5s ease-in 0.8s infinite;
-        }
-
-        .tear-right-2 {
-            right: 80px;
-            top: 60px;
-            animation: tearFall 2.5s ease-in 1.8s infinite;
-        }
-
-        @keyframes tearFall {
-            0% {
-                opacity: 0;
-                transform: translateY(0) rotate(45deg) scale(0.5);
-            }
-            15% {
-                opacity: 1;
-                transform: translateY(10px) rotate(45deg) scale(1);
-            }
-            85% {
-                opacity: 0.8;
-            }
-            100% {
-                opacity: 0;
-                transform: translateY(120px) rotate(45deg) scale(0.8);
-            }
-        }
-
         /* Add hover effect to emoji */
-        .emoji-container:hover .tear {
-            animation-duration: 1.5s;
-        }
-
         .emoji-container:hover .emoji-face {
             transform: scale(1.05);
             transition: transform 0.3s ease;
@@ -148,6 +103,8 @@
             opacity: 0;
             transform: translateY(20px);
             transition: transform 0.3s ease, text-shadow 0.3s ease;
+            cursor: pointer;
+            position: relative;
         }
 
         .line.visible {
@@ -155,8 +112,19 @@
         }
 
         .line.visible:hover {
-            transform: translateY(-3px);
-            text-shadow: 0 0 20px rgba(93, 173, 226, 0.3);
+            transform: translateY(-5px) scale(1.02);
+            text-shadow: 0 0 30px rgba(93, 173, 226, 0.6);
+        }
+
+        .line.clicked {
+            animation: lineShake 0.5s ease-out;
+            color: #00d4ff;
+        }
+
+        @keyframes lineShake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
         }
 
         @keyframes lineAppear {
@@ -303,6 +271,7 @@
     </style>
 </head>
 <body>
+    <canvas class="tears-canvas" id="tears-canvas"></canvas>
     <a href="#main-content" class="skip-link">Skip to poem content</a>
 
     <main class="container" id="main-content" role="main">
@@ -315,15 +284,11 @@
             <h2 class="sr-only" id="poem-title">Interactive Poem: When Pixels Cry</h2>
 
             <div class="emoji-container">
-                <div class="emoji-face" aria-label="Crying emoji face with animated tears">
+                <div class="emoji-face" aria-label="Crying emoji face with animated tears falling in background">
                     <span class="eyes">●</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="eyes">●</span><br>
                     <span>(&nbsp;&nbsp;___&nbsp;&nbsp;)</span><br>
                     <span class="tears-text">&nbsp;^^^</span>
                 </div>
-                <div class="tear tear-left-1" aria-hidden="true"></div>
-                <div class="tear tear-left-2" aria-hidden="true"></div>
-                <div class="tear tear-right-1" aria-hidden="true"></div>
-                <div class="tear tear-right-2" aria-hidden="true"></div>
             </div>
 
             <div class="line" data-delay="1000">
@@ -366,15 +331,140 @@
     </main>
 
     <script>
-        // Animate lines in sequence
+        // Tears canvas animation
+        const canvas = document.getElementById('tears-canvas');
+        const ctx = canvas.getContext('2d');
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        class Tear {
+            constructor() {
+                this.reset();
+            }
+
+            reset() {
+                this.x = Math.random() * canvas.width;
+                this.y = -20;
+                this.speed = Math.random() * 3 + 2;
+                this.size = Math.random() * 8 + 4;
+                this.opacity = Math.random() * 0.5 + 0.3;
+            }
+
+            update() {
+                this.y += this.speed;
+                if (this.y > canvas.height) {
+                    this.reset();
+                }
+            }
+
+            draw() {
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                ctx.rotate(45 * Math.PI / 180);
+
+                // Draw teardrop shape
+                ctx.globalAlpha = this.opacity;
+                const gradient = ctx.createLinearGradient(-this.size, -this.size, this.size, this.size);
+                gradient.addColorStop(0, '#5dade2');
+                gradient.addColorStop(1, '#3498db');
+                ctx.fillStyle = gradient;
+
+                ctx.beginPath();
+                ctx.arc(0, 0, this.size, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Glow effect
+                ctx.shadowBlur = 20;
+                ctx.shadowColor = 'rgba(93, 173, 226, 0.8)';
+                ctx.fill();
+
+                ctx.restore();
+            }
+        }
+
+        // Create tear drops
+        const tears = [];
+        for (let i = 0; i < 30; i++) {
+            tears.push(new Tear());
+            tears[i].y = Math.random() * canvas.height; // Spread them out initially
+        }
+
+        function animateTears() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            tears.forEach(tear => {
+                tear.update();
+                tear.draw();
+            });
+
+            requestAnimationFrame(animateTears);
+        }
+
+        animateTears();
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+
+        // Poem interactivity
         document.addEventListener('DOMContentLoaded', function() {
             const lines = document.querySelectorAll('.line');
+            let mouseX = 0;
+            let mouseY = 0;
 
+            // Animate lines in sequence
             lines.forEach((line, index) => {
                 const delay = parseInt(line.getAttribute('data-delay')) || (index * 1000);
                 setTimeout(() => {
                     line.classList.add('visible');
                 }, delay);
+
+                // Click interaction
+                line.addEventListener('click', function() {
+                    this.classList.add('clicked');
+
+                    // Create burst of tears at cursor position
+                    for (let i = 0; i < 5; i++) {
+                        const tear = new Tear();
+                        tear.x = mouseX + (Math.random() - 0.5) * 100;
+                        tear.y = mouseY;
+                        tear.speed = Math.random() * 4 + 3;
+                        tears.push(tear);
+                    }
+
+                    setTimeout(() => {
+                        this.classList.remove('clicked');
+                    }, 500);
+                });
+            });
+
+            // Track mouse position
+            document.addEventListener('mousemove', (e) => {
+                mouseX = e.clientX;
+                mouseY = e.clientY;
+
+                // Make nearby lines react to mouse
+                lines.forEach(line => {
+                    if (!line.classList.contains('visible')) return;
+
+                    const rect = line.getBoundingClientRect();
+                    const lineX = rect.left + rect.width / 2;
+                    const lineY = rect.top + rect.height / 2;
+
+                    const distance = Math.sqrt(
+                        Math.pow(mouseX - lineX, 2) +
+                        Math.pow(mouseY - lineY, 2)
+                    );
+
+                    if (distance < 200) {
+                        const intensity = 1 - (distance / 200);
+                        line.style.textShadow = `0 0 ${30 * intensity}px rgba(93, 173, 226, ${0.6 * intensity})`;
+                    } else {
+                        line.style.textShadow = '';
+                    }
+                });
             });
         });
     </script>
