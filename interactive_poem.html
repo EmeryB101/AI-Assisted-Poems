@@ -75,54 +75,65 @@
         /* Animated tear drops */
         .tear {
             position: absolute;
-            width: 8px;
-            height: 12px;
-            background: #5dade2;
+            width: 16px;
+            height: 24px;
+            background: linear-gradient(135deg, #5dade2, #3498db);
             border-radius: 50% 50% 50% 0;
             transform: rotate(45deg);
             opacity: 0;
-            box-shadow: 0 0 10px rgba(93, 173, 226, 0.5);
+            box-shadow: 0 0 20px rgba(93, 173, 226, 0.8), 0 0 40px rgba(93, 173, 226, 0.4);
         }
 
         .tear-left-1 {
-            left: 85px;
-            top: 55px;
-            animation: tearFall 2s ease-in 1s infinite;
+            left: 75px;
+            top: 60px;
+            animation: tearFall 2.5s ease-in 0.5s infinite;
         }
 
         .tear-left-2 {
-            left: 88px;
-            top: 55px;
-            animation: tearFall 2s ease-in 1.6s infinite;
+            left: 80px;
+            top: 60px;
+            animation: tearFall 2.5s ease-in 1.2s infinite;
         }
 
         .tear-right-1 {
-            right: 85px;
-            top: 55px;
-            animation: tearFall 2s ease-in 1.3s infinite;
+            right: 75px;
+            top: 60px;
+            animation: tearFall 2.5s ease-in 0.8s infinite;
         }
 
         .tear-right-2 {
-            right: 88px;
-            top: 55px;
-            animation: tearFall 2s ease-in 1.9s infinite;
+            right: 80px;
+            top: 60px;
+            animation: tearFall 2.5s ease-in 1.8s infinite;
         }
 
         @keyframes tearFall {
             0% {
                 opacity: 0;
-                transform: translateY(0) rotate(45deg);
+                transform: translateY(0) rotate(45deg) scale(0.5);
             }
-            10% {
+            15% {
+                opacity: 1;
+                transform: translateY(10px) rotate(45deg) scale(1);
+            }
+            85% {
                 opacity: 0.8;
-            }
-            70% {
-                opacity: 0.6;
             }
             100% {
                 opacity: 0;
-                transform: translateY(80px) rotate(45deg);
+                transform: translateY(120px) rotate(45deg) scale(0.8);
             }
+        }
+
+        /* Add hover effect to emoji */
+        .emoji-container:hover .tear {
+            animation-duration: 1.5s;
+        }
+
+        .emoji-container:hover .emoji-face {
+            transform: scale(1.05);
+            transition: transform 0.3s ease;
         }
 
         .poem {
@@ -136,10 +147,16 @@
             margin: 35px 0;
             opacity: 0;
             transform: translateY(20px);
+            transition: transform 0.3s ease, text-shadow 0.3s ease;
         }
 
         .line.visible {
             animation: lineAppear 0.8s ease-out forwards;
+        }
+
+        .line.visible:hover {
+            transform: translateY(-3px);
+            text-shadow: 0 0 20px rgba(93, 173, 226, 0.3);
         }
 
         @keyframes lineAppear {
@@ -160,6 +177,15 @@
             color: #7db8d9;
             font-family: 'Courier New', monospace;
             font-size: 0.9em;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .highlight:hover {
+            background: rgba(93, 173, 226, 0.4);
+            color: #5dade2;
+            box-shadow: 0 0 15px rgba(93, 173, 226, 0.5);
+            transform: scale(1.05);
         }
 
         .blue-text {
