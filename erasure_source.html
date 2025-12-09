@@ -124,6 +124,23 @@
             transform: scale(1.1);
         }
 
+        .kept.clicked {
+            color: #7b2cbf;
+            text-shadow: 0 0 30px rgba(123, 44, 191, 1);
+            animation: pulse 0.5s ease-out;
+            transform: rotate(5deg) scale(1.2);
+        }
+
+        .kept.connected {
+            color: #00d4ff;
+            text-shadow: 0 0 25px rgba(0, 212, 255, 1);
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.3); }
+        }
+
         .kept::after {
             content: '';
             position: absolute;
@@ -133,11 +150,35 @@
             height: 2px;
             background: #ff006e;
             box-shadow: 0 0 8px rgba(255, 0, 110, 0.8);
+            transition: all 0.3s ease;
         }
 
         .kept:hover::after {
             background: #00d4ff;
             box-shadow: 0 0 12px rgba(0, 212, 255, 1);
+        }
+
+        .kept.clicked::after {
+            height: 4px;
+            background: #7b2cbf;
+            box-shadow: 0 0 15px rgba(123, 44, 191, 1);
+        }
+
+        /* Connection lines between juxtaposed words */
+        .connection-line {
+            position: absolute;
+            height: 2px;
+            background: linear-gradient(90deg, #7b2cbf, #00d4ff);
+            opacity: 0;
+            pointer-events: none;
+            z-index: 10;
+            box-shadow: 0 0 10px rgba(123, 44, 191, 0.8);
+            animation: lineGrow 0.5s ease-out forwards;
+        }
+
+        @keyframes lineGrow {
+            from { width: 0; opacity: 0; }
+            to { width: 100%; opacity: 1; }
         }
 
         @keyframes glow {
@@ -275,9 +316,62 @@
         </article>
 
         <footer class="instruction" role="contentinfo">
-            <p>Hover over highlighted words to see them glow • Hover over faded text to reveal what was erased</p>
-            <p class="sr-only">The magenta highlighted words form the final erasure poem. Gray faded text represents erased content that can be revealed by hovering.</p>
+            <p>Click highlighted words to reveal poetic connections • Hover to explore juxtapositions</p>
+            <p class="sr-only">The magenta highlighted words form the final erasure poem. Click words to reveal connections between juxtaposed concepts like "alone together" and "light/empty".</p>
         </footer>
     </main>
+
+    <script>
+        // Juxtaposed word pairs (opposites/tensions in the poem)
+        const juxtapositions = {
+            'alone': ['together'],
+            'together': ['alone'],
+            'light': ['empty', 'never satisfies'],
+            'empty': ['light', 'hungry'],
+            'hungry': ['empty', 'never satisfies'],
+            'information': ['drown', 'noise'],
+            'drown': ['information'],
+            'noise': ['forgetting', 'listen'],
+            'forgetting': ['Remember', 'remembering'],
+            'Remember': ['forgetting'],
+            'remembering': ['forgetting'],
+            'pixels': ['captive', 'human'],
+            'human': ['pixels', 'data'],
+            'data': ['distance', 'human'],
+            'distance': ['data'],
+            'turning away': ['see']
+        };
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const keptWords = document.querySelectorAll('.kept');
+
+            keptWords.forEach(word => {
+                word.addEventListener('click', function() {
+                    const text = this.textContent.trim();
+
+                    // Toggle clicked state
+                    this.classList.toggle('clicked');
+
+                    // Find and highlight juxtaposed words
+                    if (juxtapositions[text]) {
+                        keptWords.forEach(other => {
+                            const otherText = other.textContent.trim();
+                            if (juxtapositions[text].includes(otherText)) {
+                                other.classList.add('connected');
+                                setTimeout(() => {
+                                    other.classList.remove('connected');
+                                }, 2000);
+                            }
+                        });
+                    }
+
+                    // Remove clicked state after animation
+                    setTimeout(() => {
+                        this.classList.remove('clicked');
+                    }, 500);
+                });
+            });
+        });
+    </script>
 </body>
 </html>
