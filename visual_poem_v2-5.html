@@ -1,0 +1,1660 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connected/Disconnected - Visual Poem</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            font-family: 'Courier New', monospace;
+        }
+
+        .canvas-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .title {
+            position: absolute;
+            top: 40px;
+            left: 40px;
+            color: rgba(200, 220, 240, 0.9);
+            font-size: 1.8em;
+            text-align: left;
+            z-index: 100;
+            animation: fadeIn 2s ease-out;
+            text-shadow: 0 0 10px rgba(100, 150, 200, 0.3);
+            letter-spacing: 3px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .instructions {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(180, 200, 220, 0.6);
+            font-size: 0.9em;
+            text-align: center;
+            z-index: 100;
+        }
+
+        #visualPoem {
+            cursor: none;
+        }
+
+        .cursor {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            border: 2px solid rgba(150, 180, 210, 0.5);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 1000;
+            transition: transform 0.1s ease;
+        }
+
+        .cursor.active {
+            transform: scale(1.5);
+            border-color: rgba(220, 140, 160, 0.7);
+        }
+
+        .controls {
+            position: absolute;
+            top: 40px;
+            right: 40px;
+            z-index: 100;
+        }
+
+        .pause-btn {
+            background: rgba(40, 60, 80, 0.6);
+            border: 2px solid rgba(150, 180, 210, 0.6);
+            color: rgba(200, 220, 240, 0.9);
+            padding: 12px 24px;
+            font-size: 1em;
+            font-family: 'Courier New', monospace;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .pause-btn:hover {
+            background: rgba(50, 70, 90, 0.8);
+            border-color: rgba(180, 200, 220, 0.9);
+            transform: scale(1.05);
+        }
+
+        .pause-btn.paused {
+            background: rgba(80, 50, 60, 0.6);
+            border-color: rgba(220, 140, 160, 0.6);
+            color: rgba(240, 200, 210, 0.9);
+        }
+
+        .pause-btn.paused:hover {
+            background: rgba(100, 60, 70, 0.8);
+            border-color: rgba(240, 160, 180, 0.9);
+        }
+
+        .word-info {
+            position: absolute;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(30, 50, 70, 0.9);
+            border: 2px solid rgba(150, 180, 210, 0.4);
+            padding: 15px 30px;
+            border-radius: 10px;
+            color: rgba(220, 230, 240, 0.95);
+            font-size: 1.5em;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+
+        .word-info.visible {
+            opacity: 1;
+        }
+
+        .poem-display {
+            position: absolute;
+            left: 50px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 450px;
+            background: rgba(20, 30, 45, 0.95);
+            border: 3px solid rgba(100, 200, 255, 0.6);
+            padding: 35px;
+            border-radius: 15px;
+            color: rgba(220, 230, 240, 0.95);
+            font-size: 1.15em;
+            line-height: 1.9;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            pointer-events: none;
+            z-index: 90;
+            backdrop-filter: blur(15px);
+            box-shadow: 0 0 30px rgba(100, 200, 255, 0.3), 0 10px 40px rgba(0, 0, 0, 0.5);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .poem-display::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, transparent, rgba(100, 200, 255, 0.3), transparent);
+            animation: borderGlow 3s linear infinite;
+            z-index: -1;
+        }
+
+        @keyframes borderGlow {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .poem-display.visible {
+            opacity: 1;
+        }
+
+        .poem-display .poem-title {
+            font-size: 1.6em;
+            color: rgba(100, 200, 255, 0.95);
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: bold;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            text-shadow: 0 0 15px rgba(100, 200, 255, 0.6);
+            animation: titlePulse 2s ease-in-out infinite;
+        }
+
+        @keyframes titlePulse {
+            0%, 100% { text-shadow: 0 0 15px rgba(100, 200, 255, 0.6); }
+            50% { text-shadow: 0 0 25px rgba(100, 200, 255, 0.9); }
+        }
+
+        .poem-display .poem-line {
+            margin: 12px 0;
+            opacity: 0;
+            animation: lineSlideIn 0.6s ease-out forwards;
+            padding-left: 15px;
+            border-left: 2px solid rgba(100, 200, 255, 0.3);
+            position: relative;
+        }
+
+        .poem-display .poem-line::before {
+            content: '▸';
+            position: absolute;
+            left: -8px;
+            color: rgba(100, 200, 255, 0.6);
+            animation: blinkArrow 1.5s ease-in-out infinite;
+        }
+
+        @keyframes blinkArrow {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+
+        .poem-display .poem-line:nth-child(2) { animation-delay: 0.1s; }
+        .poem-display .poem-line:nth-child(3) { animation-delay: 0.2s; }
+        .poem-display .poem-line:nth-child(4) { animation-delay: 0.3s; }
+        .poem-display .poem-line:nth-child(5) { animation-delay: 0.4s; }
+
+        @keyframes lineSlideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .digital-bg {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: -1;
+            opacity: 0.1;
+        }
+
+        .scan-line {
+            position: absolute;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(100, 200, 255, 0.8), transparent);
+            animation: scan 3s linear infinite;
+            box-shadow: 0 0 10px rgba(100, 200, 255, 0.5);
+        }
+
+        @keyframes scan {
+            0% { top: 0; }
+            100% { top: 100%; }
+        }
+
+        /* Digital hexagon pattern overlay */
+        body::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                repeating-linear-gradient(0deg, transparent, transparent 50px, rgba(100, 200, 255, 0.03) 50px, rgba(100, 200, 255, 0.03) 51px),
+                repeating-linear-gradient(90deg, transparent, transparent 50px, rgba(100, 200, 255, 0.03) 50px, rgba(100, 200, 255, 0.03) 51px);
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* Animated corner accents */
+        .canvas-container::before,
+        .canvas-container::after {
+            content: '';
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            border: 2px solid rgba(100, 200, 255, 0.3);
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        .canvas-container::before {
+            top: 20px;
+            left: 20px;
+            border-right: none;
+            border-bottom: none;
+            animation: cornerPulse 3s ease-in-out infinite;
+        }
+
+        .canvas-container::after {
+            bottom: 20px;
+            right: 20px;
+            border-left: none;
+            border-top: none;
+            animation: cornerPulse 3s ease-in-out infinite 1.5s;
+        }
+
+        @keyframes cornerPulse {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(1.1); }
+        }
+
+        .glitch-effect {
+            animation: glitch 0.3s ease-in-out infinite;
+        }
+
+        @keyframes glitch {
+            0% { transform: translate(0); }
+            20% { transform: translate(-2px, 2px); }
+            40% { transform: translate(-2px, -2px); }
+            60% { transform: translate(2px, 2px); }
+            80% { transform: translate(2px, -2px); }
+            100% { transform: translate(0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="canvas-container">
+        <div class="title">CONNECTED · DISCONNECTED</div>
+        <div class="controls">
+            <button class="pause-btn" id="pauseBtn">PAUSE</button>
+        </div>
+        <canvas id="visualPoem"></canvas>
+        <div class="cursor" id="cursor"></div>
+        <div class="word-info" id="wordInfo"></div>
+        <div class="poem-display" id="poemDisplay"></div>
+        <div class="instructions">Hover over any word to freeze it and see its poem · Click to release · SPACE to pause</div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('visualPoem');
+        const ctx = canvas.getContext('2d');
+        const cursorEl = document.getElementById('cursor');
+        const pauseBtn = document.getElementById('pauseBtn');
+        const wordInfo = document.getElementById('wordInfo');
+        const poemDisplay = document.getElementById('poemDisplay');
+        
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        let mouseX = canvas.width / 2;
+        let mouseY = canvas.height / 2;
+        let mouseDown = false;
+        let isPaused = false;
+        let currentHoveredWord = null;
+        let ripples = [];
+        let sparkles = [];
+        let dataPackets = [];
+
+        // Data packet class for tech aesthetic
+        class DataPacket {
+            constructor(x, y, targetX, targetY, color) {
+                this.x = x;
+                this.y = y;
+                this.targetX = targetX;
+                this.targetY = targetY;
+                this.progress = 0;
+                this.color = color;
+                this.size = 3;
+            }
+
+            update() {
+                this.progress += 0.02;
+                this.x = this.x + (this.targetX - this.x) * 0.1;
+                this.y = this.y + (this.targetY - this.y) * 0.1;
+                return this.progress < 1;
+            }
+
+            draw() {
+                ctx.save();
+                ctx.globalAlpha = 1 - this.progress;
+                ctx.fillStyle = this.color;
+                ctx.shadowBlur = 8;
+                ctx.shadowColor = this.color;
+                
+                // Draw packet as square
+                ctx.fillRect(this.x - this.size/2, this.y - this.size/2, this.size, this.size);
+                
+                // Draw connection line
+                ctx.strokeStyle = this.color;
+                ctx.lineWidth = 1;
+                ctx.globalAlpha = (1 - this.progress) * 0.3;
+                ctx.beginPath();
+                ctx.moveTo(this.x, this.y);
+                ctx.lineTo(this.targetX, this.targetY);
+                ctx.stroke();
+                
+                ctx.restore();
+            }
+        }
+        let currentPoemTimeout = null;
+
+        // Poems for each word
+        const wordPoems = {
+            touch: {
+                lines: [
+                    "Fingertips trace cold glass,",
+                    "reaching for warmth behind the screen.",
+                    "A tap, a swipe—",
+                    "but never the weight of a hand in mine."
+                ]
+            },
+            screen: {
+                lines: [
+                    "Blue light bathes my face at 3 AM,",
+                    "a window to everywhere,",
+                    "yet here I sit,",
+                    "alone in its glow."
+                ]
+            },
+            alone: {
+                lines: [
+                    "A thousand friends online,",
+                    "notifications chiming like church bells,",
+                    "yet silence fills the room—",
+                    "heavy, absolute, mine."
+                ]
+            },
+            together: {
+                lines: [
+                    "We sit side by side,",
+                    "eyes on separate worlds,",
+                    "together in body,",
+                    "oceans apart in mind."
+                ]
+            },
+            scrolling: {
+                lines: [
+                    "Thumb moves without thinking,",
+                    "an endless parade of lives,",
+                    "each one perfect, filtered—",
+                    "mine feels heavier with each swipe."
+                ]
+            },
+            longing: {
+                lines: [
+                    "I ache for connection,",
+                    "the kind that exists beyond likes,",
+                    "beyond comments—",
+                    "raw, unfiltered, real."
+                ]
+            },
+            typing: {
+                lines: [
+                    "Keys click in the darkness,",
+                    "words forming, deleting, reforming.",
+                    "How do I say 'I miss you'",
+                    "when you're only pixels away?"
+                ]
+            },
+            silence: {
+                lines: [
+                    "The notifications stopped.",
+                    "The buzzing ceased.",
+                    "In the quiet, I hear",
+                    "my own breathing again."
+                ]
+            },
+            pixels: {
+                lines: [
+                    "You are dots of light,",
+                    "arranged just so to look like love.",
+                    "I reach out—",
+                    "my hand passes through."
+                ]
+            },
+            presence: {
+                lines: [
+                    "Online. Available. Here.",
+                    "Yet somehow, you've never felt",
+                    "more distant,",
+                    "more absent."
+                ]
+            },
+            virtual: {
+                lines: [
+                    "In this digital space,",
+                    "I can be anyone.",
+                    "But who I really am",
+                    "grows dimmer each day."
+                ]
+            },
+            real: {
+                lines: [
+                    "What is real anymore?",
+                    "This ache in my chest feels real.",
+                    "Your avatar smiling—",
+                    "is that real too?"
+                ]
+            },
+            distance: {
+                lines: [
+                    "Miles collapsed to milliseconds,",
+                    "yet you've never felt so far.",
+                    "Technology promised closeness—",
+                    "delivered only proximity."
+                ]
+            },
+            closeness: {
+                lines: [
+                    "I want the kind of close",
+                    "where I hear you breathe,",
+                    "not just see you typing,",
+                    "those three dots dancing."
+                ]
+            },
+            algorithm: {
+                lines: [
+                    "It knows what I want before I do,",
+                    "feeds me endless content.",
+                    "But can it know",
+                    "the emptiness it creates?"
+                ]
+            },
+            human: {
+                lines: [
+                    "Underneath the interface,",
+                    "beneath the curated posts,",
+                    "we're still human—",
+                    "messy, flawed, longing."
+                ]
+            },
+            connection: {
+                lines: [
+                    "We're more connected than ever,",
+                    "they say.",
+                    "Then why does it feel",
+                    "like I'm disappearing?"
+                ]
+            },
+            isolation: {
+                lines: [
+                    "Surrounded by voices,",
+                    "drowning in content,",
+                    "yet here I float—",
+                    "isolated in the noise."
+                ]
+            },
+            network: {
+                lines: [
+                    "Nodes and connections,",
+                    "a web spanning the globe.",
+                    "But where am I in this network?",
+                    "Just another lonely point."
+                ]
+            },
+            soul: {
+                lines: [
+                    "Can my soul fit in a profile?",
+                    "Can it be captured in posts?",
+                    "I scroll, searching for it—",
+                    "it's not there."
+                ]
+            },
+            digital: {
+                lines: [
+                    "Ones and zeros,",
+                    "binary existence.",
+                    "But I am neither one nor zero—",
+                    "I am the space between."
+                ]
+            },
+            embrace: {
+                lines: [
+                    "I want to hold someone,",
+                    "feel their heartbeat against mine,",
+                    "not just send a hug emoji",
+                    "across the void."
+                ]
+            },
+            empty: {
+                lines: [
+                    "My feed is full,",
+                    "my notifications endless,",
+                    "yet inside",
+                    "there's only echo."
+                ]
+            },
+            full: {
+                lines: [
+                    "Storage full. Memory full.",
+                    "Photos, videos, messages—",
+                    "everything saved except",
+                    "the feeling of being alive."
+                ]
+            },
+            wire: {
+                lines: [
+                    "Copper and fiber,",
+                    "carrying our words at light speed.",
+                    "But meaning gets lost",
+                    "somewhere in the cable."
+                ]
+            },
+            heartbeat: {
+                lines: [
+                    "My heart still beats,",
+                    "a rhythm older than Wi-Fi.",
+                    "It beats for connection—",
+                    "the analog kind."
+                ]
+            },
+            notification: {
+                lines: [
+                    "Ping. Buzz. Chime.",
+                    "Someone thought of me.",
+                    "I smile for a second,",
+                    "then the emptiness returns."
+                ]
+            },
+            yearning: {
+                lines: [
+                    "I yearn for conversations",
+                    "that don't end in 'lol'.",
+                    "For presence without performance,",
+                    "for seeing without being seen."
+                ]
+            },
+            ghost: {
+                lines: [
+                    "They viewed my story.",
+                    "They didn't reply.",
+                    "I'm haunted by",
+                    "digital ghosts."
+                ]
+            },
+            memory: {
+                lines: [
+                    "Cloud storage holds my memories now,",
+                    "perfectly preserved, never fading.",
+                    "But I can't quite remember",
+                    "what it felt like to be there."
+                ]
+            },
+            profile: {
+                lines: [
+                    "Here's the version of me",
+                    "I want you to see:",
+                    "confident, happy, connected.",
+                    "The real me is typing this at 2 AM."
+                ]
+            },
+            person: {
+                lines: [
+                    "Behind every avatar,",
+                    "there's a person.",
+                    "Behind every person,",
+                    "there's a screen."
+                ]
+            },
+            like: {
+                lines: [
+                    "Hearts and thumbs up,",
+                    "dopamine hits, validation.",
+                    "But do you like me,",
+                    "or just my posts?"
+                ]
+            },
+            love: {
+                lines: [
+                    "Can love exist in DMs?",
+                    "In video calls and voice notes?",
+                    "I guess we'll find out—",
+                    "we have no choice."
+                ]
+            },
+            data: {
+                lines: [
+                    "I am data points:",
+                    "clicks, views, engagement metrics.",
+                    "Somewhere in the numbers,",
+                    "I lost myself."
+                ]
+            },
+            feeling: {
+                lines: [
+                    "There's an emoji for every feeling,",
+                    "they tell me.",
+                    "But which one means",
+                    "'I'm losing myself in this'?"
+                ]
+            },
+            glow: {
+                lines: [
+                    "Screen glow in the dark,",
+                    "my constant companion.",
+                    "It lights my face but",
+                    "cannot warm my heart."
+                ]
+            },
+            dark: {
+                lines: [
+                    "When I close the laptop,",
+                    "darkness falls.",
+                    "In the silence, I wonder:",
+                    "Who am I without the screen?"
+                ]
+            },
+            reach: {
+                lines: [
+                    "I reach across the digital divide,",
+                    "searching for someone real.",
+                    "My hand closes on",
+                    "nothing but light."
+                ]
+            },
+            missing: {
+                lines: [
+                    "I miss you,",
+                    "though we talk every day.",
+                    "Text can't capture",
+                    "the way you laugh."
+                ]
+            },
+            present: {
+                lines: [
+                    "Be present, they say.",
+                    "But how, when the world",
+                    "exists in this rectangle",
+                    "in my hand?"
+                ]
+            },
+            absent: {
+                lines: [
+                    "You're absent even when you're here,",
+                    "eyes on a screen,",
+                    "fingers scrolling—",
+                    "present in body only."
+                ]
+            },
+            face: {
+                lines: [
+                    "I want to see your face,",
+                    "not your FaceTime.",
+                    "The real lines, the real light,",
+                    "the real you."
+                ]
+            },
+            there: {
+                lines: [
+                    "You're always 'there,'",
+                    "wherever there is.",
+                    "But I need you here,",
+                    "in the same room, breathing."
+                ]
+            },
+            interface: {
+                lines: [
+                    "Clean. Intuitive. User-friendly.",
+                    "The interface between us",
+                    "is anything but simple—",
+                    "it's where meaning goes to die."
+                ]
+            },
+            message: {
+                lines: [
+                    "Message sent. Message read.",
+                    "But did it reach you?",
+                    "Did you feel what I meant",
+                    "between the words?"
+                ]
+            },
+            whisper: {
+                lines: [
+                    "Once, we whispered secrets",
+                    "breath to ear.",
+                    "Now we type them,",
+                    "encrypted, cold, safe."
+                ]
+            },
+            signal: {
+                lines: [
+                    "Four bars. Full signal.",
+                    "Perfect connection.",
+                    "So why does it feel",
+                    "like you can't hear me?"
+                ]
+            },
+            found: {
+                lines: [
+                    "I found you online,",
+                    "reconnected, they call it.",
+                    "But have we really found",
+                    "each other?"
+                ]
+            },
+            static: {
+                lines: [
+                    "White noise. Static. Buffering.",
+                    "Sometimes I am the static—",
+                    "present but not clear,",
+                    "there but not understood."
+                ]
+            },
+            clarity: {
+                lines: [
+                    "In HD, 4K, crystal clear,",
+                    "I see everything.",
+                    "Except what matters:",
+                    "the truth of us."
+                ]
+            },
+            lost: {
+                lines: [
+                    "Connection lost. Signal dropped.",
+                    "But I was already lost",
+                    "long before",
+                    "the Wi-Fi went out."
+                ]
+            },
+            searching: {
+                lines: [
+                    "Searching for meaning,",
+                    "searching for connection,",
+                    "searching for myself—",
+                    "No results found."
+                ]
+            },
+            here: {
+                lines: [
+                    "I'm here,",
+                    "in this moment,",
+                    "trying to be present—",
+                    "but the screen keeps calling."
+                ]
+            }
+        };
+
+        // Get poem for a word
+        function getPoemForWord(word) {
+            return wordPoems[word] || {
+                lines: [
+                    "In this digital age,",
+                    "words carry weight,",
+                    "even the simplest ones—",
+                    "especially the simplest ones."
+                ]
+            };
+        }
+
+        // Display poem with digital effects
+        function showPoem(word) {
+            const poem = getPoemForWord(word);
+            const theme = getWordTheme(word);
+            
+            // Add theme-specific styling
+            let themeClass = '';
+            let bgEffect = '';
+            
+            switch(theme) {
+                case 'digital':
+                    themeClass = 'glitch-effect';
+                    bgEffect = '<div class="digital-bg"><canvas id="digitalCanvas"></canvas></div>';
+                    break;
+                case 'isolation':
+                    bgEffect = '<div class="scan-line"></div>';
+                    break;
+                case 'connection':
+                    bgEffect = '<div class="digital-bg"></div>';
+                    break;
+                default:
+                    bgEffect = '<div class="scan-line"></div>';
+            }
+            
+            poemDisplay.innerHTML = `
+                ${bgEffect}
+                <div class="poem-title ${themeClass}">${word.toUpperCase()}</div>
+                ${poem.lines.map(line => `<div class="poem-line">${line}</div>`).join('')}
+            `;
+            
+            // Add digital matrix effect for digital words
+            if (theme === 'digital') {
+                setTimeout(() => {
+                    const digitalCanvas = document.getElementById('digitalCanvas');
+                    if (digitalCanvas) {
+                        digitalCanvas.width = 450;
+                        digitalCanvas.height = 400;
+                        const dCtx = digitalCanvas.getContext('2d');
+                        
+                        const chars = '01';
+                        const columns = 20;
+                        const drops = Array(columns).fill(0);
+                        
+                        function drawMatrix() {
+                            dCtx.fillStyle = 'rgba(20, 30, 45, 0.05)';
+                            dCtx.fillRect(0, 0, digitalCanvas.width, digitalCanvas.height);
+                            
+                            dCtx.fillStyle = 'rgba(100, 200, 255, 0.3)';
+                            dCtx.font = '12px monospace';
+                            
+                            for (let i = 0; i < drops.length; i++) {
+                                const text = chars[Math.floor(Math.random() * chars.length)];
+                                dCtx.fillText(text, i * 22, drops[i] * 20);
+                                
+                                if (drops[i] * 20 > digitalCanvas.height && Math.random() > 0.95) {
+                                    drops[i] = 0;
+                                }
+                                drops[i]++;
+                            }
+                        }
+                        
+                        const matrixInterval = setInterval(drawMatrix, 50);
+                        poemDisplay.matrixInterval = matrixInterval;
+                    }
+                }, 100);
+            }
+            
+            poemDisplay.classList.add('visible');
+        }
+
+        function hidePoem() {
+            if (poemDisplay.matrixInterval) {
+                clearInterval(poemDisplay.matrixInterval);
+            }
+            poemDisplay.classList.remove('visible');
+        }
+
+        // Categorize words by theme
+        const wordThemes = {
+            connection: ['touch', 'together', 'connection', 'closeness', 'embrace', 'reach', 'person', 'face'],
+            isolation: ['alone', 'isolation', 'distance', 'empty', 'missing', 'absent', 'lost', 'ghost'],
+            digital: ['screen', 'pixels', 'digital', 'algorithm', 'data', 'network', 'interface', 'signal', 'wire', 'static'],
+            emotion: ['longing', 'yearning', 'feeling', 'love', 'heartbeat', 'soul', 'human', 'memory'],
+            communication: ['typing', 'message', 'whisper', 'silence', 'scrolling', 'notification'],
+            reality: ['virtual', 'real', 'presence', 'profile', 'searching', 'found', 'clarity', 'glow', 'here', 'there']
+        };
+
+        function getWordTheme(word) {
+            for (let theme in wordThemes) {
+                if (wordThemes[theme].includes(word)) {
+                    return theme;
+                }
+            }
+            return 'default';
+        }
+
+        // Effect classes
+        class Ripple {
+            constructor(x, y, color) {
+                this.x = x;
+                this.y = y;
+                this.radius = 0;
+                this.maxRadius = 150;
+                this.opacity = 1;
+                this.color = color;
+                this.speed = 3;
+            }
+
+            update() {
+                this.radius += this.speed;
+                this.opacity = 1 - (this.radius / this.maxRadius);
+                return this.radius < this.maxRadius;
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.strokeStyle = `${this.color}, ${this.opacity})`;
+                ctx.lineWidth = 2;
+                ctx.stroke();
+            }
+        }
+
+        class Sparkle {
+            constructor(x, y, color, vx, vy) {
+                this.x = x;
+                this.y = y;
+                this.vx = vx || (Math.random() - 0.5) * 3;
+                this.vy = vy || (Math.random() - 0.5) * 3;
+                this.life = 1;
+                this.size = Math.random() * 3 + 1;
+                this.color = color;
+                this.trail = [];
+            }
+
+            update() {
+                // Store position for trail
+                this.trail.push({x: this.x, y: this.y, life: this.life});
+                if (this.trail.length > 5) this.trail.shift();
+                
+                this.x += this.vx;
+                this.y += this.vy;
+                this.life -= 0.02;
+                this.vy += 0.1;
+                return this.life > 0;
+            }
+
+            draw() {
+                // Draw trail
+                this.trail.forEach((point, i) => {
+                    ctx.save();
+                    ctx.globalAlpha = point.life * (i / this.trail.length) * 0.5;
+                    ctx.fillStyle = this.color;
+                    ctx.beginPath();
+                    ctx.arc(point.x, point.y, this.size * 0.5, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.restore();
+                });
+                
+                // Draw main particle
+                ctx.save();
+                ctx.globalAlpha = this.life;
+                ctx.fillStyle = this.color;
+                ctx.shadowBlur = 10;
+                ctx.shadowColor = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            }
+        }
+
+        class HeartParticle {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.vy = -2;
+                this.life = 1;
+                this.size = 12;
+            }
+
+            update() {
+                this.y += this.vy;
+                this.life -= 0.015;
+                return this.life > 0;
+            }
+
+            draw() {
+                ctx.save();
+                ctx.globalAlpha = this.life;
+                ctx.fillStyle = 'rgba(240, 180, 200, 1)';
+                ctx.font = `${this.size}px Arial`;
+                ctx.textAlign = 'center';
+                ctx.fillText('♥', this.x, this.y);
+                ctx.restore();
+            }
+        }
+
+        class StaticParticle {
+            constructor(x, y) {
+                this.x = x + (Math.random() - 0.5) * 100;
+                this.y = y + (Math.random() - 0.5) * 100;
+                this.vx = (Math.random() - 0.5) * 2;
+                this.vy = (Math.random() - 0.5) * 2;
+                this.life = 1;
+                this.size = Math.random() * 2 + 1;
+            }
+
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                this.life -= 0.02;
+                return this.life > 0;
+            }
+
+            draw() {
+                ctx.save();
+                ctx.globalAlpha = this.life * 0.5;
+                ctx.fillStyle = 'rgba(150, 190, 220, 1)';
+                ctx.fillRect(this.x, this.y, this.size, this.size);
+                ctx.restore();
+            }
+        }
+
+        // Visual poem words - further reduced for maximum clarity
+        const poemWords = [
+            'touch', 'screen', 'alone', 'together', 
+            'longing', 'silence', 'pixels', 
+            'virtual', 'real', 'distance',
+            'human', 'connection', 'isolation',
+            'digital', 'embrace', 'heartbeat',
+            'yearning', 'ghost', 'memory',
+            'person', 'love', 'data',
+            'feeling', 'missing', 'face',
+            'message', 'signal', 'searching'
+        ];
+
+        class WordParticle {
+            constructor(angle, radius, word) {
+                this.baseAngle = angle;
+                this.baseRadius = radius;
+                this.word = word;
+                this.offset = Math.random() * Math.PI * 2;
+                this.pulseSpeed = 0.003 + Math.random() * 0.003; // Much slower pulse
+                this.pulseOffset = Math.random() * Math.PI * 2;
+                this.size = 26 + Math.random() * 3; // Larger, more uniform (was 24-28)
+                this.fragmentOffset = 0; // No fragmentation for stability
+                this.fragmentDirection = Math.random() * Math.PI * 2;
+                this.hovered = false;
+                this.hoverScale = 1;
+                this.hoverIntensity = 0;
+                this.velocityX = 0;
+                this.velocityY = 0;
+                this.exploded = false;
+                this.explodeTime = 0;
+                this.targetX = 0;
+                this.targetY = 0;
+                this.width = 0;
+                this.height = 0;
+                this.lastHovered = false;
+            }
+
+            checkHover(mx, my) {
+                const dx = mx - this.x;
+                const dy = my - this.y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                const hitRadius = Math.max(this.width, this.height) / 2 + 40; // Much larger hit area
+                
+                const wasHovered = this.hovered;
+                
+                if (dist < hitRadius) {
+                    this.hovered = true;
+                    this.hoverIntensity = Math.min(1, this.hoverIntensity + 0.2);
+                    
+                    // Push other words away when this word is hovered
+                    if (this.hoverIntensity > 0.7) {
+                        particles.forEach(other => {
+                            if (other !== this && !other.exploded) {
+                                const dx = other.x - this.x;
+                                const dy = other.y - this.y;
+                                const dist = Math.sqrt(dx * dx + dy * dy);
+                                if (dist < 200 && dist > 0) { // Larger push radius (was 150)
+                                    const force = (200 - dist) / 200 * 4; // Much stronger push (was 2)
+                                    other.x += (dx / dist) * force;
+                                    other.y += (dy / dist) * force;
+                                }
+                            }
+                        });
+                    }
+                    
+                    if (!this.lastHovered && this.hoverIntensity > 0.5) {
+                        this.triggerThemeEffect();
+                        this.lastHovered = true;
+                    }
+                    return true;
+                } else {
+                    this.hovered = false;
+                    this.hoverIntensity = Math.max(0, this.hoverIntensity - 0.1);
+                    if (this.hoverIntensity < 0.3) {
+                        this.lastHovered = false;
+                    }
+                    return false;
+                }
+            }
+
+            triggerThemeEffect() {
+                const theme = getWordTheme(this.word);
+                
+                // Add digital particle burst for all themes
+                for (let i = 0; i < 6; i++) {
+                    const angle = (i / 6) * Math.PI * 2;
+                    sparkles.push(new Sparkle(
+                        this.x + Math.cos(angle) * 15,
+                        this.y + Math.sin(angle) * 15,
+                        'rgba(100, 200, 255, 1)',
+                        Math.cos(angle) * 1.5,
+                        Math.sin(angle) * 1.5
+                    ));
+                }
+                
+                switch(theme) {
+                    case 'connection':
+                        for (let i = 0; i < 3; i++) {
+                            setTimeout(() => {
+                                sparkles.push(new HeartParticle(this.x, this.y));
+                            }, i * 100);
+                        }
+                        ripples.push(new Ripple(this.x, this.y, 'rgba(240, 180, 200'));
+                        break;
+                        
+                    case 'isolation':
+                        for (let i = 0; i < 2; i++) {
+                            ripples.push(new Ripple(this.x, this.y, 'rgba(100, 120, 150'));
+                        }
+                        particles.forEach(p => {
+                            if (p !== this) {
+                                const dx = p.x - this.x;
+                                const dy = p.y - this.y;
+                                const dist = Math.sqrt(dx * dx + dy * dy);
+                                if (dist < 100 && dist > 0) {
+                                    p.velocityX = (dx / dist) * 5;
+                                    p.velocityY = (dy / dist) * 5;
+                                }
+                            }
+                        });
+                        break;
+                        
+                    case 'digital':
+                        for (let i = 0; i < 15; i++) {
+                            sparkles.push(new StaticParticle(this.x, this.y));
+                        }
+                        break;
+                        
+                    case 'emotion':
+                        ripples.push(new Ripple(this.x, this.y, 'rgba(240, 200, 150'));
+                        for (let i = 0; i < 8; i++) {
+                            sparkles.push(new Sparkle(this.x, this.y, 'rgba(255, 220, 180, 1)'));
+                        }
+                        break;
+                        
+                    case 'communication':
+                        for (let i = 0; i < 12; i++) {
+                            const angle = (i / 12) * Math.PI * 2;
+                            const speed = 2;
+                            sparkles.push(new Sparkle(
+                                this.x + Math.cos(angle) * 10,
+                                this.y + Math.sin(angle) * 10,
+                                'rgba(150, 200, 240, 1)',
+                                Math.cos(angle) * speed,
+                                Math.sin(angle) * speed
+                            ));
+                        }
+                        break;
+                        
+                    case 'reality':
+                        for (let i = 0; i < 3; i++) {
+                            setTimeout(() => {
+                                ripples.push(new Ripple(
+                                    this.x + (Math.random() - 0.5) * 20,
+                                    this.y + (Math.random() - 0.5) * 20,
+                                    'rgba(180, 220, 240'
+                                ));
+                            }, i * 50);
+                        }
+                        break;
+                }
+            }
+
+            explode(mx, my) {
+                const dx = this.x - mx;
+                const dy = this.y - my;
+                const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+                const force = 15;
+                this.velocityX = (dx / dist) * force + (Math.random() - 0.5) * 5;
+                this.velocityY = (dy / dist) * force + (Math.random() - 0.5) * 5;
+                this.exploded = true;
+                this.explodeTime = 0;
+            }
+
+            update(time) {
+                if (this.exploded) {
+                    this.explodeTime++;
+                    this.x += this.velocityX;
+                    this.y += this.velocityY;
+                    this.velocityX *= 0.95;
+                    this.velocityY *= 0.95;
+                    const returnForce = 0.02;
+                    this.velocityX += (this.targetX - this.x) * returnForce;
+                    this.velocityY += (this.targetY - this.y) * returnForce;
+                    
+                    if (this.explodeTime > 120) {
+                        this.exploded = false;
+                        this.velocityX = 0;
+                        this.velocityY = 0;
+                    }
+                    this.opacity = 0.5 + Math.sin(time * 0.01) * 0.2;
+                    return;
+                }
+                
+                const pulseAmount = isPaused ? 0 : 5; // No pulse when paused
+                const pulse = isPaused ? 0 : Math.sin(time * this.pulseSpeed + this.pulseOffset) * pulseAmount;
+                const t = this.baseAngle;
+                const heartX = 16 * Math.pow(Math.sin(t), 3);
+                const heartY = -(13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t));
+                const scale = 28 + pulse; // Maximum scale for best spacing (was 25)
+                
+                this.targetX = canvas.width * 0.7 + heartX * scale;
+                this.targetY = canvas.height / 2 + heartY * scale - 50;
+                this.x = this.targetX;
+                this.y = this.targetY;
+                
+                // Only add movement if NOT hovered AND NOT paused - words freeze when you hover or pause
+                if (!isPaused && !this.hovered) {
+                    const breathe = Math.sin(time * 0.0002 + this.offset) * 1; // Very slow, minimal breathing
+                    this.x += breathe;
+                    this.y += breathe;
+                } else if (isPaused) {
+                    // When paused, snap exactly to target position (no movement at all)
+                    this.x = this.targetX;
+                    this.y = this.targetY;
+                }
+                
+                const dx = mouseX - this.x;
+                const dy = mouseY - this.y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                const interactionRadius = this.hovered ? 0 : 0; // Disable mouse push completely for stability
+                const interactionStrength = 0; // No push at all
+                
+                if (dist < interactionRadius && (!isPaused || this.hovered)) {
+                    const force = (interactionRadius - dist) / interactionRadius;
+                    this.x -= (dx / dist) * force * interactionStrength;
+                    this.y -= (dy / dist) * force * interactionStrength;
+                }
+                
+                // Push words away from each other when they're too close (but not when paused)
+                if (!isPaused) {
+                    particles.forEach(other => {
+                        if (other !== this && !this.exploded && !other.exploded) {
+                            const dx = this.x - other.x;
+                            const dy = this.y - other.y;
+                            const dist = Math.sqrt(dx * dx + dy * dy);
+                            const minDist = 85; // Even larger minimum distance (was 70)
+                            
+                            if (dist < minDist && dist > 0) {
+                                const force = (minDist - dist) / minDist * 1.5; // Stronger push
+                                this.x += (dx / dist) * force;
+                                this.y += (dy / dist) * force;
+                            }
+                        }
+                    });
+                }
+                
+                // Only fragment if not hovered - minimal movement
+                if (!isPaused && !this.hovered) {
+                    const fragmentPhase = Math.sin(time * 0.0001 + this.offset) * 0.5 + 0.5; // Very slow fragmentation
+                    this.x += Math.cos(this.fragmentDirection) * this.fragmentOffset * fragmentPhase * 0.1;
+                    this.y += Math.sin(this.fragmentDirection) * this.fragmentOffset * fragmentPhase * 0.1;
+                }
+                
+                const targetScale = this.hovered ? 2.2 : 1; // Scale up more when hovered
+                this.hoverScale += (targetScale - this.hoverScale) * 0.2; // Faster scaling
+                
+                if (this.hovered) {
+                    this.opacity = 1;
+                } else if (isPaused) {
+                    this.opacity = 0.85;
+                } else {
+                    this.opacity = 0.85 + Math.sin(time * 0.0005 + this.offset) * 0.1; // Very slow, minimal fade
+                }
+            }
+
+            draw() {
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                ctx.scale(this.hoverScale, this.hoverScale);
+                
+                const glowIntensity = this.hovered ? 25 : 12;
+                ctx.shadowBlur = glowIntensity;
+                
+                if (this.hovered) {
+                    ctx.shadowColor = `rgba(220, 140, 160, 0.6)`;
+                } else {
+                    ctx.shadowColor = `rgba(150, 190, 220, ${this.opacity * 0.4})`;
+                }
+                
+                const fontSize = this.size * (1 + this.hoverIntensity * 0.5);
+                ctx.font = `bold ${fontSize}px 'Courier New', monospace`;
+                
+                if (this.hovered) {
+                    ctx.fillStyle = `rgba(240, 180, 200, ${this.opacity})`;
+                } else {
+                    ctx.fillStyle = `rgba(200, 220, 240, ${this.opacity})`;
+                }
+                
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(this.word, 0, 0);
+                
+                const metrics = ctx.measureText(this.word);
+                this.width = metrics.width;
+                this.height = fontSize;
+                
+                if (this.hoverIntensity > 0.3) {
+                    // Animated hexagon background
+                    ctx.save();
+                    ctx.globalAlpha = this.hoverIntensity * 0.3;
+                    ctx.strokeStyle = 'rgba(100, 200, 255, 0.6)';
+                    ctx.lineWidth = 2;
+                    const hexSize = Math.max(this.width, this.height) * 1.2;
+                    for (let i = 0; i < 6; i++) {
+                        const angle = (Math.PI / 3) * i + Date.now() * 0.001;
+                        const x = Math.cos(angle) * hexSize;
+                        const y = Math.sin(angle) * hexSize;
+                        if (i === 0) {
+                            ctx.beginPath();
+                            ctx.moveTo(x, y);
+                        } else {
+                            ctx.lineTo(x, y);
+                        }
+                    }
+                    ctx.closePath();
+                    ctx.stroke();
+                    ctx.restore();
+                    
+                    // Outer glow circle with pulse
+                    ctx.beginPath();
+                    ctx.arc(0, 0, Math.max(this.width, this.height) * 0.9, 0, Math.PI * 2);
+                    ctx.strokeStyle = `rgba(220, 140, 160, ${this.hoverIntensity * 0.6})`;
+                    ctx.lineWidth = 3;
+                    ctx.shadowBlur = 15;
+                    ctx.shadowColor = `rgba(220, 140, 160, ${this.hoverIntensity * 0.8})`;
+                    ctx.stroke();
+                    
+                    // Inner pulse circle with data stream effect
+                    const pulseSize = Math.sin(Date.now() * 0.003) * 5 + 5;
+                    ctx.beginPath();
+                    ctx.arc(0, 0, Math.max(this.width, this.height) * 0.6 + pulseSize, 0, Math.PI * 2);
+                    ctx.strokeStyle = `rgba(100, 200, 255, ${this.hoverIntensity * 0.5})`;
+                    ctx.lineWidth = 2;
+                    ctx.setLineDash([5, 5]);
+                    ctx.lineDashOffset = -Date.now() * 0.05;
+                    ctx.shadowBlur = 10;
+                    ctx.shadowColor = 'rgba(100, 200, 255, 0.8)';
+                    ctx.stroke();
+                    ctx.setLineDash([]);
+                    
+                    // Corner brackets for tech feel
+                    const bracketSize = Math.max(this.width, this.height) * 0.5;
+                    ctx.strokeStyle = `rgba(100, 200, 255, ${this.hoverIntensity * 0.7})`;
+                    ctx.lineWidth = 2;
+                    // Top-left bracket
+                    ctx.beginPath();
+                    ctx.moveTo(-bracketSize, -bracketSize);
+                    ctx.lineTo(-bracketSize - 10, -bracketSize);
+                    ctx.moveTo(-bracketSize, -bracketSize);
+                    ctx.lineTo(-bracketSize, -bracketSize - 10);
+                    // Top-right bracket
+                    ctx.moveTo(bracketSize, -bracketSize);
+                    ctx.lineTo(bracketSize + 10, -bracketSize);
+                    ctx.moveTo(bracketSize, -bracketSize);
+                    ctx.lineTo(bracketSize, -bracketSize - 10);
+                    // Bottom-left bracket
+                    ctx.moveTo(-bracketSize, bracketSize);
+                    ctx.lineTo(-bracketSize - 10, bracketSize);
+                    ctx.moveTo(-bracketSize, bracketSize);
+                    ctx.lineTo(-bracketSize, bracketSize + 10);
+                    // Bottom-right bracket
+                    ctx.moveTo(bracketSize, bracketSize);
+                    ctx.lineTo(bracketSize + 10, bracketSize);
+                    ctx.moveTo(bracketSize, bracketSize);
+                    ctx.lineTo(bracketSize, bracketSize + 10);
+                    ctx.stroke();
+                }
+                
+                ctx.restore();
+            }
+        }
+
+        // Create particles
+        const particles = [];
+        const numPoints = poemWords.length;
+        for (let i = 0; i < numPoints; i++) {
+            const angle = (i / numPoints) * Math.PI * 2;
+            const word = poemWords[i % poemWords.length];
+            particles.push(new WordParticle(angle, 200, word));
+        }
+
+        // Connections
+        class Connection {
+            constructor(p1, p2) {
+                this.p1 = p1;
+                this.p2 = p2;
+                this.opacity = 0;
+            }
+
+            update() {
+                const dx = this.p1.x - this.p2.x;
+                const dy = this.p1.y - this.p2.y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                const maxDist = 80;
+                
+                if (dist < maxDist) {
+                    this.opacity = Math.min(0.4, (maxDist - dist) / maxDist * 0.4);
+                    if (this.p1.hovered || this.p2.hovered) {
+                        this.opacity = Math.min(0.8, this.opacity * 3);
+                    }
+                } else {
+                    this.opacity *= 0.95;
+                }
+            }
+
+            draw() {
+                if (this.opacity > 0.01) {
+                    ctx.beginPath();
+                    ctx.moveTo(this.p1.x, this.p1.y);
+                    ctx.lineTo(this.p2.x, this.p2.y);
+                    
+                    if (this.p1.hovered || this.p2.hovered) {
+                        ctx.strokeStyle = `rgba(220, 140, 160, ${this.opacity})`;
+                        ctx.lineWidth = 2;
+                    } else {
+                        ctx.strokeStyle = `rgba(150, 190, 220, ${this.opacity})`;
+                        ctx.lineWidth = 1;
+                    }
+                    ctx.stroke();
+                }
+            }
+        }
+
+        const connections = [];
+        for (let i = 0; i < particles.length; i++) {
+            for (let j = i + 1; j < particles.length; j++) {
+                if (Math.random() > 0.7) {
+                    connections.push(new Connection(particles[i], particles[j]));
+                }
+            }
+        }
+
+        // Pause button
+        pauseBtn.addEventListener('click', () => {
+            isPaused = !isPaused;
+            pauseBtn.textContent = isPaused ? 'RESUME' : 'PAUSE';
+            pauseBtn.classList.toggle('paused');
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'Space') {
+                e.preventDefault();
+                isPaused = !isPaused;
+                pauseBtn.textContent = isPaused ? 'RESUME' : 'PAUSE';
+                pauseBtn.classList.toggle('paused');
+            }
+        });
+
+        // Mouse tracking
+        canvas.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            cursorEl.style.left = mouseX - 20 + 'px';
+            cursorEl.style.top = mouseY - 20 + 'px';
+            
+            let anyHovered = false;
+            currentHoveredWord = null;
+            
+            particles.forEach(particle => {
+                if (particle.checkHover(mouseX, mouseY)) {
+                    anyHovered = true;
+                    currentHoveredWord = particle.word;
+                }
+            });
+            
+            if (anyHovered) {
+                cursorEl.classList.add('active');
+                wordInfo.textContent = currentHoveredWord;
+                wordInfo.classList.add('visible');
+                
+                // Show poem quickly when hovering
+                if (currentPoemTimeout) clearTimeout(currentPoemTimeout);
+                currentPoemTimeout = setTimeout(() => {
+                    if (currentHoveredWord) {
+                        showPoem(currentHoveredWord);
+                    }
+                }, 300); // Very fast trigger - 0.3 seconds
+            } else {
+                cursorEl.classList.remove('active');
+                wordInfo.classList.remove('visible');
+                if (currentPoemTimeout) clearTimeout(currentPoemTimeout);
+                hidePoem();
+            }
+        });
+
+        canvas.addEventListener('mousedown', (e) => {
+            mouseDown = true;
+            particles.forEach(particle => {
+                if (particle.hovered) {
+                    particle.explode(mouseX, mouseY);
+                }
+            });
+        });
+
+        canvas.addEventListener('mouseup', () => {
+            mouseDown = false;
+        });
+
+        // Animation
+        let time = 0;
+        function animate() {
+            if (!isPaused) {
+                time += 8; // Slower time progression (was 16)
+            }
+            
+            ctx.fillStyle = 'rgba(20, 30, 50, 0.3)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            ripples = ripples.filter(ripple => {
+                const alive = ripple.update();
+                if (alive) ripple.draw();
+                return alive;
+            });
+            
+            sparkles = sparkles.filter(sparkle => {
+                const alive = sparkle.update();
+                if (alive) sparkle.draw();
+                return alive;
+            });
+            
+            // Update and draw data packets (only when not paused)
+            if (!isPaused) {
+                dataPackets = dataPackets.filter(packet => {
+                    const alive = packet.update();
+                    if (alive) packet.draw();
+                    return alive;
+                });
+                
+                // Generate data packets around hovered words
+                particles.forEach(particle => {
+                    if (particle.hovered && Math.random() > 0.9) {
+                        const angle = Math.random() * Math.PI * 2;
+                        const dist = 60;
+                        dataPackets.push(new DataPacket(
+                            particle.x + Math.cos(angle) * dist,
+                            particle.y + Math.sin(angle) * dist,
+                            particle.x,
+                            particle.y,
+                            'rgba(100, 200, 255, 1)'
+                        ));
+                    }
+                });
+            } else {
+                // Still draw existing packets when paused
+                dataPackets.forEach(packet => packet.draw());
+            }
+            
+            connections.forEach(conn => {
+                conn.update();
+                conn.draw();
+            });
+            
+            particles.forEach(particle => {
+                particle.update(time);
+                particle.draw();
+            });
+            
+            const anyHovered = particles.some(p => p.hovered);
+            const centerPulse = isPaused ? 0.5 : Math.sin(time * 0.002) * 0.3 + 0.5;
+            const pulseSize = anyHovered ? 12 : 4;
+            
+            ctx.beginPath();
+            ctx.arc(canvas.width * 0.7, canvas.height / 2 - 50, pulseSize + centerPulse * 8, 0, Math.PI * 2);
+            ctx.fillStyle = anyHovered 
+                ? `rgba(220, 140, 160, ${centerPulse * 0.6})` 
+                : `rgba(220, 140, 160, ${centerPulse * 0.4})`;
+            ctx.shadowBlur = 20;
+            ctx.shadowColor = anyHovered 
+                ? `rgba(220, 140, 160, ${centerPulse * 0.6})` 
+                : `rgba(220, 140, 160, ${centerPulse * 0.4})`;
+            ctx.fill();
+            
+            requestAnimationFrame(animate);
+        }
+
+        animate();
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+    </script>
+</body>
+</html>
