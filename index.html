@@ -181,6 +181,21 @@
             scroll-margin-top: 20px;
         }
 
+        /* Top poems navigation section */
+        .top-poems-nav {
+            margin-top: 20px;
+        }
+
+        .nav-section-title {
+            color: #00d4ff;
+            font-size: 1.4em;
+            margin: 40px 0 25px 0;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            text-align: center;
+            text-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+        }
+
         .poem-card {
             background: rgba(0, 212, 255, 0.05);
             border: 2px solid rgba(0, 212, 255, 0.3);
@@ -222,14 +237,20 @@
             transform: translateY(-5px);
         }
 
-        .poem-card h4 {
+        .poem-card h3 {
             color: #ff006e;
             font-size: 1.5em;
             letter-spacing: 2px;
-            margin-bottom: 15px;
+            margin: 0 0 15px 0;
             text-shadow: 0 0 10px rgba(255, 0, 110, 0.5);
             position: relative;
             z-index: 1;
+            text-align: center;
+            line-height: 1.3;
+            min-height: 2.6em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .poem-card .poem-type {
@@ -237,9 +258,12 @@
             font-size: 0.9em;
             letter-spacing: 2px;
             text-transform: uppercase;
-            margin-bottom: 20px;
+            margin: 0 0 20px 0;
             position: relative;
             z-index: 1;
+            text-align: center;
+            line-height: 1.2;
+            min-height: 1.2em;
         }
 
         .poem-card a {
@@ -350,17 +374,18 @@
             <p>In this portfolio, I have included four varying poems of this theme: two erasure poems (one visual, one source text), one interactive visual poem, and one interactive kinetic poem. Each poem is meant to build upon this narrative from various perspectives and showcase how digital poetry can expand upon genre while also acknowledging implications of AI within creative works. I hope you enjoy my portfolio.</p>
         </section>
 
-        <!-- Quick Navigation -->
+        <!-- Quick Navigation Pills -->
         <nav class="quick-nav" aria-label="Jump to poem types">
             <a href="#erasure-section" class="nav-pill">Erasure Poems</a>
             <a href="#interactive-section" class="nav-pill">Interactive Poems</a>
         </nav>
 
-        <nav aria-label="Poetry collection navigation">
-            <h3 class="section-heading" id="erasure-section">Erasure Poems</h3>
+        <!-- Top Navigation Grid - All Poems Visible -->
+        <section class="top-poems-nav" aria-label="All available poems">
+            <h2 class="nav-section-title">Erasure Poems</h2>
             <div class="poems-grid">
                 <article class="poem-card">
-                    <h4>Connected/Disconnected</h4>
+                    <h3>Connected/Disconnected</h3>
                     <p class="poem-type">Erasure Poem (Visual)</p>
                     <a href="erasure_poem (1).html" aria-label="View Connected/Disconnected erasure poem - displayed in phone interface with cyberpunk aesthetics">
                         View Poem
@@ -370,7 +395,7 @@
                 </article>
 
                 <article class="poem-card">
-                    <h4>Digital Disconnection</h4>
+                    <h3>Digital Disconnection</h3>
                     <p class="poem-type">Erasure Poem (Source)</p>
                     <a href="erasure_source.html" aria-label="View Digital Disconnection erasure source - interactive source text with network visualization">
                         View Poem
@@ -380,10 +405,10 @@
                 </article>
             </div>
 
-            <h3 class="section-heading" id="interactive-section">Interactive Poems</h3>
+            <h2 class="nav-section-title">Interactive Poems</h2>
             <div class="poems-grid">
                 <article class="poem-card">
-                    <h4>Connected/Disconnected</h4>
+                    <h3>Connected/Disconnected</h3>
                     <p class="poem-type">Interactive Visual Poem</p>
                     <a href="visual_poem_v2-5.html" aria-label="View Connected/Disconnected interactive visual poem - canvas-based network visualization with animated particles">
                         View Poem
@@ -393,7 +418,7 @@
                 </article>
 
                 <article class="poem-card">
-                    <h4>When Pixels Cry</h4>
+                    <h3>When Pixels Cry</h3>
                     <p class="poem-type">Interactive/Kinetic Poem</p>
                     <a href="interactive_poem.html" aria-label="View When Pixels Cry interactive poem - an animated kinetic poem exploring childhood in the digital age">
                         View Poem
@@ -402,7 +427,7 @@
                     </a>
                 </article>
             </div>
-        </nav>
+        </section>
 
         <footer class="footer" role="contentinfo">
             <p>Created with Claude Code <span aria-hidden="true">•</span> Digital Poetry Exploration</p>
