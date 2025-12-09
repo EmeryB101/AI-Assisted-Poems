@@ -119,6 +119,57 @@
             margin-top: 40px;
         }
 
+        /* Quick Navigation */
+        .quick-nav {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 40px 0;
+            padding: 30px 0;
+            border-top: 1px solid rgba(0, 212, 255, 0.3);
+            border-bottom: 1px solid rgba(0, 212, 255, 0.3);
+        }
+
+        .nav-pill {
+            padding: 15px 40px;
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.1), rgba(123, 44, 191, 0.1));
+            border: 2px solid rgba(0, 212, 255, 0.4);
+            border-radius: 50px;
+            color: #00d4ff;
+            text-decoration: none;
+            font-size: 1.1em;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-pill::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 212, 255, 0.3), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .nav-pill:hover::before {
+            left: 100%;
+        }
+
+        .nav-pill:hover,
+        .nav-pill:focus {
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.2), rgba(123, 44, 191, 0.2));
+            border-color: #00d4ff;
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
+            transform: translateY(-3px);
+            outline: 3px solid #00d4ff;
+            outline-offset: 3px;
+        }
+
         .section-heading {
             color: #00d4ff;
             font-size: 1.3em;
@@ -127,6 +178,7 @@
             text-transform: uppercase;
             text-align: center;
             text-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+            scroll-margin-top: 20px;
         }
 
         .poem-card {
@@ -269,6 +321,16 @@
             .poems-grid {
                 grid-template-columns: 1fr;
             }
+
+            .quick-nav {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .nav-pill {
+                padding: 12px 30px;
+                font-size: 1em;
+            }
         }
     </style>
 </head>
@@ -285,11 +347,17 @@
             <h2 id="statement-heading">Artist Statement</h2>
             <p>This collection of AI-assisted poems uses Claude Code as a digital companion for interactive and multimodal pieces. My collection "Connected/Disconnected" is meant to mirror the ongoing push and pull of technology and society. The theme of this poem was to connect these juxtaposing ideas by continuously asking Claude Code to make poems as emotional as possible, pushing the boundaries of AI and pathos.</p>
 
-            <p>In this portfolio, I have included five varying poems of this theme: two erasure poems (one visual, one source text), two visual poems, and an interactive kinetic poem. Each poem is meant to build upon this narrative from various perspectives and showcase how digital poetry can expand upon genre while also acknowledging implications of AI within creative works. I hope you enjoy my portfolio.</p>
+            <p>In this portfolio, I have included four varying poems of this theme: two erasure poems (one visual, one source text), one interactive visual poem, and one interactive kinetic poem. Each poem is meant to build upon this narrative from various perspectives and showcase how digital poetry can expand upon genre while also acknowledging implications of AI within creative works. I hope you enjoy my portfolio.</p>
         </section>
 
+        <!-- Quick Navigation -->
+        <nav class="quick-nav" aria-label="Jump to poem types">
+            <a href="#erasure-section" class="nav-pill">Erasure Poems</a>
+            <a href="#interactive-section" class="nav-pill">Interactive Poems</a>
+        </nav>
+
         <nav aria-label="Poetry collection navigation">
-            <h3 class="section-heading">Erasure Poems</h3>
+            <h3 class="section-heading" id="erasure-section">Erasure Poems</h3>
             <div class="poems-grid">
                 <article class="poem-card">
                     <h4>Connected/Disconnected</h4>
@@ -312,7 +380,7 @@
                 </article>
             </div>
 
-            <h3 class="section-heading">Visual & Interactive Poems</h3>
+            <h3 class="section-heading" id="interactive-section">Interactive Poems</h3>
             <div class="poems-grid">
                 <article class="poem-card">
                     <h4>Connected/Disconnected</h4>
@@ -321,16 +389,6 @@
                         View Poem
                         <span aria-hidden="true"> →</span>
                         <span class="sr-only"> - Connected/Disconnected Visual</span>
-                    </a>
-                </article>
-
-                <article class="poem-card">
-                    <h4>Songs of Digital Innocence Lost</h4>
-                    <p class="poem-type">Visual Poem</p>
-                    <a href="visual_poem.html" aria-label="View Songs of Digital Innocence Lost visual poem - a William Blake inspired work on digital age innocence">
-                        View Poem
-                        <span aria-hidden="true"> →</span>
-                        <span class="sr-only"> - Songs of Digital Innocence Lost</span>
                     </a>
                 </article>
 
