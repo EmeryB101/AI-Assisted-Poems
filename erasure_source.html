@@ -129,16 +129,44 @@
             text-shadow: 0 0 30px rgba(123, 44, 191, 1);
             animation: pulse 0.5s ease-out;
             transform: rotate(5deg) scale(1.2);
+            position: relative;
+        }
+
+        .kept.clicked::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(123, 44, 191, 0.6), transparent);
+            animation: ripple 1s ease-out;
+            transform: translate(-50%, -50%);
+        }
+
+        @keyframes ripple {
+            to {
+                width: 300px;
+                height: 300px;
+                opacity: 0;
+            }
         }
 
         .kept.connected {
             color: #00d4ff;
             text-shadow: 0 0 25px rgba(0, 212, 255, 1);
+            animation: float 1s ease-in-out;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
         }
 
         @keyframes pulse {
             0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.3); }
+            50% { transform: scale(1.3) rotate(5deg); }
         }
 
         .kept::after {
@@ -342,6 +370,82 @@
             'turning away': ['see']
         };
 
+        function createParticles(element) {
+            const rect = element.getBoundingClientRect();
+            const container = document.querySelector('.network-container');
+
+            for (let i = 0; i < 8; i++) {
+                const particle = document.createElement('div');
+                particle.style.position = 'absolute';
+                particle.style.width = '4px';
+                particle.style.height = '4px';
+                particle.style.background = '#7b2cbf';
+                particle.style.borderRadius = '50%';
+                particle.style.left = (rect.left - container.getBoundingClientRect().left + rect.width / 2) + 'px';
+                particle.style.top = (rect.top - container.getBoundingClientRect().top + rect.height / 2) + 'px';
+                particle.style.pointerEvents = 'none';
+                particle.style.boxShadow = '0 0 10px #7b2cbf';
+                particle.style.zIndex = '20';
+
+                container.appendChild(particle);
+
+                const angle = (Math.PI * 2 * i) / 8;
+                const velocity = 100;
+                const vx = Math.cos(angle) * velocity;
+                const vy = Math.sin(angle) * velocity;
+
+                let opacity = 1;
+                let x = parseFloat(particle.style.left);
+                let y = parseFloat(particle.style.top);
+
+                const animate = () => {
+                    opacity -= 0.02;
+                    x += vx * 0.016;
+                    y += vy * 0.016;
+
+                    particle.style.left = x + 'px';
+                    particle.style.top = y + 'px';
+                    particle.style.opacity = opacity;
+
+                    if (opacity > 0) {
+                        requestAnimationFrame(animate);
+                    } else {
+                        particle.remove();
+                    }
+                };
+
+                requestAnimationFrame(animate);
+            }
+        }
+
+        function drawConnectionLine(from, to) {
+            const container = document.querySelector('.network-container');
+            const fromRect = from.getBoundingClientRect();
+            const toRect = to.getBoundingClientRect();
+            const containerRect = container.getBoundingClientRect();
+
+            const line = document.createElement('div');
+            line.className = 'connection-line';
+
+            const x1 = fromRect.left - containerRect.left + fromRect.width / 2;
+            const y1 = fromRect.top - containerRect.top + fromRect.height / 2;
+            const x2 = toRect.left - containerRect.left + toRect.width / 2;
+            const y2 = toRect.top - containerRect.top + toRect.height / 2;
+
+            const length = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+            const angle = Math.atan2(y2 - y1, x2 - x1) * 180 / Math.PI;
+
+            line.style.width = length + 'px';
+            line.style.left = x1 + 'px';
+            line.style.top = y1 + 'px';
+            line.style.transform = `rotate(${angle}deg)`;
+            line.style.transformOrigin = '0 0';
+
+            container.appendChild(line);
+
+            setTimeout(() => line.remove(), 2000);
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
             const keptWords = document.querySelectorAll('.kept');
 
@@ -349,8 +453,9 @@
                 word.addEventListener('click', function() {
                     const text = this.textContent.trim();
 
-                    // Toggle clicked state
-                    this.classList.toggle('clicked');
+                    // Clicked animation
+                    this.classList.add('clicked');
+                    createParticles(this);
 
                     // Find and highlight juxtaposed words
                     if (juxtapositions[text]) {
@@ -358,6 +463,7 @@
                             const otherText = other.textContent.trim();
                             if (juxtapositions[text].includes(otherText)) {
                                 other.classList.add('connected');
+                                drawConnectionLine(this, other);
                                 setTimeout(() => {
                                     other.classList.remove('connected');
                                 }, 2000);
