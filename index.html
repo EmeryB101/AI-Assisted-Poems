@@ -114,9 +114,19 @@
 
         .poems-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 30px;
             margin-top: 40px;
+        }
+
+        .section-heading {
+            color: #00d4ff;
+            font-size: 1.3em;
+            margin: 50px 0 30px 0;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            text-align: center;
+            text-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
         }
 
         .poem-card {
@@ -160,7 +170,7 @@
             transform: translateY(-5px);
         }
 
-        .poem-card h3 {
+        .poem-card h4 {
             color: #ff006e;
             font-size: 1.5em;
             letter-spacing: 2px;
@@ -275,39 +285,55 @@
             <h2 id="statement-heading">Artist Statement</h2>
             <p>This collection of AI-assisted poems uses Claude Code as a digital companion for interactive and multimodal pieces. My collection "Connected/Disconnected" is meant to mirror the ongoing push and pull of technology and society. The theme of this poem was to connect these juxtaposing ideas by continuously asking Claude Code to make poems as emotional as possible, pushing the boundaries of AI and pathos.</p>
 
-            <p>In this portfolio, I have included three varying poems of this theme, including an interactive poem, a visual poem, and an erasure poem. Each poem is meant to build upon this narrative from various perspectives and showcase how digital poetry can expand upon genre while also acknowledging implications of AI within creative works. I hope you enjoy my portfolio.</p>
+            <p>In this portfolio, I have included four varying poems of this theme: two erasure poems (one visual, one source text), a visual poem, and an interactive kinetic poem. Each poem is meant to build upon this narrative from various perspectives and showcase how digital poetry can expand upon genre while also acknowledging implications of AI within creative works. I hope you enjoy my portfolio.</p>
         </section>
 
-        <nav class="poems-grid" aria-label="Poetry collection navigation">
-            <article class="poem-card">
-                <h3>Connected/Disconnected</h3>
-                <p class="poem-type">Erasure Poem</p>
-                <a href="erasure_poem (1).html" aria-label="View Connected/Disconnected erasure poem - explore themes of digital technology and human connection">
-                    View Poem
-                    <span aria-hidden="true"> →</span>
-                    <span class="sr-only"> - Connected/Disconnected</span>
-                </a>
-            </article>
+        <nav aria-label="Poetry collection navigation">
+            <h3 class="section-heading">Erasure Poems</h3>
+            <div class="poems-grid">
+                <article class="poem-card">
+                    <h4>Connected/Disconnected</h4>
+                    <p class="poem-type">Erasure Poem (Visual)</p>
+                    <a href="erasure_poem (1).html" aria-label="View Connected/Disconnected erasure poem - displayed in phone interface with cyberpunk aesthetics">
+                        View Poem
+                        <span aria-hidden="true"> →</span>
+                        <span class="sr-only"> - Connected/Disconnected</span>
+                    </a>
+                </article>
 
-            <article class="poem-card">
-                <h3>Songs of Digital Innocence Lost</h3>
-                <p class="poem-type">Visual Poem</p>
-                <a href="visual_poem.html" aria-label="View Songs of Digital Innocence Lost visual poem - a William Blake inspired work on digital age innocence">
-                    View Poem
-                    <span aria-hidden="true"> →</span>
-                    <span class="sr-only"> - Songs of Digital Innocence Lost</span>
-                </a>
-            </article>
+                <article class="poem-card">
+                    <h4>Digital Disconnection</h4>
+                    <p class="poem-type">Erasure Poem (Source)</p>
+                    <a href="erasure_source.html" aria-label="View Digital Disconnection erasure source - interactive source text with network visualization">
+                        View Poem
+                        <span aria-hidden="true"> →</span>
+                        <span class="sr-only"> - Digital Disconnection</span>
+                    </a>
+                </article>
+            </div>
 
-            <article class="poem-card">
-                <h3>When Pixels Cry</h3>
-                <p class="poem-type">Interactive Poem</p>
-                <a href="interactive_poem.html" aria-label="View When Pixels Cry interactive poem - an animated kinetic poem exploring childhood in the digital age">
-                    View Poem
-                    <span aria-hidden="true"> →</span>
-                    <span class="sr-only"> - When Pixels Cry</span>
-                </a>
-            </article>
+            <h3 class="section-heading">Visual & Interactive Poems</h3>
+            <div class="poems-grid">
+                <article class="poem-card">
+                    <h4>Songs of Digital Innocence Lost</h4>
+                    <p class="poem-type">Visual Poem</p>
+                    <a href="visual_poem.html" aria-label="View Songs of Digital Innocence Lost visual poem - a William Blake inspired work on digital age innocence">
+                        View Poem
+                        <span aria-hidden="true"> →</span>
+                        <span class="sr-only"> - Songs of Digital Innocence Lost</span>
+                    </a>
+                </article>
+
+                <article class="poem-card">
+                    <h4>When Pixels Cry</h4>
+                    <p class="poem-type">Interactive/Kinetic Poem</p>
+                    <a href="interactive_poem.html" aria-label="View When Pixels Cry interactive poem - an animated kinetic poem exploring childhood in the digital age">
+                        View Poem
+                        <span aria-hidden="true"> →</span>
+                        <span class="sr-only"> - When Pixels Cry</span>
+                    </a>
+                </article>
+            </div>
         </nav>
 
         <footer class="footer" role="contentinfo">
