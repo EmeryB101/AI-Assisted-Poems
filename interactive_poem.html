@@ -41,6 +41,14 @@
             font-weight: 400;
             font-style: italic;
             letter-spacing: 2px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        h1:hover {
+            color: #e74c3c;
+            text-shadow: 0 0 30px rgba(231, 76, 60, 0.8);
+            letter-spacing: 8px;
         }
 
         /* Tears canvas background */
@@ -55,40 +63,33 @@
             opacity: 0.6;
         }
 
-        .emoji-container {
-            position: relative;
-            margin: 60px auto 120px auto;
-            width: 300px;
-            height: 200px;
-            z-index: 1;
+        /* Small crying emoji in corner */
+        .emoji-face {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            font-size: 1.2em;
+            opacity: 0.5;
+            font-family: 'Courier New', monospace;
+            line-height: 1.2;
+            letter-spacing: 0.1em;
+            z-index: 100;
+            transition: all 0.3s ease;
+            cursor: pointer;
         }
 
-        .emoji-face {
-            font-size: 3.5em;
-            opacity: 0;
-            animation: fadeIn 1s ease-out 0.5s forwards;
-            font-family: 'Courier New', monospace;
-            line-height: 1.4;
-            letter-spacing: 0.15em;
-            position: relative;
-            z-index: 1;
+        .emoji-face:hover {
+            opacity: 1;
+            transform: scale(1.3);
         }
 
         .emoji-face .eyes {
             color: #f1c40f;
-            font-weight: bold;
-            font-size: 1.2em;
+            font-size: 0.8em;
         }
 
         .emoji-face .tears-text {
             color: #5dade2;
-            display: inline-block;
-        }
-
-        /* Add hover effect to emoji */
-        .emoji-container:hover .emoji-face {
-            transform: scale(1.05);
-            transition: transform 0.3s ease;
         }
 
         .poem {
@@ -122,9 +123,12 @@
         }
 
         .line.disconnected {
-            animation: disconnect 1s ease-out forwards;
-            opacity: 0.3;
-            filter: blur(2px);
+            animation: dataCorrupt 1.5s ease-out forwards;
+            position: relative;
+        }
+
+        .line.glitching {
+            animation: glitchEffect 0.5s ease-in-out infinite;
         }
 
         @keyframes lineBreak {
@@ -136,21 +140,54 @@
             100% { transform: translateX(0) rotate(0deg); }
         }
 
-        @keyframes disconnect {
+        @keyframes dataCorrupt {
             0% {
-                transform: translateY(0) scale(1);
                 opacity: 1;
-                filter: blur(0px);
+                filter: blur(0);
             }
-            50% {
-                transform: translateY(-20px) scale(0.95);
+            20% {
+                opacity: 0.8;
+                transform: translateX(-5px);
+                filter: hue-rotate(90deg);
+            }
+            40% {
                 opacity: 0.5;
-                filter: blur(3px);
+                transform: translateX(5px);
+                filter: hue-rotate(180deg) blur(1px);
+            }
+            60% {
+                opacity: 0.3;
+                transform: translateX(-3px);
+                filter: hue-rotate(270deg) blur(2px);
+            }
+            80% {
+                opacity: 0.15;
+                filter: hue-rotate(360deg) blur(3px);
             }
             100% {
-                transform: translateY(0) scale(1);
-                opacity: 0.3;
-                filter: blur(2px);
+                opacity: 0.1;
+                transform: scale(0.8);
+                filter: blur(4px);
+                text-shadow: 0 0 20px rgba(231, 76, 60, 0.5);
+            }
+        }
+
+        @keyframes glitchEffect {
+            0%, 100% {
+                transform: translate(0, 0);
+                filter: hue-rotate(0deg);
+            }
+            25% {
+                transform: translate(-2px, 2px);
+                filter: hue-rotate(90deg);
+            }
+            50% {
+                transform: translate(2px, -2px);
+                filter: hue-rotate(180deg);
+            }
+            75% {
+                transform: translate(-2px, -2px);
+                filter: hue-rotate(270deg);
             }
         }
 
@@ -181,6 +218,11 @@
             color: #5dade2;
             box-shadow: 0 0 15px rgba(93, 173, 226, 0.5);
             transform: scale(1.05);
+        }
+
+        .highlight.glitching {
+            animation: glitchEffect 0.3s ease-in-out infinite;
+            box-shadow: 0 0 25px rgba(231, 76, 60, 0.8);
         }
 
         .blue-text {
@@ -307,16 +349,14 @@
             <p class="sr-only">An interactive kinetic poem about childhood and technology, featuring animated text and terminal aesthetics</p>
         </header>
 
-        <article class="poem" role="article" aria-labelledby="poem-title">
-            <h2 class="sr-only" id="poem-title">Interactive Poem: When Pixels Cry</h2>
+        <!-- Small crying face in corner -->
+        <div class="emoji-face" aria-label="Crying emoji - hover to cry more" title="The pixels cry...">
+            <span class="eyes">●</span>&nbsp;<span class="eyes">●</span><br>
+            <span class="tears-text">^^^</span>
+        </div>
 
-            <div class="emoji-container">
-                <div class="emoji-face" aria-label="Crying emoji face with animated tears falling in background">
-                    <span class="eyes">●</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="eyes">●</span><br>
-                    <span>(&nbsp;&nbsp;___&nbsp;&nbsp;)</span><br>
-                    <span class="tears-text">&nbsp;^^^</span>
-                </div>
-            </div>
+        <article class="poem" role="article" aria-labelledby="poem-title">
+            <h2 class="sr-only" id="poem-title">Interactive Poem: When Pixels Cry - Click lines to corrupt data, hover highlighted words to glitch</h2>
 
             <div class="line" data-delay="1000">
                 Small hands on <span class="highlight">glass screens</span>,
@@ -454,6 +494,8 @@
         // Poem interactivity
         document.addEventListener('DOMContentLoaded', function() {
             const lines = document.querySelectorAll('.line');
+            const highlights = document.querySelectorAll('.highlight');
+            const title = document.querySelector('h1');
             let mouseX = 0;
             let mouseY = 0;
 
@@ -464,74 +506,88 @@
                     line.classList.add('visible');
                 }, delay);
 
-                // Click interaction - represents disconnection
+                // Click interaction - represents DATA CORRUPTION (theme: digital breakdown)
                 line.addEventListener('click', function() {
+                    if (this.classList.contains('disconnected')) return;
+
                     this.classList.add('clicked');
 
-                    // Add disconnected state (fades and blurs)
-                    setTimeout(() => {
-                        this.classList.add('disconnected');
-                    }, 800);
-
-                    // Create shower of tears at line position (crying from disconnection)
+                    // Create massive tear shower (emotional breakdown from corruption)
                     const rect = this.getBoundingClientRect();
-                    for (let i = 0; i < 15; i++) {
+                    for (let i = 0; i < 25; i++) {
                         const tear = new Tear();
                         tear.x = rect.left + rect.width / 2 + (Math.random() - 0.5) * rect.width;
-                        tear.y = rect.top + (Math.random() - 0.5) * 50;
+                        tear.y = rect.top + (Math.random() - 0.5) * 100;
+                        tear.speed = Math.random() * 7 + 3;
+                        tear.size = Math.random() * 16 + 8;
+                        tear.opacity = Math.random() * 0.8 + 0.5;
+                        tears.push(tear);
+                    }
+
+                    // Data corruption effect
+                    setTimeout(() => {
+                        this.classList.add('disconnected');
+                        this.classList.remove('clicked');
+                    }, 800);
+                });
+            });
+
+            // Highlighted words glitch on hover (theme: unstable digital elements)
+            highlights.forEach(word => {
+                word.addEventListener('mouseenter', function() {
+                    this.classList.add('glitching');
+
+                    // Spawn tears from glitched word
+                    const rect = this.getBoundingClientRect();
+                    for (let i = 0; i < 5; i++) {
+                        const tear = new Tear();
+                        tear.x = rect.left + rect.width / 2 + (Math.random() - 0.5) * 60;
+                        tear.y = rect.top;
+                        tear.speed = Math.random() * 4 + 2;
+                        tear.size = Math.random() * 10 + 5;
+                        tears.push(tear);
+                    }
+                });
+
+                word.addEventListener('mouseleave', function() {
+                    this.classList.remove('glitching');
+                });
+            });
+
+            // Title corruption on hover (theme: complete system failure)
+            title.addEventListener('click', function() {
+                // System overload - massive tear cascade
+                for (let i = 0; i < 100; i++) {
+                    const tear = new Tear();
+                    tear.x = Math.random() * canvas.width;
+                    tear.y = Math.random() * -200;
+                    tear.speed = Math.random() * 10 + 5;
+                    tear.size = Math.random() * 20 + 10;
+                    tear.opacity = Math.random() * 0.9 + 0.3;
+                    tears.push(tear);
+                }
+            });
+
+            // Small emoji crying interaction
+            const emojiface = document.querySelector('.emoji-face');
+            let cryInterval;
+
+            emojiface.addEventListener('mouseenter', function() {
+                const rect = this.getBoundingClientRect();
+                cryInterval = setInterval(() => {
+                    // Tears from emoji
+                    for (let i = 0; i < 2; i++) {
+                        const tear = new Tear();
+                        tear.x = rect.left + rect.width / 2 + (Math.random() - 0.5) * 20;
+                        tear.y = rect.bottom;
                         tear.speed = Math.random() * 5 + 2;
                         tear.size = Math.random() * 12 + 6;
                         tears.push(tear);
                     }
-
-                    setTimeout(() => {
-                        this.classList.remove('clicked');
-                    }, 800);
-
-                    // Can reconnect by clicking again
-                    setTimeout(() => {
-                        if (this.classList.contains('disconnected')) {
-                            this.addEventListener('click', function reconnect() {
-                                this.classList.remove('disconnected');
-                                this.style.opacity = '1';
-                                this.style.filter = 'blur(0)';
-                                this.removeEventListener('click', reconnect);
-                            }, { once: true });
-                        }
-                    }, 1000);
-                });
+                }, 80);
             });
 
-            // Emoji face crying interaction
-            const emojiContainer = document.querySelector('.emoji-container');
-            let isCryingHard = false;
-            let cryInterval;
-
-            emojiContainer.addEventListener('mouseenter', function() {
-                isCryingHard = true;
-                cryInterval = setInterval(() => {
-                    const rect = this.getBoundingClientRect();
-                    // Tears fall from both eyes
-                    for (let i = 0; i < 3; i++) {
-                        const tear = new Tear();
-                        tear.x = rect.left + rect.width / 3 + (Math.random() - 0.5) * 30;
-                        tear.y = rect.top + rect.height / 3;
-                        tear.speed = Math.random() * 6 + 3;
-                        tear.size = Math.random() * 15 + 8;
-                        tears.push(tear);
-
-                        const tear2 = new Tear();
-                        tear2.x = rect.left + (rect.width * 2 / 3) + (Math.random() - 0.5) * 30;
-                        tear2.y = rect.top + rect.height / 3;
-                        tear2.speed = Math.random() * 6 + 3;
-                        tear2.size = Math.random() * 15 + 8;
-                        tears.push(tear2);
-                    }
-                }, 100);
-            });
-
-            emojiContainer.addEventListener('mouseleave', function() {
-                isCryingHard = false;
+            emojiface.addEventListener('mouseleave', function() {
                 clearInterval(cryInterval);
             });
 
