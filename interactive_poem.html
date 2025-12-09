@@ -43,29 +43,86 @@
             letter-spacing: 2px;
         }
 
+        .emoji-container {
+            position: relative;
+            margin: 60px auto 120px auto;
+            width: 300px;
+            height: 200px;
+        }
+
         .emoji-face {
-            font-size: 2.5em;
-            margin: 60px 0 100px 0;
+            font-size: 3.5em;
             opacity: 0;
             animation: fadeIn 1s ease-out 0.5s forwards;
             font-family: 'Courier New', monospace;
-            line-height: 1.6;
-            letter-spacing: 0.1em;
+            line-height: 1.4;
+            letter-spacing: 0.15em;
+            position: relative;
+            z-index: 2;
         }
 
         .emoji-face .eyes {
             color: #f1c40f;
             font-weight: bold;
+            font-size: 1.2em;
         }
 
-        .emoji-face .tears {
+        .emoji-face .tears-text {
+            color: #5dade2;
             display: inline-block;
-            animation: tearDrop 2s ease-in-out infinite;
         }
 
-        @keyframes tearDrop {
-            0%, 100% { transform: translateY(0); opacity: 1; }
-            50% { transform: translateY(3px); opacity: 0.7; }
+        /* Animated tear drops */
+        .tear {
+            position: absolute;
+            width: 8px;
+            height: 12px;
+            background: #5dade2;
+            border-radius: 50% 50% 50% 0;
+            transform: rotate(45deg);
+            opacity: 0;
+            box-shadow: 0 0 10px rgba(93, 173, 226, 0.5);
+        }
+
+        .tear-left-1 {
+            left: 85px;
+            top: 55px;
+            animation: tearFall 2s ease-in 1s infinite;
+        }
+
+        .tear-left-2 {
+            left: 88px;
+            top: 55px;
+            animation: tearFall 2s ease-in 1.6s infinite;
+        }
+
+        .tear-right-1 {
+            right: 85px;
+            top: 55px;
+            animation: tearFall 2s ease-in 1.3s infinite;
+        }
+
+        .tear-right-2 {
+            right: 88px;
+            top: 55px;
+            animation: tearFall 2s ease-in 1.9s infinite;
+        }
+
+        @keyframes tearFall {
+            0% {
+                opacity: 0;
+                transform: translateY(0) rotate(45deg);
+            }
+            10% {
+                opacity: 0.8;
+            }
+            70% {
+                opacity: 0.6;
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(80px) rotate(45deg);
+            }
         }
 
         .poem {
@@ -231,10 +288,16 @@
         <article class="poem" role="article" aria-labelledby="poem-title">
             <h2 class="sr-only" id="poem-title">Interactive Poem: When Pixels Cry</h2>
 
-            <div class="emoji-face" aria-label="Crying emoji face made of text characters">
-                <span class="eyes">●</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="eyes">●</span><br>
-                <span>(&nbsp;&nbsp;___&nbsp;&nbsp;)</span><br>
-                <span class="tears">&nbsp;^^^</span>
+            <div class="emoji-container">
+                <div class="emoji-face" aria-label="Crying emoji face with animated tears">
+                    <span class="eyes">●</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="eyes">●</span><br>
+                    <span>(&nbsp;&nbsp;___&nbsp;&nbsp;)</span><br>
+                    <span class="tears-text">&nbsp;^^^</span>
+                </div>
+                <div class="tear tear-left-1" aria-hidden="true"></div>
+                <div class="tear tear-left-2" aria-hidden="true"></div>
+                <div class="tear tear-right-1" aria-hidden="true"></div>
+                <div class="tear tear-right-2" aria-hidden="true"></div>
             </div>
 
             <div class="line" data-delay="1000">
