@@ -241,6 +241,23 @@
             color: #ff006e;
         }
 
+        .message-bubble.message-failed {
+            align-self: center;
+            background: rgba(220, 53, 69, 0.15);
+            border: 1px solid rgba(220, 53, 69, 0.5);
+            color: #dc3545;
+            font-size: 0.85em;
+            font-style: italic;
+            text-align: center;
+            animation: failureShake 0.5s ease;
+        }
+
+        @keyframes failureShake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
         .response-choices {
             position: fixed;
             bottom: 20px;
@@ -548,61 +565,77 @@
     <script>
         // Conversations for each app
         const conversations = [
-            // App 0: Screen
+            // App 0: Screen (glass, separation, tactile loss)
             [
-                { from: 'them', text: 'glass between us—' },
-                { from: 'you', choices: ['infinite screens', 'shattered connection', 'nothing real', 'cold touch'] },
-                { from: 'them', text: 'can you feel me through it?' },
-                { from: 'you', choices: ['barely', 'never', 'trying', 'fading'] }
+                { from: 'them', text: 'glass between us, cold and clear—' },
+                { from: 'you', choices: ['shimmering separation', 'see-through silence', 'surface so smooth', 'can\'t cross it'] },
+                { from: 'them', text: 'skin craves skin, but finds only screen' },
+                { from: 'you', choices: ['smooth, sterile stillness', 'warmth turned winter', 'touch turned digital', 'nothing real remains'] },
+                { from: 'them', text: 'do you remember what hands felt like?' },
+                { from: 'you', choices: ['barely breathing memory', 'fading like photographs', 'never knew', 'trying to forget'] }
             ],
-            // App 1: Notify
+            // App 1: Notify (pings as prayers, desperate waiting)
             [
-                { from: 'them', text: 'every ping' },
-                { from: 'you', choices: ['a prayer', 'a wound', 'an echo', 'a lie'] },
-                { from: 'them', text: 'waiting for you to—' },
-                { from: 'you', choices: ['answer', 'disappear', 'care', 'see me'] }
+                { from: 'them', text: 'every ping a prayer—' },
+                { from: 'you', choices: ['please be present', 'prove you\'re there', 'pull me closer', 'piercing silence'] },
+                { from: 'them', text: 'waiting, watching, willing you to—' },
+                { from: 'you', choices: ['answer this ache', 'witness my wounds', 'wake from wherever', 'wander away'] },
+                { from: 'them', text: 'how many notifications until you notice?' },
+                { from: 'you', choices: ['counting each cry', 'drowning in digits', 'never enough', 'stopped counting'] }
             ],
-            // App 2: Social
+            // App 2: Social (alone/together paradox, curated emptiness)
             [
-                { from: 'them', text: 'we scroll past ourselves' },
-                { from: 'you', choices: ['alone in crowds', 'together in nothing', 'lost in feeds', 'empty together'] },
-                { from: 'them', text: 'is this what we wanted?' },
-                { from: 'you', choices: ['no', 'maybe', 'I forgot', 'still hoping'] }
+                { from: 'them', text: 'alone together, scrolling in sync—' },
+                { from: 'you', choices: ['crowded by ghosts', 'companions in vacancy', 'curating our cages', 'lost in the scroll'] },
+                { from: 'them', text: 'swipe left on loneliness, still lonely—' },
+                { from: 'you', choices: ['likes won\'t love me', 'followers who flee', 'hearts hollow as hell', 'no one's really there'] },
+                { from: 'them', text: 'when did connection become collection?' },
+                { from: 'you', choices: ['cataloging our collapse', 'measuring in metrics', 'can\'t remember before', 'connection died quietly'] }
             ],
-            // App 3: Camera
+            // App 3: Camera (seeing/being seen, filtered reality)
             [
-                { from: 'them', text: 'do you still see me' },
-                { from: 'you', choices: ['through blue glow', 'in the static', 'beyond pixels', 'somewhere'] },
-                { from: 'them', text: 'or just my reflection?' },
-                { from: 'you', choices: ['both', 'neither', 'can\'t tell', 'looking away'] }
+                { from: 'them', text: 'through the lens, are you looking at me?' },
+                { from: 'you', choices: ['gazing through glass', 'glimpsing your ghost', 'seeing only screens', 'somewhere beneath pixels'] },
+                { from: 'them', text: 'filter upon filter, faces fade—' },
+                { from: 'you', choices: ['beauty bleached blank', 'perfected into nothing', 'polished till invisible', 'can\'t find the real'] },
+                { from: 'them', text: 'who are we without the glow?' },
+                { from: 'you', choices: ['buried beneath brightness', 'forgotten behind filters', 'never knew ourselves', 'nothing without it'] }
             ],
-            // App 4: Feed
+            // App 4: Feed (endless consumption, hunger never satisfied)
             [
-                { from: 'them', text: 'fingers on glass—' },
-                { from: 'you', choices: ['never touching skin', 'scrolling endlessly', 'reaching nothing', 'dancing alone'] },
-                { from: 'them', text: 'when did we stop' },
-                { from: 'you', choices: ['feeling?', 'trying?', 'caring?', 'being present?'] }
+                { from: 'them', text: 'fingers forever scrolling, seeking—' },
+                { from: 'you', choices: ['sustenance in silence', 'feeding on fragments', 'scrolling past souls', 'starving while consuming'] },
+                { from: 'them', text: 'we swallow stories, stay hungry—' },
+                { from: 'you', choices: ['feast on the fleeting', 'gorging on ghosts', 'full of emptiness', 'never satisfied'] },
+                { from: 'them', text: 'what were we hungry for, before?' },
+                { from: 'you', choices: ['meaning, maybe', 'moments, not metrics', 'can\'t remember feasts', 'nothing nourishes now'] }
             ],
-            // App 5: Empty
+            // App 5: Empty (void, hollowness, hunger for substance)
             [
-                { from: 'them', text: 'we feast on light' },
-                { from: 'you', choices: ['starving for substance', 'never satisfied', 'always hungry', 'growing hollow'] },
-                { from: 'them', text: 'this emptiness—' },
-                { from: 'you', choices: ['fills me', 'consumes me', 'is all I know', 'hurts'] }
+                { from: 'them', text: 'hollow hearts, holding nothing—' },
+                { from: 'you', choices: ['echoing endlessly', 'emptiness within emptiness', 'hungry for something heavy', 'void seeking void'] },
+                { from: 'them', text: 'we fill the silence with noise—' },
+                { from: 'you', choices: ['still so quiet inside', 'sound won\'t save us', 'screaming into stillness', 'nothing fills it'] },
+                { from: 'them', text: 'is emptiness all that\'s left?' },
+                { from: 'you', choices: ['all I\'ve ever known', 'aching for absence', 'emptiness is everything', 'can\'t feel fullness'] }
             ],
-            // App 6: Info
+            // App 6: Info (drowning in data, truth vs noise)
             [
-                { from: 'them', text: 'drowning in data' },
-                { from: 'you', choices: ['thirsty for truth', 'lost in noise', 'forgetting how', 'can\'t breathe'] },
-                { from: 'them', text: 'they said it would free us' },
-                { from: 'you', choices: ['they lied', 'we believed', 'now we\'re trapped', 'freedom died'] }
+                { from: 'them', text: 'drowning in data, gasping for truth—' },
+                { from: 'you', choices: ['buried beneath bytes', 'suffocating in signals', 'thirsty while drowning', 'truth turns to static'] },
+                { from: 'them', text: 'they promised knowledge, delivered noise—' },
+                { from: 'you', choices: ['wisdom washed away', 'lost in the overflow', 'learning to forget', 'can\'t hear truth anymore'] },
+                { from: 'them', text: 'how do we surface from this sea?' },
+                { from: 'you', choices: ['swimming toward silence', 'sinking feels safer', 'never learned to float', 'drowning is all we know'] }
             ],
-            // App 7: Stream
+            // App 7: Stream (flood of content, language lost)
             [
-                { from: 'them', text: 'we forgot the language' },
-                { from: 'you', choices: ['of presence', 'of touch', 'of silence', 'of being'] },
-                { from: 'them', text: 'speaking only in—' },
-                { from: 'you', choices: ['echoes', 'absence', 'noise', 'nothing'] }
+                { from: 'them', text: 'streaming endlessly, words washed away—' },
+                { from: 'you', choices: ['language liquefied', 'speaking in static', 'silence swallowed whole', 'words won\'t hold weight'] },
+                { from: 'them', text: 'we pour ourselves out, evaporate—' },
+                { from: 'you', choices: ['vapor, not voice', 'flooding into nothing', 'flow without form', 'can\'t catch the current'] },
+                { from: 'them', text: 'what\'s left when the stream runs dry?' },
+                { from: 'you', choices: ['dust of dialogue', 'dried-up desires', 'silence, finally', 'nothing ever was'] }
             ]
         ];
 
@@ -698,6 +731,17 @@
         function selectResponse(appIndex, choice, choicesDiv) {
             const chatContainer = document.getElementById('chat' + appIndex);
 
+            // Check if choice is negative (triggers message failure)
+            const negativeKeywords = [
+                'never', 'nothing', "can't", 'died', 'no one',
+                'stopped', 'trying to forget', 'drowning is all we know',
+                'wander away', 'connection died', 'lost in the scroll'
+            ];
+
+            const isNegative = negativeKeywords.some(keyword =>
+                choice.toLowerCase().includes(keyword)
+            );
+
             // Remove choices
             choicesDiv.remove();
 
@@ -708,9 +752,21 @@
             chatContainer.appendChild(bubble);
             chatContainer.scrollTop = chatContainer.scrollHeight;
 
-            // Move to next message
-            appProgress[appIndex]++;
-            setTimeout(() => showNextMessage(appIndex), 1000);
+            if (isNegative) {
+                // Show delivery failure after brief delay
+                setTimeout(() => {
+                    const failBubble = document.createElement('div');
+                    failBubble.className = 'message-bubble message-failed';
+                    failBubble.textContent = '⚠ Message Not Delivered';
+                    chatContainer.appendChild(failBubble);
+                    chatContainer.scrollTop = chatContainer.scrollHeight;
+                }, 800);
+                // Conversation ends here - don't progress
+            } else {
+                // Move to next message
+                appProgress[appIndex]++;
+                setTimeout(() => showNextMessage(appIndex), 1000);
+            }
         }
 
         function powerOff() {
