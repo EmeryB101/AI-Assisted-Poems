@@ -634,6 +634,9 @@
     </main>
 
     <script>
+        // Debug: Verify script is loading
+        console.log('✓ Script loaded successfully');
+
         // Conversations for each app
         const conversations = [
             // App 0: Screen (glass, separation, tactile loss)
@@ -716,6 +719,7 @@
         let composeStep = 0; // Track conversation step for Compose app
 
         function openApp(index) {
+            console.log('openApp called with index:', index);
             if (index === 8) {
                 // Memory app - just show power button
                 document.getElementById('powerDisplay').classList.add('active');
@@ -934,6 +938,17 @@
 
         // Allow Enter key to send message
         document.addEventListener('DOMContentLoaded', () => {
+            console.log('✓ DOM Content Loaded');
+
+            // Count app icons
+            const icons = document.querySelectorAll('.app-icon');
+            console.log(`✓ Found ${icons.length} app icons`);
+
+            // Verify onclick handlers
+            icons.forEach((icon, i) => {
+                console.log(`Icon ${i}: onclick = ${icon.onclick ? 'attached' : 'MISSING'}`);
+            });
+
             const input = document.getElementById('userInput9');
             if (input) {
                 input.addEventListener('keypress', (e) => {
