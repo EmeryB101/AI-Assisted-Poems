@@ -130,16 +130,36 @@
             text-align: justify;
         }
 
-        /* Poem Navigation Tabs */
+        /* Poem Navigation Sections */
         .poem-nav {
+            margin: 30px 0;
+        }
+
+        .poem-category {
+            margin-bottom: 30px;
+        }
+
+        .poem-category:last-of-type {
+            margin-bottom: 0;
+        }
+
+        .category-title {
+            color: #00d4ff;
+            font-size: 1.1em;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            text-align: center;
+            margin-bottom: 15px;
+            text-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+        }
+
+        .poem-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 15px;
-            margin: 30px 0;
-            padding: 0;
         }
 
-        .poem-nav a {
+        .poem-grid a {
             padding: 18px 20px;
             background: linear-gradient(135deg, rgba(0, 212, 255, 0.15), rgba(123, 44, 191, 0.15));
             border: 2px solid rgba(0, 212, 255, 0.5);
@@ -154,7 +174,7 @@
             overflow: hidden;
         }
 
-        .poem-nav a span {
+        .poem-grid a span {
             display: block;
             color: #7b2cbf;
             font-size: 0.75em;
@@ -162,7 +182,7 @@
             letter-spacing: 1px;
         }
 
-        .poem-nav a::before {
+        .poem-grid a::before {
             content: '';
             position: absolute;
             top: 0;
@@ -173,12 +193,12 @@
             transition: left 0.5s ease;
         }
 
-        .poem-nav a:hover::before {
+        .poem-grid a:hover::before {
             left: 100%;
         }
 
-        .poem-nav a:hover,
-        .poem-nav a:focus {
+        .poem-grid a:hover,
+        .poem-grid a:focus {
             background: linear-gradient(135deg, rgba(0, 212, 255, 0.25), rgba(123, 44, 191, 0.25));
             border-color: #00d4ff;
             box-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
@@ -239,13 +259,17 @@
                 padding: 30px 20px;
             }
 
-            .poem-nav {
+            .poem-grid {
                 grid-template-columns: 1fr;
             }
 
-            .poem-nav a {
+            .poem-grid a {
                 padding: 15px 18px;
                 font-size: 0.9em;
+            }
+
+            .category-title {
+                font-size: 1em;
             }
         }
     </style>
@@ -261,22 +285,33 @@
 
         <!-- Poem Navigation -->
         <nav class="poem-nav" aria-label="Navigate to poems">
-            <a href="erasure_poem (1).html" aria-label="View Connected/Disconnected erasure poem">
-                Connected/Disconnected
-                <span>Erasure Poem (Visual)</span>
-            </a>
-            <a href="erasure_source.html" aria-label="View Digital Disconnection erasure source">
-                Digital Disconnection
-                <span>Erasure Poem (Source)</span>
-            </a>
-            <a href="visual_poem_v2-5.html" aria-label="View Connected/Disconnected interactive visual poem">
-                Connected/Disconnected
-                <span>Interactive Visual</span>
-            </a>
-            <a href="interactive_poem.html" aria-label="View When Pixels Cry interactive poem">
-                When Pixels Cry
-                <span>Interactive/Kinetic</span>
-            </a>
+            <div class="poem-category">
+                <h3 class="category-title">Erasure Poems</h3>
+                <div class="poem-grid">
+                    <a href="erasure_poem (1).html" aria-label="View Connected/Disconnected erasure poem">
+                        Connected/Disconnected
+                        <span>Erasure Poem (Visual)</span>
+                    </a>
+                    <a href="erasure_source.html" aria-label="View Digital Disconnection erasure source">
+                        Digital Disconnection
+                        <span>Erasure Poem (Source)</span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="poem-category">
+                <h3 class="category-title">Interactive Poems</h3>
+                <div class="poem-grid">
+                    <a href="visual_poem_v2-5.html" aria-label="View Connected/Disconnected interactive visual poem">
+                        Connected/Disconnected
+                        <span>Interactive Visual</span>
+                    </a>
+                    <a href="interactive_poem.html" aria-label="View When Pixels Cry interactive poem">
+                        When Pixels Cry
+                        <span>Interactive/Kinetic</span>
+                    </a>
+                </div>
+            </div>
         </nav>
 
         <section class="artist-statement" aria-labelledby="statement-heading">
