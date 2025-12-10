@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Connected/Disconnected - An interactive erasure poem exploring digital technology's impact on human connection. Click on phone app icons to reveal poem text with glitching and fading effects representing connection and disconnection.">
+    <meta name="author" content="AI-Assisted Poetry Portfolio">
+    <title>Erasure Poem: Connected/Disconnected</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 40px;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 25%, #16213e 50%, #1a1a2e 75%, #0a0a0a 100%);
+            background-size: 400% 400%;
+            animation: backgroundShift 15s ease infinite;
+            font-family: 'Courier New', monospace;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        @keyframes backgroundShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .matrix-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            max-width: 900px;
+            background: rgba(10, 10, 10, 0.85);
+            padding: 60px;
+            box-shadow: 0 0 40px rgba(0, 212, 255, 0.3);
+            position: relative;
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            z-index: 1;
+        }
+
+        h1 {
+            text-align: center;
+            color: #00d4ff;
+            margin-bottom: 40px;
+            font-size: 1.8em;
+            letter-spacing: 4px;
+            text-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+        }
+
+        /* Phone container */
+        .phone {
+            width: 360px;
+            height: 720px;
+            margin: 0 auto;
+            background: #1a1a1a;
+            border: 12px solid #2a2a2a;
+            border-radius: 40px;
+            box-shadow: 0 0 40px rgba(0, 212, 255, 0.3), inset 0 0 20px rgba(0, 0, 0, 0.5);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Phone notch */
+        .phone::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 150px;
+            height: 30px;
+            background: #2a2a2a;
+            border-radius: 0 0 20px 20px;
+            z-index: 100;
+        }
+
+        /* Status bar */
+        .status-bar {
+            position: absolute;
+            top: 10px;
+            left: 0;
+            right: 0;
+            height: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            color: #00d4ff;
+            font-size: 11px;
+            z-index: 101;
+        }
+
+        .signal-bars {
+            display: flex;
+            gap: 2px;
+        }
+
+        .signal-bar {
+            width: 3px;
+            background: #00d4ff;
+            animation: signalFlicker 2s ease-in-out infinite;
+        }
+
+        .signal-bar:nth-child(1) { height: 4px; }
+        .signal-bar:nth-child(2) { height: 7px; animation-delay: 0.2s; }
+        .signal-bar:nth-child(3) { height: 10px; animation-delay: 0.4s; }
+        .signal-bar:nth-child(4) { height: 13px; animation-delay: 0.6s; }
+
+        @keyframes signalFlicker {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        /* Phone screen */
+        .screen {
+            position: absolute;
+            top: 50px;
+            left: 0;
+            right: 0;
+            bottom: 20px;
+            background: linear-gradient(135deg, #0d0d0d, #1a1a1a);
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        /* App grid */
+        .app-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .app-icon {
+            width: 70px;
+            height: 70px;
+            margin: 0 auto;
+            border-radius: 18px;
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.3), rgba(123, 44, 191, 0.3));
+            border: 2px solid rgba(0, 212, 255, 0.5);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+        }
+
+        .app-icon:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.6);
+        }
+
+        .app-icon.clicked {
+            animation: appDisconnect 0.6s ease;
+        }
+
+        @keyframes appDisconnect {
+            0% { transform: scale(1); opacity: 1; }
+            25% { transform: scale(1.2) rotate(5deg); opacity: 0.8; filter: hue-rotate(90deg); }
+            50% { transform: scale(0.9) rotate(-5deg); opacity: 0.4; filter: blur(2px); }
+            75% { transform: scale(1.1); opacity: 0.6; }
+            100% { transform: scale(1); opacity: 0.3; }
+        }
+
+        .app-label {
+            text-align: center;
+            color: #00d4ff;
+            font-size: 11px;
+            margin-top: 8px;
+            letter-spacing: 0.5px;
+        }
+
+        /* Poem text display */
+        .poem-display {
+            position: absolute;
+            top: 50px;
+            left: 0;
+            right: 0;
+            bottom: 20px;
+            background: rgba(0, 0, 0, 0.95);
+            padding: 30px 20px;
+            opacity: 0;
+            pointer-events: none;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow-y: auto;
+            z-index: 50;
+        }
+
+        .poem-display.active {
+            opacity: 1;
+            pointer-events: all;
+            animation: displayConnect 0.8s ease;
+        }
+
+        @keyframes displayConnect {
+            0% {
+                opacity: 0;
+                transform: scale(0.8);
+                filter: blur(10px);
+            }
+            40% {
+                opacity: 0.5;
+                filter: blur(5px) brightness(1.5);
+            }
+            60% {
+                opacity: 0.7;
+                transform: scale(1.05);
+            }
+            80% {
+                filter: blur(2px);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+                filter: blur(0);
+            }
+        }
+
+        .poem-text {
+            color: #ff006e;
+            font-size: 1.3em;
+            text-align: center;
+            line-height: 2;
+            text-shadow: 0 0 10px rgba(255, 0, 110, 0.8);
+            margin-bottom: 15px;
+        }
+
+        .poem-text.glitch {
+            animation: textGlitch 0.3s ease infinite;
+        }
+
+        @keyframes textGlitch {
+            0%, 100% { transform: translate(0); filter: hue-rotate(0deg); }
+            25% { transform: translate(-2px, 2px); filter: hue-rotate(90deg); }
+            50% { transform: translate(2px, -2px); filter: hue-rotate(180deg); }
+            75% { transform: translate(-2px, -2px); filter: hue-rotate(270deg); }
+        }
+
+        .poem-text.fade-in {
+            animation: fadeConnect 1.2s ease;
+        }
+
+        @keyframes fadeConnect {
+            0% { opacity: 0; transform: translateY(20px); }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        .poem-text.disconnect {
+            animation: textDisconnect 0.8s ease;
+        }
+
+        @keyframes textDisconnect {
+            0% { opacity: 1; filter: blur(0); }
+            30% { opacity: 0.7; filter: blur(3px) brightness(1.5); }
+            60% { opacity: 0.4; transform: scale(0.95); filter: blur(5px); }
+            100% { opacity: 0.2; transform: scale(0.9); filter: blur(8px); }
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: rgba(255, 0, 110, 0.3);
+            border: 2px solid #ff006e;
+            color: #ff006e;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .close-btn:hover {
+            background: rgba(255, 0, 110, 0.5);
+            box-shadow: 0 0 15px rgba(255, 0, 110, 0.6);
+        }
+
+        /* Connection indicator */
+        .connection-indicator {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 12px;
+            color: #7b2cbf;
+            text-align: center;
+            opacity: 0.7;
+        }
+
+        .connection-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #00d4ff;
+            margin-right: 5px;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; box-shadow: 0 0 5px #00d4ff; }
+            50% { opacity: 0.3; box-shadow: 0 0 15px #00d4ff; }
+        }
+
+        .instructions {
+            text-align: center;
+            color: #7b2cbf;
+            font-size: 0.9em;
+            margin-top: 30px;
+            padding: 15px;
+            background: rgba(123, 44, 191, 0.1);
+            border-left: 3px solid #7b2cbf;
+        }
+
+        /* Screen reader only */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border-width: 0;
+        }
+
+        .skip-link {
+            position: fixed;
+            top: -40px;
+            left: 0;
+            background: #00d4ff;
+            color: #000;
+            padding: 8px;
+            text-decoration: none;
+            z-index: 1000;
+            font-weight: bold;
+        }
+
+        .skip-link:focus {
+            top: 0;
+        }
+
+        /* Power off overlay */
+        .power-off-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 200;
+            transition: opacity 0.5s ease;
+        }
+
+        .power-off-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+            animation: powerDown 3s ease forwards;
+        }
+
+        @keyframes powerDown {
+            0% {
+                opacity: 1;
+                filter: brightness(1);
+            }
+            50% {
+                opacity: 1;
+                filter: brightness(0.5);
+                transform: scale(1);
+            }
+            80% {
+                opacity: 0.8;
+                transform: scaleY(0.1);
+                filter: brightness(0.1);
+            }
+            100% {
+                opacity: 0;
+                transform: scaleY(0);
+                filter: brightness(0);
+            }
+        }
+
+        .shutdown-text {
+            color: #fff;
+            font-size: 1.5em;
+            text-align: center;
+            margin: 10px 0;
+            animation: fadeShutdown 2s ease forwards;
+            opacity: 0;
+        }
+
+        @keyframes fadeShutdown {
+            0% {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            30% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            70% {
+                opacity: 1;
+            }
+            100% {
+                opacity: 0;
+            }
+        }
+
+        .power-off-btn:hover {
+            background: rgba(255, 0, 110, 0.5);
+            box-shadow: 0 0 20px rgba(255, 0, 110, 0.6);
+        }
+    </style>
+</head>
+<body>
+    <a href="#main-content" class="skip-link">Skip to poem content</a>
+    <canvas class="matrix-bg" id="matrix" aria-hidden="true"></canvas>
+
+    <main class="container" id="main-content" role="main">
+        <header>
+            <h1>CONNECTED / DISCONNECTED</h1>
+            <p class="sr-only">An interactive erasure poem. Click on app icons to reveal poem text with connection and disconnection effects.</p>
+        </header>
+
+        <div class="phone" role="region" aria-label="Interactive phone interface">
+            <!-- Status bar -->
+            <div class="status-bar" aria-hidden="true">
+                <div class="signal-bars">
+                    <div class="signal-bar"></div>
+                    <div class="signal-bar"></div>
+                    <div class="signal-bar"></div>
+                    <div class="signal-bar"></div>
+                </div>
+                <div>12:34</div>
+                <div>89%</div>
+            </div>
+
+            <!-- Home screen -->
+            <div class="screen" id="homeScreen">
+                <div class="app-grid">
+                    <div class="app-item">
+                        <div class="app-icon" data-poem="screens" onclick="showPoem(0)" tabindex="0" role="button" aria-label="Screen app - reveals poem text">📱</div>
+                        <div class="app-label">Screen</div>
+                    </div>
+                    <div class="app-item">
+                        <div class="app-icon" data-poem="notification" onclick="showPoem(1)" tabindex="0" role="button" aria-label="Notifications app - reveals poem text">🔔</div>
+                        <div class="app-label">Notify</div>
+                    </div>
+                    <div class="app-item">
+                        <div class="app-icon" data-poem="alone" onclick="showPoem(2)" tabindex="0" role="button" aria-label="Social app - reveals poem text">👥</div>
+                        <div class="app-label">Social</div>
+                    </div>
+                    <div class="app-item">
+                        <div class="app-icon" data-poem="eyes" onclick="showPoem(3)" tabindex="0" role="button" aria-label="Camera app - reveals poem text">👁️</div>
+                        <div class="app-label">Camera</div>
+                    </div>
+                    <div class="app-item">
+                        <div class="app-icon" data-poem="scroll" onclick="showPoem(4)" tabindex="0" role="button" aria-label="Feed app - reveals poem text">📜</div>
+                        <div class="app-label">Feed</div>
+                    </div>
+                    <div class="app-item">
+                        <div class="app-icon" data-poem="empty" onclick="showPoem(5)" tabindex="0" role="button" aria-label="Empty app - reveals poem text">💭</div>
+                        <div class="app-label">Empty</div>
+                    </div>
+                    <div class="app-item">
+                        <div class="app-icon" data-poem="information" onclick="showPoem(6)" tabindex="0" role="button" aria-label="Info app - reveals poem text">📊</div>
+                        <div class="app-label">Info</div>
+                    </div>
+                    <div class="app-item">
+                        <div class="app-icon" data-poem="drown" onclick="showPoem(7)" tabindex="0" role="button" aria-label="Stream app - reveals poem text">🌊</div>
+                        <div class="app-label">Stream</div>
+                    </div>
+                    <div class="app-item">
+                        <div class="app-icon" data-poem="remember" onclick="showPoem(8)" tabindex="0" role="button" aria-label="Memory app - reveals poem text">🧠</div>
+                        <div class="app-label">Memory</div>
+                    </div>
+                </div>
+
+                <div class="connection-indicator" aria-hidden="true">
+                    <span class="connection-dot"></span>
+                    <span id="statusText">Connection unstable</span>
+                </div>
+            </div>
+
+            <!-- Poem displays (one for each app) -->
+            <div class="poem-display" id="display0">
+                <button class="close-btn" onclick="closePoem(0)" aria-label="Close poem">×</button>
+                <div class="poem-text fade-in" style="font-size: 1.4em;">glass between us,</div>
+                <div class="poem-text disconnect" style="animation-delay: 0.3s;">infinite screens</div>
+                <div class="connection-indicator"><span class="connection-dot"></span>connecting...</div>
+            </div>
+
+            <div class="poem-display" id="display1">
+                <button class="close-btn" onclick="closePoem(1)" aria-label="Close poem">×</button>
+                <div class="poem-text glitch">every ping a prayer—</div>
+                <div class="poem-text disconnect" style="animation-delay: 0.4s;">unanswered</div>
+                <div class="connection-indicator"><span class="connection-dot"></span>signal lost</div>
+            </div>
+
+            <div class="poem-display" id="display2">
+                <button class="close-btn" onclick="closePoem(2)" aria-label="Close poem">×</button>
+                <div class="poem-text fade-in">we scroll past ourselves</div>
+                <div class="poem-text disconnect" style="animation-delay: 0.4s;">alone in the crowd,</div>
+                <div class="poem-text glitch" style="animation-delay: 0.7s;">together in nothing</div>
+                <div class="connection-indicator"><span class="connection-dot"></span>disconnected</div>
+            </div>
+
+            <div class="poem-display" id="display3">
+                <button class="close-btn" onclick="closePoem(3)" aria-label="Close poem">×</button>
+                <div class="poem-text fade-in" style="font-size: 1.5em;">do you still see me</div>
+                <div class="poem-text disconnect" style="animation-delay: 0.5s;">through your blue glow?</div>
+                <div class="connection-indicator"><span class="connection-dot"></span>reconnecting...</div>
+            </div>
+
+            <div class="poem-display" id="display4">
+                <button class="close-btn" onclick="closePoem(4)" aria-label="Close poem">×</button>
+                <div class="poem-text glitch">fingers dance on glass—</div>
+                <div class="poem-text disconnect" style="animation-delay: 0.4s;">never touching skin,</div>
+                <div class="poem-text fade-in" style="animation-delay: 0.8s;">endlessly scrolling into void</div>
+                <div class="connection-indicator"><span class="connection-dot"></span>interference detected</div>
+            </div>
+
+            <div class="poem-display" id="display5">
+                <button class="close-btn" onclick="closePoem(5)" aria-label="Close poem">×</button>
+                <div class="poem-text fade-in">we feast on light,</div>
+                <div class="poem-text glitch" style="animation-delay: 0.5s;">starving for substance—</div>
+                <div class="poem-text disconnect" style="animation-delay: 0.9s; font-size: 1.6em;">hollow</div>
+                <div class="connection-indicator"><span class="connection-dot"></span>connection failed</div>
+            </div>
+
+            <div class="poem-display" id="display6">
+                <button class="close-btn" onclick="closePoem(6)" aria-label="Close poem">×</button>
+                <div class="poem-text disconnect">drowning in data,</div>
+                <div class="poem-text glitch" style="animation-delay: 0.4s; font-size: 1.8em;">thirsty for truth</div>
+                <div class="connection-indicator"><span class="connection-dot"></span>overloaded</div>
+            </div>
+
+            <div class="poem-display" id="display7">
+                <button class="close-btn" onclick="closePoem(7)" aria-label="Close poem">×</button>
+                <div class="poem-text fade-in">we forgot the language</div>
+                <div class="poem-text disconnect" style="animation-delay: 0.4s;">of presence,</div>
+                <div class="poem-text glitch" style="animation-delay: 0.7s;">speaking only in silence—</div>
+                <div class="poem-text disconnect" style="animation-delay: 1.1s; font-size: 1.4em;">noise</div>
+                <div class="connection-indicator"><span class="connection-dot"></span>signal degraded</div>
+            </div>
+
+            <div class="poem-display" id="display8">
+                <button class="close-btn" onclick="closePoem(8)" aria-label="Close poem">×</button>
+                <div class="poem-text fade-in">remember when we looked up</div>
+                <div class="poem-text disconnect" style="animation-delay: 0.5s;">at stars, not screens?</div>
+                <div class="poem-text glitch" style="animation-delay: 1s;">pixels cage us,</div>
+                <div class="poem-text fade-in" style="animation-delay: 1.5s;">yet we still dream—</div>
+                <div class="poem-text disconnect" style="animation-delay: 2s; font-size: 1.3em;">still human beneath</div>
+                <div class="poem-text fade-in" style="animation-delay: 2.5s; font-size: 1.5em;">the blue light</div>
+                <div class="poem-text glitch" style="animation-delay: 3s; font-size: 1.2em;">can we turn away?</div>
+                <div class="poem-text fade-in" style="animation-delay: 3.5s; font-size: 1.8em;">can we remember</div>
+                <div class="poem-text disconnect" style="animation-delay: 4s; font-size: 2em;">to see?</div>
+                <button class="power-off-btn" onclick="powerOff()" style="margin-top: 30px; padding: 12px 30px; background: rgba(255, 0, 110, 0.3); border: 2px solid #ff006e; color: #ff006e; border-radius: 25px; cursor: pointer; font-size: 1em; transition: all 0.3s ease;">Power Off</button>
+                <div class="connection-indicator"><span class="connection-dot"></span>reconnected</div>
+            </div>
+
+            <!-- Power off overlay -->
+            <div class="power-off-overlay" id="powerOffOverlay">
+                <div class="shutdown-text">maybe silence</div>
+                <div class="shutdown-text" style="animation-delay: 1s;">is connection</div>
+            </div>
+        </div>
+
+        <div class="instructions">
+            <p><strong>Click on each app icon</strong> to reveal parts of the poem.</p>
+            <p>Watch as the text glitches (disconnection) and fades in (connection),<br>representing our fragmented digital experience.</p>
+        </div>
+    </main>
+
+    <script>
+        // Matrix background effect
+        const canvas = document.getElementById('matrix');
+        const ctx = canvas.getContext('2d');
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const chars = '01アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン';
+        const fontSize = 14;
+        const columns = canvas.width / fontSize;
+        const drops = [];
+
+        for (let i = 0; i < columns; i++) {
+            drops[i] = Math.random() * -100;
+        }
+
+        function drawMatrix() {
+            ctx.fillStyle = 'rgba(10, 10, 10, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.fillStyle = '#00d4ff';
+            ctx.font = fontSize + 'px monospace';
+
+            for (let i = 0; i < drops.length; i++) {
+                const text = chars[Math.floor(Math.random() * chars.length)];
+                const x = i * fontSize;
+                const y = drops[i] * fontSize;
+
+                ctx.fillStyle = `rgba(0, 212, 255, ${Math.random() * 0.5 + 0.3})`;
+                ctx.fillText(text, x, y);
+
+                if (y > canvas.height && Math.random() > 0.975) {
+                    drops[i] = 0;
+                }
+
+                drops[i]++;
+            }
+        }
+
+        setInterval(drawMatrix, 50);
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+
+        // Poem interaction
+        let currentDisplay = null;
+
+        function showPoem(index) {
+            // Close any currently open display
+            if (currentDisplay !== null) {
+                closePoem(currentDisplay);
+            }
+
+            // Add clicked animation to app icon
+            const icons = document.querySelectorAll('.app-icon');
+            icons[index].classList.add('clicked');
+
+            // Show poem display with delay
+            setTimeout(() => {
+                const display = document.getElementById('display' + index);
+                display.classList.add('active');
+                currentDisplay = index;
+            }, 300);
+        }
+
+        function closePoem(index) {
+            const display = document.getElementById('display' + index);
+            display.classList.remove('active');
+
+            // Remove clicked class from icon
+            const icons = document.querySelectorAll('.app-icon');
+            icons[index].classList.remove('clicked');
+
+            currentDisplay = null;
+        }
+
+        function powerOff() {
+            const overlay = document.getElementById('powerOffOverlay');
+            overlay.classList.add('active');
+
+            // After animation completes, fade everything to black
+            setTimeout(() => {
+                document.querySelector('.phone').style.transition = 'opacity 1s ease';
+                document.querySelector('.phone').style.opacity = '0';
+            }, 3000);
+        }
+
+        // Keyboard support
+        document.querySelectorAll('.app-icon').forEach((icon, index) => {
+            icon.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    showPoem(index);
+                }
+            });
+        });
+
+        document.querySelectorAll('.close-btn').forEach((btn, index) => {
+            btn.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    closePoem(index);
+                }
+            });
+        });
+    </script>
+</body>
+</html>
