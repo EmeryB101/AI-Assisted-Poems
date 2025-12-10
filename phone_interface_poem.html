@@ -421,39 +421,39 @@
             <div class="screen" id="homeScreen">
                 <div class="app-grid">
                     <div class="app-item">
-                        <div class="app-icon" data-app="0">📱</div>
+                        <div class="app-icon" onclick="openApp(0)">📱</div>
                         <div class="app-label">Screen</div>
                     </div>
                     <div class="app-item">
-                        <div class="app-icon" data-app="1">🔔</div>
+                        <div class="app-icon" onclick="openApp(1)">🔔</div>
                         <div class="app-label">Notify</div>
                     </div>
                     <div class="app-item">
-                        <div class="app-icon" data-app="2">👥</div>
+                        <div class="app-icon" onclick="openApp(2)">👥</div>
                         <div class="app-label">Social</div>
                     </div>
                     <div class="app-item">
-                        <div class="app-icon" data-app="3">👁️</div>
+                        <div class="app-icon" onclick="openApp(3)">👁️</div>
                         <div class="app-label">Camera</div>
                     </div>
                     <div class="app-item">
-                        <div class="app-icon" data-app="4">📜</div>
+                        <div class="app-icon" onclick="openApp(4)">📜</div>
                         <div class="app-label">Feed</div>
                     </div>
                     <div class="app-item">
-                        <div class="app-icon" data-app="5">💭</div>
+                        <div class="app-icon" onclick="openApp(5)">💭</div>
                         <div class="app-label">Empty</div>
                     </div>
                     <div class="app-item">
-                        <div class="app-icon" data-app="6">📊</div>
+                        <div class="app-icon" onclick="openApp(6)">📊</div>
                         <div class="app-label">Info</div>
                     </div>
                     <div class="app-item">
-                        <div class="app-icon" data-app="7">🌊</div>
+                        <div class="app-icon" onclick="openApp(7)">🌊</div>
                         <div class="app-label">Stream</div>
                     </div>
                     <div class="app-item">
-                        <div class="app-icon" data-app="8">🧠</div>
+                        <div class="app-icon" onclick="openApp(8)">🧠</div>
                         <div class="app-label">Memory</div>
                     </div>
                 </div>
@@ -461,14 +461,14 @@
 
             <!-- Chat overlay -->
             <div class="chat-overlay" id="chatOverlay">
-                <button class="close-btn" id="closeBtn">×</button>
+                <button class="close-btn" onclick="closeChat()">×</button>
                 <div class="messages" id="messages"></div>
                 <div class="choices" id="choices"></div>
             </div>
 
             <!-- Power display -->
             <div class="power-display" id="powerDisplay">
-                <button class="power-btn" id="powerBtn">Power Off</button>
+                <button class="power-btn" onclick="powerOff()">Power Off</button>
             </div>
 
             <!-- Shutdown overlay -->
@@ -562,33 +562,14 @@
         let currentApp = null;
         let currentStep = 0;
 
-        // Get elements
-        const chatOverlay = document.getElementById('chatOverlay');
-        const powerDisplay = document.getElementById('powerDisplay');
-        const messages = document.getElementById('messages');
-        const choicesDiv = document.getElementById('choices');
-        const closeBtn = document.getElementById('closeBtn');
-        const powerBtn = document.getElementById('powerBtn');
-        const shutdownOverlay = document.getElementById('shutdownOverlay');
-
-        // Add click listeners to all app icons
-        document.querySelectorAll('.app-icon').forEach(icon => {
-            icon.addEventListener('click', function() {
-                const appId = parseInt(this.getAttribute('data-app'));
-                openApp(appId);
-                this.classList.add('visited');
-            });
-        });
-
-        // Close button
-        closeBtn.addEventListener('click', closeChat);
-
-        // Power button
-        powerBtn.addEventListener('click', powerOff);
-
         function openApp(appId) {
             currentApp = appId;
             currentStep = 0;
+
+            const chatOverlay = document.getElementById('chatOverlay');
+            const powerDisplay = document.getElementById('powerDisplay');
+            const messages = document.getElementById('messages');
+            const choicesDiv = document.getElementById('choices');
 
             if (appId === 8) {
                 // Memory app - show power display
@@ -603,6 +584,10 @@
         }
 
         function closeChat() {
+            const chatOverlay = document.getElementById('chatOverlay');
+            const powerDisplay = document.getElementById('powerDisplay');
+            const choicesDiv = document.getElementById('choices');
+
             chatOverlay.classList.remove('active');
             powerDisplay.classList.remove('active');
             choicesDiv.classList.remove('active');
@@ -616,6 +601,8 @@
 
         function showNextMessage() {
             const conversation = conversations[currentApp];
+            const messages = document.getElementById('messages');
+            const choicesDiv = document.getElementById('choices');
 
             if (currentStep >= conversation.length) {
                 choicesDiv.classList.remove('active');
@@ -643,7 +630,7 @@
                     const btn = document.createElement('button');
                     btn.className = 'choice-btn';
                     btn.textContent = choice;
-                    btn.addEventListener('click', () => selectChoice(choice));
+                    btn.onclick = function() { selectChoice(choice); };
                     choicesDiv.appendChild(btn);
                 });
                 choicesDiv.classList.add('active');
@@ -651,6 +638,9 @@
         }
 
         function selectChoice(choice) {
+            const messages = document.getElementById('messages');
+            const choicesDiv = document.getElementById('choices');
+
             // Hide choices
             choicesDiv.classList.remove('active');
 
@@ -684,6 +674,7 @@
         }
 
         function powerOff() {
+            const shutdownOverlay = document.getElementById('shutdownOverlay');
             shutdownOverlay.classList.add('active');
             setTimeout(() => {
                 document.querySelector('.phone').style.transition = 'opacity 1.5s ease';
