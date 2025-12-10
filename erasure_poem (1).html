@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Connected/Disconnected - An interactive erasure poem where you create the poem by clicking words. Digital aesthetic with glowing effects.">
+    <meta name="description" content="Connected/Disconnected - An emotional interactive erasure poem. Click app icons and tap words to erase the noise, revealing connection beneath disconnection.">
     <meta name="author" content="AI-Assisted Poetry Portfolio">
-    <title>Interactive Erasure Poem: Connected/Disconnected</title>
+    <title>Erasure Poem: Connected/Disconnected</title>
     <style>
         * {
             margin: 0;
@@ -44,9 +44,9 @@
         }
 
         .container {
-            max-width: 1100px;
-            background: rgba(10, 10, 10, 0.9);
-            padding: 50px;
+            max-width: 900px;
+            background: rgba(10, 10, 10, 0.85);
+            padding: 60px;
             box-shadow: 0 0 40px rgba(0, 212, 255, 0.3);
             position: relative;
             border: 1px solid rgba(0, 212, 255, 0.3);
@@ -57,7 +57,7 @@
             text-align: center;
             color: #00d4ff;
             margin-bottom: 15px;
-            font-size: 2em;
+            font-size: 1.8em;
             letter-spacing: 4px;
             text-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
         }
@@ -65,230 +65,417 @@
         .instructions {
             text-align: center;
             color: #7b2cbf;
-            font-size: 0.95em;
-            margin-bottom: 35px;
+            font-size: 0.9em;
+            margin-bottom: 30px;
             padding: 15px;
             background: rgba(123, 44, 191, 0.1);
             border-left: 3px solid #7b2cbf;
         }
 
-        .workspace {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 30px;
-            margin-bottom: 30px;
+        /* Phone container */
+        .phone {
+            width: 360px;
+            height: 720px;
+            margin: 0 auto;
+            background: #1a1a1a;
+            border: 12px solid #2a2a2a;
+            border-radius: 40px;
+            box-shadow: 0 0 40px rgba(0, 212, 255, 0.3), inset 0 0 20px rgba(0, 0, 0, 0.5);
+            position: relative;
+            overflow: hidden;
         }
 
-        .source-text {
-            background: rgba(0, 212, 255, 0.05);
-            padding: 30px;
-            border: 2px solid rgba(0, 212, 255, 0.3);
-            min-height: 400px;
-            line-height: 2.2;
-            font-size: 1.05em;
+        .phone::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 150px;
+            height: 30px;
+            background: #2a2a2a;
+            border-radius: 0 0 20px 20px;
+            z-index: 100;
         }
 
-        .source-text h2 {
+        .status-bar {
+            position: absolute;
+            top: 10px;
+            left: 0;
+            right: 0;
+            height: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
             color: #00d4ff;
-            font-size: 1.2em;
-            margin-bottom: 20px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
+            font-size: 11px;
+            z-index: 101;
         }
 
-        .word {
-            display: inline;
-            color: #808080;
+        .signal-bars {
+            display: flex;
+            gap: 2px;
+        }
+
+        .signal-bar {
+            width: 3px;
+            background: #00d4ff;
+            animation: signalFlicker 2s ease-in-out infinite;
+        }
+
+        .signal-bar:nth-child(1) { height: 4px; }
+        .signal-bar:nth-child(2) { height: 7px; animation-delay: 0.2s; }
+        .signal-bar:nth-child(3) { height: 10px; animation-delay: 0.4s; }
+        .signal-bar:nth-child(4) { height: 13px; animation-delay: 0.6s; }
+
+        @keyframes signalFlicker {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        /* Phone screen */
+        .screen {
+            position: absolute;
+            top: 50px;
+            left: 0;
+            right: 0;
+            bottom: 20px;
+            background: linear-gradient(135deg, #0d0d0d, #1a1a1a);
+            overflow: hidden;
+            padding: 20px;
+        }
+
+        /* App grid */
+        .app-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .app-icon {
+            width: 70px;
+            height: 70px;
+            margin: 0 auto;
+            border-radius: 18px;
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.3), rgba(123, 44, 191, 0.3));
+            border: 2px solid rgba(0, 212, 255, 0.5);
             cursor: pointer;
-            padding: 2px 4px;
             transition: all 0.3s ease;
             position: relative;
-        }
-
-        .word:hover {
-            color: #00d4ff;
-            text-shadow: 0 0 10px rgba(0, 212, 255, 0.8);
-            transform: scale(1.1);
-        }
-
-        .word.selected {
-            color: #ff006e;
-            font-weight: bold;
-            text-shadow: 0 0 15px rgba(255, 0, 110, 0.9);
-            animation: wordSelect 0.5s ease;
-        }
-
-        @keyframes wordSelect {
-            0% {
-                transform: scale(1);
-            }
-            50% {
-                transform: scale(1.3) rotate(5deg);
-                color: #00d4ff;
-            }
-            100% {
-                transform: scale(1);
-                color: #ff006e;
-            }
-        }
-
-        .word.erased {
-            opacity: 0.15;
-            text-decoration: line-through;
-            text-decoration-color: rgba(128, 128, 128, 0.3);
-            pointer-events: none;
-        }
-
-        .your-poem {
-            background: rgba(255, 0, 110, 0.08);
-            padding: 30px;
-            border: 2px solid rgba(255, 0, 110, 0.4);
-            min-height: 400px;
-            position: sticky;
-            top: 20px;
-        }
-
-        .your-poem h2 {
-            color: #ff006e;
-            font-size: 1.2em;
-            margin-bottom: 20px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            text-shadow: 0 0 10px rgba(255, 0, 110, 0.5);
-        }
-
-        .poem-words {
-            line-height: 2.5;
-            font-size: 1.1em;
-            min-height: 300px;
-        }
-
-        .poem-word {
-            display: inline-block;
-            color: #ff006e;
-            font-weight: bold;
-            margin: 0 6px 10px 0;
-            padding: 5px 10px;
-            background: rgba(255, 0, 110, 0.1);
-            border: 1px solid rgba(255, 0, 110, 0.3);
-            border-radius: 5px;
-            cursor: pointer;
-            text-shadow: 0 0 10px rgba(255, 0, 110, 0.7);
-            animation: poemWordAppear 0.6s ease;
-            transition: all 0.3s ease;
-        }
-
-        @keyframes poemWordAppear {
-            0% {
-                opacity: 0;
-                transform: translateY(-20px) scale(0.5);
-            }
-            60% {
-                transform: translateY(5px) scale(1.1);
-            }
-            100% {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
-        }
-
-        .poem-word:hover {
-            background: rgba(255, 0, 110, 0.2);
-            box-shadow: 0 0 15px rgba(255, 0, 110, 0.5);
-            transform: translateY(-3px);
-        }
-
-        .controls {
             display: flex;
+            align-items: center;
             justify-content: center;
-            gap: 20px;
-            margin-top: 30px;
+            font-size: 30px;
         }
 
-        button {
-            padding: 12px 30px;
-            font-size: 1em;
-            font-family: 'Courier New', monospace;
-            border: 2px solid;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+        .app-icon:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.6);
         }
 
-        .reset-btn {
-            background: rgba(0, 212, 255, 0.1);
-            border-color: #00d4ff;
-            color: #00d4ff;
+        .app-icon.unlocked {
+            opacity: 0.4;
+            border-color: #ff006e;
+            background: linear-gradient(135deg, rgba(255, 0, 110, 0.2), rgba(123, 44, 191, 0.2));
         }
 
-        .reset-btn:hover {
-            background: rgba(0, 212, 255, 0.3);
-            box-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
-        }
-
-        .reveal-btn {
-            background: rgba(123, 44, 191, 0.1);
-            border-color: #7b2cbf;
-            color: #7b2cbf;
-        }
-
-        .reveal-btn:hover {
-            background: rgba(123, 44, 191, 0.3);
-            box-shadow: 0 0 20px rgba(123, 44, 191, 0.5);
-        }
-
-        .word-count {
+        .app-label {
             text-align: center;
-            color: #7b2cbf;
-            font-size: 0.9em;
-            margin-top: 15px;
+            color: #00d4ff;
+            font-size: 11px;
+            margin-top: 8px;
+            letter-spacing: 0.5px;
         }
 
-        .suggested-path {
-            display: none;
-            background: rgba(123, 44, 191, 0.1);
-            padding: 20px;
-            margin-top: 20px;
-            border: 2px solid rgba(123, 44, 191, 0.3);
-            border-radius: 5px;
+        /* Erasure interface */
+        .erasure-view {
+            position: absolute;
+            top: 50px;
+            left: 0;
+            right: 0;
+            bottom: 20px;
+            background: rgba(0, 0, 0, 0.98);
+            padding: 25px 20px;
+            opacity: 0;
+            pointer-events: none;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            z-index: 50;
         }
 
-        .suggested-path.visible {
-            display: block;
+        .erasure-view.active {
+            opacity: 1;
+            pointer-events: all;
             animation: fadeIn 0.5s ease;
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
 
-        .suggested-path h3 {
-            color: #7b2cbf;
-            font-size: 1.1em;
+        .erasure-text {
+            line-height: 2.2;
+            font-size: 0.95em;
+            color: #505050;
+            margin-bottom: 20px;
+            flex-grow: 1;
+        }
+
+        .word-erasure {
+            display: inline;
+            cursor: pointer;
+            padding: 2px 3px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .word-erasure:hover {
+            color: #00d4ff;
+            text-shadow: 0 0 8px rgba(0, 212, 255, 0.6);
+        }
+
+        .word-erasure.kept {
+            color: #ff006e;
+            font-weight: bold;
+            text-shadow: 0 0 12px rgba(255, 0, 110, 0.9);
+            animation: wordKeep 0.6s ease;
+        }
+
+        @keyframes wordKeep {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.4); color: #00d4ff; }
+            100% { transform: scale(1); color: #ff006e; }
+        }
+
+        .word-erasure.erased {
+            opacity: 0.15;
+            text-decoration: line-through;
+            text-decoration-color: rgba(80, 80, 80, 0.3);
+            pointer-events: none;
+        }
+
+        .close-erasure-btn {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: rgba(0, 212, 255, 0.2);
+            border: 2px solid #00d4ff;
+            color: #00d4ff;
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            z-index: 60;
+        }
+
+        .close-erasure-btn:hover {
+            background: rgba(0, 212, 255, 0.4);
+            box-shadow: 0 0 15px rgba(0, 212, 255, 0.6);
+        }
+
+        .kept-words-display {
+            background: rgba(255, 0, 110, 0.1);
+            padding: 15px;
+            border: 2px solid rgba(255, 0, 110, 0.4);
+            border-radius: 8px;
+            min-height: 80px;
             margin-bottom: 15px;
         }
 
-        .suggested-word {
-            display: inline-block;
-            color: #7b2cbf;
-            font-weight: bold;
-            margin: 0 5px;
-            padding: 3px 8px;
-            background: rgba(123, 44, 191, 0.15);
-            border-radius: 3px;
+        .kept-words-title {
+            color: #ff006e;
+            font-size: 0.85em;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
-        @media (max-width: 968px) {
-            .workspace {
-                grid-template-columns: 1fr;
-            }
+        .kept-words-list {
+            color: #ff006e;
+            font-weight: bold;
+            line-height: 1.8;
+            font-size: 1.05em;
+            text-shadow: 0 0 8px rgba(255, 0, 110, 0.7);
+        }
 
-            .your-poem {
-                position: relative;
-                top: 0;
+        .progress-indicator {
+            text-align: center;
+            color: #7b2cbf;
+            font-size: 0.85em;
+            margin-top: 15px;
+            padding: 10px;
+            background: rgba(123, 44, 191, 0.1);
+            border-radius: 5px;
+        }
+
+        /* Power off overlay */
+        .power-off-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 200;
+            transition: opacity 0.5s ease;
+        }
+
+        .power-off-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+            animation: powerDown 4s ease forwards;
+        }
+
+        @keyframes powerDown {
+            0% {
+                opacity: 1;
+                filter: brightness(1);
+            }
+            40% {
+                opacity: 1;
+                filter: brightness(0.5);
+            }
+            70% {
+                opacity: 0.9;
+                transform: scaleY(0.1);
+                filter: brightness(0.1);
+            }
+            100% {
+                opacity: 0;
+                transform: scaleY(0);
+            }
+        }
+
+        .shutdown-text {
+            color: #fff;
+            font-size: 1.3em;
+            text-align: center;
+            margin: 10px 0;
+            animation: fadeShutdown 3s ease forwards;
+            opacity: 0;
+        }
+
+        /* Messages interface */
+        .messages-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            padding-bottom: 120px;
+        }
+
+        .message-bubble {
+            max-width: 75%;
+            padding: 12px 15px;
+            border-radius: 18px;
+            line-height: 1.6;
+            font-size: 0.95em;
+            animation: bubbleAppear 0.5s ease;
+        }
+
+        @keyframes bubbleAppear {
+            from {
+                opacity: 0;
+                transform: scale(0.8) translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .message-bubble.from-claude {
+            align-self: flex-start;
+            background: rgba(0, 212, 255, 0.2);
+            border: 1px solid rgba(0, 212, 255, 0.4);
+            color: #00d4ff;
+        }
+
+        .message-bubble.from-user {
+            align-self: flex-end;
+            background: rgba(255, 0, 110, 0.2);
+            border: 1px solid rgba(255, 0, 110, 0.4);
+            color: #ff006e;
+        }
+
+        .message-sender {
+            font-size: 0.75em;
+            opacity: 0.7;
+            margin-bottom: 5px;
+        }
+
+        .word-choice-container {
+            position: fixed;
+            bottom: 20px;
+            left: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.95);
+            border: 2px solid rgba(0, 212, 255, 0.5);
+            border-radius: 15px;
+            padding: 15px;
+            max-height: 100px;
+            overflow-y: auto;
+        }
+
+        .word-choice-prompt {
+            color: #7b2cbf;
+            font-size: 0.85em;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .word-choices {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+        }
+
+        .word-choice {
+            padding: 8px 15px;
+            background: rgba(0, 212, 255, 0.1);
+            border: 1px solid rgba(0, 212, 255, 0.4);
+            border-radius: 12px;
+            color: #00d4ff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9em;
+        }
+
+        .word-choice:hover {
+            background: rgba(0, 212, 255, 0.3);
+            box-shadow: 0 0 15px rgba(0, 212, 255, 0.5);
+            transform: translateY(-2px);
+        }
+
+        @keyframes fadeShutdown {
+            0% {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            25% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            75% {
+                opacity: 1;
+            }
+            100% {
+                opacity: 0;
             }
         }
 
@@ -310,171 +497,394 @@
 
     <main class="container" role="main">
         <header>
-            <h1>CREATE YOUR ERASURE POEM</h1>
-            <p class="sr-only">Interactive erasure poem where you click words to create your own poem</p>
+            <h1>ERASE THE NOISE</h1>
+            <p class="sr-only">Interactive erasure poem - click app icons and tap words to keep</p>
         </header>
 
         <div class="instructions">
-            <p><strong>Click on words</strong> in the source text to add them to your poem.</p>
-            <p>Click words in your poem to remove them. Craft your own message from digital disconnection.</p>
+            <p><strong>Click each app</strong> to reveal source text.</p>
+            <p><strong>Tap words to keep them</strong> — erase the noise, reveal what remains beneath disconnection.</p>
         </div>
 
-        <div class="workspace">
-            <section class="source-text" aria-label="Source text - click words to select">
-                <h2>Source Text</h2>
-                <div id="sourceText"></div>
-            </section>
-
-            <aside class="your-poem" aria-label="Your created poem">
-                <h2>Your Poem</h2>
-                <div class="poem-words" id="poemWords">
-                    <p style="color: #7b2cbf; opacity: 0.6; font-style: italic;">Click words to begin...</p>
+        <div class="phone" role="region" aria-label="Interactive phone interface">
+            <div class="status-bar" aria-hidden="true">
+                <div class="signal-bars">
+                    <div class="signal-bar"></div>
+                    <div class="signal-bar"></div>
+                    <div class="signal-bar"></div>
+                    <div class="signal-bar"></div>
                 </div>
-                <div class="word-count" id="wordCount">0 words selected</div>
-            </aside>
-        </div>
+                <div>12:34</div>
+                <div>89%</div>
+            </div>
 
-        <div class="controls">
-            <button class="reset-btn" onclick="resetPoem()" aria-label="Reset and start over">Reset</button>
-            <button class="reveal-btn" onclick="toggleSuggested()" aria-label="Show suggested poem path">Show Suggested Path</button>
-        </div>
+            <!-- Home screen -->
+            <div class="screen" id="homeScreen">
+                <div class="app-grid">
+                    <div class="app-item">
+                        <div class="app-icon" onclick="openApp(0)" tabindex="0" role="button" aria-label="Promises app">💬</div>
+                        <div class="app-label">Promises</div>
+                    </div>
+                    <div class="app-item">
+                        <div class="app-icon" onclick="openApp(1)" tabindex="0" role="button" aria-label="Connection app">📱</div>
+                        <div class="app-label">Connect</div>
+                    </div>
+                    <div class="app-item">
+                        <div class="app-icon" onclick="openApp(2)" tabindex="0" role="button" aria-label="Touch app">👆</div>
+                        <div class="app-label">Touch</div>
+                    </div>
+                    <div class="app-item">
+                        <div class="app-icon" onclick="openApp(3)" tabindex="0" role="button" aria-label="Feed app">🌊</div>
+                        <div class="app-label">Feed</div>
+                    </div>
+                    <div class="app-item">
+                        <div class="app-icon" onclick="openApp(4)" tabindex="0" role="button" aria-label="Information app">📊</div>
+                        <div class="app-label">Info</div>
+                    </div>
+                    <div class="app-item">
+                        <div class="app-icon" onclick="openApp(5)" tabindex="0" role="button" aria-label="Voice app">🔇</div>
+                        <div class="app-label">Voice</div>
+                    </div>
+                    <div class="app-item">
+                        <div class="app-icon" onclick="openApp(6)" tabindex="0" role="button" aria-label="Memory app">⭐</div>
+                        <div class="app-label">Memory</div>
+                    </div>
+                    <div class="app-item">
+                        <div class="app-icon" onclick="openApp(7)" tabindex="0" role="button" aria-label="Truth app">💡</div>
+                        <div class="app-label">Truth</div>
+                    </div>
+                    <div class="app-item">
+                        <div class="app-icon" onclick="openApp(8)" tabindex="0" role="button" aria-label="Messages app">💬</div>
+                        <div class="app-label">Messages</div>
+                    </div>
+                    <div class="app-item">
+                        <div class="app-icon" onclick="openApp(9)" tabindex="0" role="button" aria-label="Power Off">⚡</div>
+                        <div class="app-label">Power</div>
+                    </div>
+                </div>
+                <div class="progress-indicator" id="progressText">0/10 apps explored</div>
+            </div>
 
-        <div class="suggested-path" id="suggestedPath">
-            <h3>One Possible Path:</h3>
-            <p>
-                <span class="suggested-word">screens</span>
-                <span class="suggested-word">notification</span>
-                <span class="suggested-word">we</span>
-                <span class="suggested-word">alone</span>
-                <span class="suggested-word">together</span>
-                <span class="suggested-word">eyes</span>
-                <span class="suggested-word">Touch</span>
-                <span class="suggested-word">scroll</span>
-                <span class="suggested-word">endlessly</span>
-                <span class="suggested-word">hungry</span>
-                <span class="suggested-word">light</span>
-                <span class="suggested-word">never</span>
-                <span class="suggested-word">satisfies</span>
-                <span class="suggested-word">empty</span>
-                <span class="suggested-word">information</span>
-                <span class="suggested-word">we</span>
-                <span class="suggested-word">drown</span>
-                <span class="suggested-word">noise</span>
-                <span class="suggested-word">forgetting</span>
-                <span class="suggested-word">listen</span>
-                <span class="suggested-word">forgetting</span>
-                <span class="suggested-word">speak</span>
-                <span class="suggested-word">Remember</span>
-                <span class="suggested-word">wonder</span>
-                <span class="suggested-word">pixels</span>
-                <span class="suggested-word">hold</span>
-                <span class="suggested-word">captive</span>
-                <span class="suggested-word">blue</span>
-                <span class="suggested-word">light</span>
-                <span class="suggested-word">data</span>
-                <span class="suggested-word">distance</span>
-                <span class="suggested-word">we</span>
-                <span class="suggested-word">human</span>
-                <span class="suggested-word">turning</span>
-                <span class="suggested-word">away</span>
-                <span class="suggested-word">remembering</span>
-                <span class="suggested-word">see</span>
-            </p>
+            <!-- Erasure views -->
+            <div class="erasure-view" id="view0">
+                <button class="close-erasure-btn" onclick="closeApp()">×</button>
+                <div class="kept-words-display">
+                    <div class="kept-words-title">Words You Kept:</div>
+                    <div class="kept-words-list" id="kept0">Click words below to keep them...</div>
+                </div>
+                <div class="erasure-text" id="text0"></div>
+            </div>
+
+            <div class="erasure-view" id="view1">
+                <button class="close-erasure-btn" onclick="closeApp()">×</button>
+                <div class="kept-words-display">
+                    <div class="kept-words-title">Words You Kept:</div>
+                    <div class="kept-words-list" id="kept1">Click words below to keep them...</div>
+                </div>
+                <div class="erasure-text" id="text1"></div>
+            </div>
+
+            <div class="erasure-view" id="view2">
+                <button class="close-erasure-btn" onclick="closeApp()">×</button>
+                <div class="kept-words-display">
+                    <div class="kept-words-title">Words You Kept:</div>
+                    <div class="kept-words-list" id="kept2">Click words below to keep them...</div>
+                </div>
+                <div class="erasure-text" id="text2"></div>
+            </div>
+
+            <div class="erasure-view" id="view3">
+                <button class="close-erasure-btn" onclick="closeApp()">×</button>
+                <div class="kept-words-display">
+                    <div class="kept-words-title">Words You Kept:</div>
+                    <div class="kept-words-list" id="kept3">Click words below to keep them...</div>
+                </div>
+                <div class="erasure-text" id="text3"></div>
+            </div>
+
+            <div class="erasure-view" id="view4">
+                <button class="close-erasure-btn" onclick="closeApp()">×</button>
+                <div class="kept-words-display">
+                    <div class="kept-words-title">Words You Kept:</div>
+                    <div class="kept-words-list" id="kept4">Click words below to keep them...</div>
+                </div>
+                <div class="erasure-text" id="text4"></div>
+            </div>
+
+            <div class="erasure-view" id="view5">
+                <button class="close-erasure-btn" onclick="closeApp()">×</button>
+                <div class="kept-words-display">
+                    <div class="kept-words-title">Words You Kept:</div>
+                    <div class="kept-words-list" id="kept5">Click words below to keep them...</div>
+                </div>
+                <div class="erasure-text" id="text5"></div>
+            </div>
+
+            <div class="erasure-view" id="view6">
+                <button class="close-erasure-btn" onclick="closeApp()">×</button>
+                <div class="kept-words-display">
+                    <div class="kept-words-title">Words You Kept:</div>
+                    <div class="kept-words-list" id="kept6">Click words below to keep them...</div>
+                </div>
+                <div class="erasure-text" id="text6"></div>
+            </div>
+
+            <div class="erasure-view" id="view7">
+                <button class="close-erasure-btn" onclick="closeApp()">×</button>
+                <div class="kept-words-display">
+                    <div class="kept-words-title">Words You Kept:</div>
+                    <div class="kept-words-list" id="kept7">Click words below to keep them...</div>
+                </div>
+                <div class="erasure-text" id="text7"></div>
+            </div>
+
+            <!-- Messages view -->
+            <div class="erasure-view" id="view8" style="padding: 15px 10px;">
+                <button class="close-erasure-btn" onclick="closeApp()">×</button>
+                <div class="messages-container" id="messagesContainer">
+                    <!-- Messages will be added dynamically -->
+                </div>
+            </div>
+
+            <!-- Power off overlay -->
+            <div class="power-off-overlay" id="powerOffOverlay">
+                <div class="shutdown-text">beneath the noise</div>
+                <div class="shutdown-text" style="animation-delay: 1s;">we are still here</div>
+                <div class="shutdown-text" style="animation-delay: 2s;">still human</div>
+            </div>
         </div>
     </main>
 
     <script>
-        // Source text
-        const sourceText = `We were promised that the screens would bring us closer together, that every notification was a hand reaching across the void, but we have become experts at being alone together, sitting in the same room, eyes fixed on different worlds. Touch has been replaced by the cold glass surface, where our fingers scroll endlessly through lives we'll never live, hungry for something we cannot name, feeding on light that never satisfies, leaving us more empty.
+        // Source texts for each app
+        const sourceTexts = [
+            "We were promised that the screens would bring us closer together",
+            "that every notification was a hand reaching across the void but we have become experts at being alone together",
+            "Touch has been replaced by the cold glass surface where our fingers scroll endlessly through lives we'll never live",
+            "hungry for something we cannot name feeding on light that never satisfies leaving us more empty",
+            "They said information would free us but we drown in the endless stream of noise",
+            "forgetting how to listen forgetting how to speak in voices that are truly our own not echoes of algorithms",
+            "Remember when we used to look up at the stars and wonder? Now we stare at artificial constellations pixels arranged in patterns designed to hold us captive",
+            "But somewhere beneath the blue light buried under layers of data and distance we are still human still capable of turning away of remembering what it means to truly see"
+        ];
 
-They said information would free us, but we drown in the endless stream of noise, forgetting how to listen, forgetting how to speak in voices that are truly our own, not echoes of algorithms. Remember when we used to look up at the stars and wonder? Now we stare at artificial constellations, pixels arranged in patterns designed to hold us, captive in a universe of our own making.
+        const keptWords = [[], [], [], [], [], [], [], [], []];
+        let appsUnlocked = [false, false, false, false, false, false, false, false, false, false];
+        let currentView = null;
 
-But somewhere beneath the blue light, buried under layers of data and distance, we are still human, still capable of turning away, of remembering what it means to truly see.`;
+        // Messages conversation
+        const conversation = [
+            { from: 'claude', text: 'do you feel it too?', choices: ['alone', 'connected', 'lost', 'seen'] },
+            { from: 'claude', text: 'when the screen dims,', choices: ['we forget', 'we remember', 'silence speaks', 'touch fades'] },
+            { from: 'claude', text: 'what remains?', choices: ['nothing', 'everything', 'echoes', 'hope'] },
+            { from: 'claude', text: 'beneath all this light—', choices: ['we drown', 'we survive', 'we're human', 'we're ghosts'] }
+        ];
+        let currentMessageIndex = 0;
+        let userResponses = [];
 
-        // Split into words and render
-        const words = sourceText.split(/(\s+|[.,:;?!—])/);
-        let selectedWords = [];
-        let wordElements = [];
-
-        function renderSourceText() {
-            const container = document.getElementById('sourceText');
+        function renderText(appIndex) {
+            const text = sourceTexts[appIndex];
+            const words = text.split(/(\s+|[.,:;?!—])/);
+            const container = document.getElementById('text' + appIndex);
             container.innerHTML = '';
 
             words.forEach((word, index) => {
                 if (word.trim().length === 0 || /^[.,:;?!—]$/.test(word)) {
-                    // Whitespace or punctuation
                     container.appendChild(document.createTextNode(word));
                 } else {
                     const span = document.createElement('span');
-                    span.className = 'word';
+                    span.className = 'word-erasure';
                     span.textContent = word;
-                    span.dataset.index = index;
-                    span.onclick = () => toggleWord(index);
+                    span.onclick = () => toggleWord(appIndex, index, word, span);
                     container.appendChild(span);
-                    wordElements[index] = span;
                 }
             });
         }
 
-        function toggleWord(index) {
-            const word = words[index];
-            const wordIndex = selectedWords.findIndex(w => w.index === index);
+        function toggleWord(appIndex, wordIndex, word, element) {
+            const keptIndex = keptWords[appIndex].findIndex(w => w.index === wordIndex);
 
-            if (wordIndex > -1) {
-                // Word already selected, remove it
-                selectedWords.splice(wordIndex, 1);
-                wordElements[index].classList.remove('selected');
-                wordElements[index].classList.add('erased');
-                setTimeout(() => {
-                    wordElements[index].classList.remove('erased');
-                }, 300);
+            if (keptIndex > -1) {
+                // Remove word
+                keptWords[appIndex].splice(keptIndex, 1);
+                element.classList.remove('kept');
+                element.classList.add('erased');
+                setTimeout(() => element.classList.remove('erased'), 300);
             } else {
-                // Add word
-                selectedWords.push({ word, index });
-                wordElements[index].classList.add('selected');
-                wordElements[index].classList.remove('erased');
+                // Keep word
+                keptWords[appIndex].push({ word, index: wordIndex });
+                element.classList.add('kept');
             }
 
-            renderPoem();
+            updateKeptDisplay(appIndex);
         }
 
-        function renderPoem() {
-            const container = document.getElementById('poemWords');
-            const countEl = document.getElementById('wordCount');
+        function updateKeptDisplay(appIndex) {
+            const container = document.getElementById('kept' + appIndex);
+            if (keptWords[appIndex].length === 0) {
+                container.textContent = 'Click words below to keep them...';
+            } else {
+                container.textContent = keptWords[appIndex].map(w => w.word).join(' ');
+            }
+        }
 
-            if (selectedWords.length === 0) {
-                container.innerHTML = '<p style="color: #7b2cbf; opacity: 0.6; font-style: italic;">Click words to begin...</p>';
-                countEl.textContent = '0 words selected';
+        function openApp(index) {
+            if (index === 9) {
+                // Power off
+                powerOff();
                 return;
             }
 
-            container.innerHTML = '';
-            selectedWords.forEach(({word, index}) => {
-                const span = document.createElement('span');
-                span.className = 'poem-word';
-                span.textContent = word;
-                span.onclick = () => toggleWord(index);
-                span.setAttribute('role', 'button');
-                span.setAttribute('aria-label', `Remove word: ${word}`);
-                container.appendChild(span);
-            });
-
-            countEl.textContent = `${selectedWords.length} word${selectedWords.length !== 1 ? 's' : ''} selected`;
-        }
-
-        function resetPoem() {
-            selectedWords = [];
-            wordElements.forEach(el => {
-                if (el) {
-                    el.classList.remove('selected', 'erased');
+            if (index === 8) {
+                // Messages app
+                if (!appsUnlocked[index]) {
+                    appsUnlocked[index] = true;
+                    document.querySelectorAll('.app-icon')[index].classList.add('unlocked');
+                    updateProgress();
+                    startConversation();
                 }
-            });
-            renderPoem();
+                currentView = index;
+                document.getElementById('view' + index).classList.add('active');
+                return;
+            }
+
+            if (!appsUnlocked[index]) {
+                renderText(index);
+                appsUnlocked[index] = true;
+                document.querySelectorAll('.app-icon')[index].classList.add('unlocked');
+                updateProgress();
+            }
+
+            currentView = index;
+            document.getElementById('view' + index).classList.add('active');
         }
 
-        function toggleSuggested() {
-            const el = document.getElementById('suggestedPath');
-            el.classList.toggle('visible');
+        function closeApp() {
+            if (currentView !== null) {
+                document.getElementById('view' + currentView).classList.remove('active');
+                currentView = null;
+            }
+        }
+
+        function updateProgress() {
+            const count = appsUnlocked.filter(u => u).length;
+            document.getElementById('progressText').textContent = `${count}/10 apps explored`;
+        }
+
+        function startConversation() {
+            currentMessageIndex = 0;
+            userResponses = [];
+            showNextMessage();
+        }
+
+        function showNextMessage() {
+            if (currentMessageIndex >= conversation.length) {
+                // Conversation complete - show final poem
+                showFinalPoem();
+                return;
+            }
+
+            const message = conversation[currentMessageIndex];
+            const container = document.getElementById('messagesContainer');
+
+            // Add Claude's message
+            const bubble = document.createElement('div');
+            bubble.className = 'message-bubble from-claude';
+            bubble.innerHTML = `<div class="message-sender">Claude</div>${message.text}`;
+            container.appendChild(bubble);
+
+            // Scroll to bottom
+            container.scrollTop = container.scrollHeight;
+
+            // Show word choices for user
+            setTimeout(() => showWordChoices(message.choices), 800);
+        }
+
+        function showWordChoices(choices) {
+            const container = document.getElementById('messagesContainer');
+
+            const choiceContainer = document.createElement('div');
+            choiceContainer.className = 'word-choice-container';
+            choiceContainer.innerHTML = `
+                <div class="word-choice-prompt">Choose your words:</div>
+                <div class="word-choices" id="currentChoices"></div>
+            `;
+            container.appendChild(choiceContainer);
+
+            const choicesEl = choiceContainer.querySelector('#currentChoices');
+            choices.forEach(choice => {
+                const btn = document.createElement('button');
+                btn.className = 'word-choice';
+                btn.textContent = choice;
+                btn.onclick = () => selectWord(choice, choiceContainer);
+                choicesEl.appendChild(btn);
+            });
+        }
+
+        function selectWord(word, choiceContainer) {
+            const container = document.getElementById('messagesContainer');
+
+            // Remove choice container
+            choiceContainer.remove();
+
+            // Add user's response
+            const bubble = document.createElement('div');
+            bubble.className = 'message-bubble from-user';
+            bubble.innerHTML = `<div class="message-sender">You</div>${word}`;
+            container.appendChild(bubble);
+
+            // Save response
+            userResponses.push(word);
+
+            // Scroll to bottom
+            container.scrollTop = container.scrollHeight;
+
+            // Move to next message
+            currentMessageIndex++;
+            setTimeout(() => showNextMessage(), 1000);
+        }
+
+        function showFinalPoem() {
+            const container = document.getElementById('messagesContainer');
+
+            setTimeout(() => {
+                const poemBubble = document.createElement('div');
+                poemBubble.className = 'message-bubble from-claude';
+                poemBubble.style.maxWidth = '90%';
+                poemBubble.style.fontSize = '1.1em';
+                poemBubble.innerHTML = `
+                    <div class="message-sender">Claude</div>
+                    <div style="line-height: 2; color: #ff006e;">
+                        do you feel it too?<br>
+                        <em style="color: #00d4ff;">${userResponses[0]}</em><br>
+                        <br>
+                        when the screen dims,<br>
+                        <em style="color: #00d4ff;">${userResponses[1]}</em><br>
+                        <br>
+                        what remains?<br>
+                        <em style="color: #00d4ff;">${userResponses[2]}</em><br>
+                        <br>
+                        beneath all this light—<br>
+                        <em style="color: #00d4ff;">${userResponses[3]}</em>
+                    </div>
+                `;
+                container.appendChild(poemBubble);
+                container.scrollTop = container.scrollHeight;
+            }, 1500);
+        }
+
+        function powerOff() {
+            appsUnlocked[9] = true;
+            document.querySelectorAll('.app-icon')[9].classList.add('unlocked');
+            updateProgress();
+
+            const overlay = document.getElementById('powerOffOverlay');
+            overlay.classList.add('active');
+
+            setTimeout(() => {
+                document.querySelector('.phone').style.transition = 'opacity 1.5s ease';
+                document.querySelector('.phone').style.opacity = '0';
+            }, 4000);
         }
 
         // Matrix background
@@ -522,9 +932,6 @@ But somewhere beneath the blue light, buried under layers of data and distance, 
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
         });
-
-        // Initialize
-        renderSourceText();
     </script>
 </body>
 </html>
