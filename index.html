@@ -40,7 +40,7 @@
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
-            opacity: 0.08;
+            opacity: 0.18;
             z-index: -1;
             pointer-events: none;
         }
@@ -385,6 +385,12 @@
             <p class="subtitle">AI-Assisted Poems Portfolio</p>
         </header>
 
+        <!-- Quick Navigation Pills - Moved to Top -->
+        <nav class="quick-nav" aria-label="Jump to poem types">
+            <a href="#erasure-section" class="nav-pill">Erasure Poems</a>
+            <a href="#interactive-section" class="nav-pill">Interactive Poems</a>
+        </nav>
+
         <section class="artist-statement" aria-labelledby="statement-heading">
             <h2 id="statement-heading">Artist Statement</h2>
             <p>This collection of AI-assisted poems uses Claude Code as a digital companion for interactive and multimodal pieces. My collection "Connected/Disconnected" is meant to mirror the ongoing push and pull of technology and society. The theme of this poem was to connect these juxtaposing ideas by continuously asking Claude Code to make poems as emotional as possible, pushing the boundaries of AI and pathos.</p>
@@ -392,14 +398,8 @@
             <p>In this portfolio, I have included four varying poems of this theme: two erasure poems (one visual, one source text), one interactive visual poem, and one interactive kinetic poem. Each poem is meant to build upon this narrative from various perspectives and showcase how digital poetry can expand upon genre while also acknowledging implications of AI within creative works. I hope you enjoy my portfolio.</p>
         </section>
 
-        <!-- Quick Navigation Pills -->
-        <nav class="quick-nav" aria-label="Jump to poem types">
-            <a href="#erasure-section" class="nav-pill">Erasure Poems</a>
-            <a href="#interactive-section" class="nav-pill">Interactive Poems</a>
-        </nav>
-
         <!-- Top Navigation Grid - All Poems Visible -->
-        <section class="top-poems-nav" aria-label="All available poems">
+        <section class="top-poems-nav" id="erasure-section" aria-label="All available poems">
             <h2 class="nav-section-title">Erasure Poems</h2>
             <div class="poems-grid">
                 <article class="poem-card">
@@ -423,7 +423,7 @@
                 </article>
             </div>
 
-            <h2 class="nav-section-title">Interactive Poems</h2>
+            <h2 class="nav-section-title" id="interactive-section">Interactive Poems</h2>
             <div class="poems-grid">
                 <article class="poem-card">
                     <h3>Connected/Disconnected</h3>
