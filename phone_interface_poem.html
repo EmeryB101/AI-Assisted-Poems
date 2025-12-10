@@ -256,39 +256,39 @@
 
             <div class="screen" id="home">
                 <div class="app-grid">
-                    <div class="app" onclick="open(0)">
+                    <div class="app" onclick="openApp(0)">
                         <div class="app-icon">📱</div>
                         <div class="app-label">Screen</div>
                     </div>
-                    <div class="app" onclick="open(1)">
+                    <div class="app" onclick="openApp(1)">
                         <div class="app-icon">🔔</div>
                         <div class="app-label">Notify</div>
                     </div>
-                    <div class="app" onclick="open(2)">
+                    <div class="app" onclick="openApp(2)">
                         <div class="app-icon">👥</div>
                         <div class="app-label">Social</div>
                     </div>
-                    <div class="app" onclick="open(3)">
+                    <div class="app" onclick="openApp(3)">
                         <div class="app-icon">👁️</div>
                         <div class="app-label">Camera</div>
                     </div>
-                    <div class="app" onclick="open(4)">
+                    <div class="app" onclick="openApp(4)">
                         <div class="app-icon">📜</div>
                         <div class="app-label">Feed</div>
                     </div>
-                    <div class="app" onclick="open(5)">
+                    <div class="app" onclick="openApp(5)">
                         <div class="app-icon">💭</div>
                         <div class="app-label">Empty</div>
                     </div>
-                    <div class="app" onclick="open(6)">
+                    <div class="app" onclick="openApp(6)">
                         <div class="app-icon">📊</div>
                         <div class="app-label">Info</div>
                     </div>
-                    <div class="app" onclick="open(7)">
+                    <div class="app" onclick="openApp(7)">
                         <div class="app-icon">🌊</div>
                         <div class="app-label">Stream</div>
                     </div>
-                    <div class="app" onclick="open(8)">
+                    <div class="app" onclick="openApp(8)">
                         <div class="app-icon">🧠</div>
                         <div class="app-label">Memory</div>
                     </div>
@@ -296,7 +296,7 @@
             </div>
 
             <div class="chat" id="chat">
-                <div class="close" onclick="close()">×</div>
+                <div class="close" onclick="closeApp()">×</div>
                 <div class="messages" id="msgs"></div>
                 <div class="options" id="opts"></div>
             </div>
@@ -380,7 +380,7 @@
         let app = null;
         let step = 0;
 
-        function open(id) {
+        function openApp(id) {
             app = id;
             step = 0;
 
@@ -393,7 +393,7 @@
             }
         }
 
-        function close() {
+        function closeApp() {
             document.getElementById('chat').classList.remove('active');
             document.getElementById('power').classList.remove('active');
             document.getElementById('opts').classList.remove('active');
