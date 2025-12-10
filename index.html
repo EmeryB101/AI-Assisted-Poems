@@ -26,6 +26,23 @@
             align-items: center;
             padding: 20px;
             position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Fade-in animation for content */
+        .main-container {
+            animation: fadeIn 1s ease-in 1.2s both;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         /* Subtle background image */
@@ -108,35 +125,35 @@
 
         .artist-statement {
             color: #e0e0e0;
-            font-size: 0.95em;
-            line-height: 1.7;
-            margin-bottom: 30px;
-            padding: 25px;
+            font-size: 0.9em;
+            line-height: 1.65;
+            margin-bottom: 20px;
+            padding: 20px;
             background: rgba(0, 212, 255, 0.05);
             border-left: 3px solid #7b2cbf;
         }
 
         .artist-statement h2 {
             color: #7b2cbf;
-            font-size: 1.1em;
-            margin-bottom: 15px;
+            font-size: 1em;
+            margin-bottom: 12px;
             letter-spacing: 2px;
             text-transform: uppercase;
             text-shadow: 0 0 10px rgba(123, 44, 191, 0.5);
         }
 
         .artist-statement p {
-            margin-bottom: 12px;
+            margin-bottom: 10px;
             text-align: justify;
         }
 
         /* Poem Navigation Sections */
         .poem-nav {
-            margin: 30px 0;
+            margin: 20px 0;
         }
 
         .poem-category {
-            margin-bottom: 30px;
+            margin-bottom: 12px;
         }
 
         .poem-category:last-of-type {
@@ -145,28 +162,61 @@
 
         .category-title {
             color: #00d4ff;
-            font-size: 1.1em;
+            font-size: 1em;
             letter-spacing: 2px;
             text-transform: uppercase;
             text-align: center;
-            margin-bottom: 15px;
+            padding: 12px 20px;
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.15), rgba(123, 44, 191, 0.15));
+            border: 2px solid rgba(0, 212, 255, 0.5);
+            cursor: pointer;
+            transition: all 0.3s ease;
             text-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+            position: relative;
+            user-select: none;
+        }
+
+        .category-title:hover {
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.25), rgba(123, 44, 191, 0.25));
+            border-color: #00d4ff;
+            box-shadow: 0 0 15px rgba(0, 212, 255, 0.4);
+        }
+
+        .category-title::after {
+            content: '▼';
+            position: absolute;
+            right: 20px;
+            font-size: 0.8em;
+            transition: transform 0.3s ease;
+        }
+
+        .category-title.active::after {
+            transform: rotate(180deg);
         }
 
         .poem-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
+            gap: 12px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease, margin-top 0.4s ease;
+            margin-top: 0;
+        }
+
+        .poem-grid.active {
+            max-height: 200px;
+            margin-top: 12px;
         }
 
         .poem-grid a {
-            padding: 18px 20px;
-            background: linear-gradient(135deg, rgba(0, 212, 255, 0.15), rgba(123, 44, 191, 0.15));
-            border: 2px solid rgba(0, 212, 255, 0.5);
+            padding: 15px 18px;
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.1), rgba(123, 44, 191, 0.1));
+            border: 2px solid rgba(0, 212, 255, 0.4);
             color: #00d4ff;
             text-decoration: none;
             text-align: center;
-            font-size: 0.95em;
+            font-size: 0.85em;
             letter-spacing: 1.5px;
             text-transform: uppercase;
             transition: all 0.3s ease;
@@ -177,8 +227,8 @@
         .poem-grid a span {
             display: block;
             color: #7b2cbf;
-            font-size: 0.75em;
-            margin-top: 5px;
+            font-size: 0.7em;
+            margin-top: 4px;
             letter-spacing: 1px;
         }
 
@@ -238,10 +288,10 @@
         }
 
         .footer {
-            margin-top: 30px;
+            margin-top: 20px;
             text-align: center;
             color: #888;
-            font-size: 0.8em;
+            font-size: 0.75em;
             font-style: italic;
         }
 
@@ -264,12 +314,13 @@
             }
 
             .poem-grid a {
-                padding: 15px 18px;
-                font-size: 0.9em;
+                padding: 12px 15px;
+                font-size: 0.8em;
             }
 
             .category-title {
-                font-size: 1em;
+                font-size: 0.9em;
+                padding: 10px 18px;
             }
         }
     </style>
@@ -286,7 +337,7 @@
         <!-- Poem Navigation -->
         <nav class="poem-nav" aria-label="Navigate to poems">
             <div class="poem-category">
-                <h3 class="category-title">Erasure Poems</h3>
+                <h3 class="category-title" onclick="toggleCategory(this)">Erasure Poems</h3>
                 <div class="poem-grid">
                     <a href="erasure_poem (1).html" aria-label="View Connected/Disconnected erasure poem">
                         Connected/Disconnected
@@ -300,7 +351,7 @@
             </div>
 
             <div class="poem-category">
-                <h3 class="category-title">Interactive Poems</h3>
+                <h3 class="category-title" onclick="toggleCategory(this)">Interactive Poems</h3>
                 <div class="poem-grid">
                     <a href="visual_poem_v2-5.html" aria-label="View Connected/Disconnected interactive visual poem">
                         Connected/Disconnected
@@ -325,5 +376,13 @@
             <p>Created with Claude Code <span aria-hidden="true">•</span> Digital Poetry Exploration</p>
         </footer>
     </main>
+
+    <script>
+        function toggleCategory(element) {
+            const grid = element.nextElementSibling;
+            element.classList.toggle('active');
+            grid.classList.toggle('active');
+        }
+    </script>
 </body>
 </html>
