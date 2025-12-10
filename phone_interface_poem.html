@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Connected/Disconnected - An interactive poem through text conversations. Choose your responses to build the poem together.">
-    <meta name="author" content="AI-Assisted Poetry Portfolio">
-    <title>Interactive Poem: Connected/Disconnected</title>
+    <meta name="description" content="Connected/Disconnected - An interactive poem through text conversations">
+    <title>Interactive Poem: Disconnected</title>
     <style>
         * {
             margin: 0;
@@ -85,7 +84,8 @@
             height: 30px;
             background: #2a2a2a;
             border-radius: 0 0 20px 20px;
-            z-index: 100;
+            z-index: 5;
+            pointer-events: none;
         }
 
         .status-bar {
@@ -100,28 +100,8 @@
             padding: 0 20px;
             color: #00d4ff;
             font-size: 11px;
-            z-index: 101;
-        }
-
-        .signal-bars {
-            display: flex;
-            gap: 2px;
-        }
-
-        .signal-bar {
-            width: 3px;
-            background: #00d4ff;
-            animation: signalFlicker 2s ease-in-out infinite;
-        }
-
-        .signal-bar:nth-child(1) { height: 4px; }
-        .signal-bar:nth-child(2) { height: 7px; animation-delay: 0.2s; }
-        .signal-bar:nth-child(3) { height: 10px; animation-delay: 0.4s; }
-        .signal-bar:nth-child(4) { height: 13px; animation-delay: 0.6s; }
-
-        @keyframes signalFlicker {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.3; }
+            z-index: 6;
+            pointer-events: none;
         }
 
         .screen {
@@ -131,7 +111,7 @@
             right: 0;
             bottom: 20px;
             background: linear-gradient(135deg, #0d0d0d, #1a1a1a);
-            overflow: hidden;
+            overflow-y: auto;
             padding: 20px;
         }
 
@@ -142,16 +122,19 @@
             margin-bottom: 40px;
         }
 
+        .app-item {
+            text-align: center;
+        }
+
         .app-icon {
             width: 70px;
             height: 70px;
-            margin: 0 auto;
+            margin: 0 auto 8px;
             border-radius: 18px;
             background: linear-gradient(135deg, rgba(0, 212, 255, 0.3), rgba(123, 44, 191, 0.3));
             border: 2px solid rgba(0, 212, 255, 0.5);
             cursor: pointer;
             transition: all 0.3s ease;
-            position: relative;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -163,20 +146,18 @@
             box-shadow: 0 0 20px rgba(0, 212, 255, 0.6);
         }
 
-        .app-icon.unlocked {
+        .app-icon.visited {
             opacity: 0.5;
         }
 
         .app-label {
-            text-align: center;
             color: #00d4ff;
             font-size: 11px;
-            margin-top: 8px;
             letter-spacing: 0.5px;
         }
 
-        /* Messages interface */
-        .messages-view {
+        /* Chat overlay */
+        .chat-overlay {
             position: absolute;
             top: 50px;
             left: 0;
@@ -184,15 +165,13 @@
             bottom: 20px;
             background: rgba(0, 0, 0, 0.98);
             padding: 15px 10px 120px 10px;
-            opacity: 0;
-            pointer-events: none;
+            display: none;
             overflow-y: auto;
-            z-index: 50;
+            z-index: 10;
         }
 
-        .messages-view.active {
-            opacity: 1;
-            pointer-events: all;
+        .chat-overlay.active {
+            display: block;
             animation: fadeIn 0.5s ease;
         }
 
@@ -201,13 +180,37 @@
             to { opacity: 1; }
         }
 
-        .messages-container {
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: rgba(0, 212, 255, 0.2);
+            border: 2px solid #00d4ff;
+            color: #00d4ff;
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            z-index: 20;
+        }
+
+        .close-btn:hover {
+            background: rgba(0, 212, 255, 0.4);
+            box-shadow: 0 0 15px rgba(0, 212, 255, 0.6);
+        }
+
+        .messages {
             display: flex;
             flex-direction: column;
             gap: 12px;
         }
 
-        .message-bubble {
+        .message {
             max-width: 75%;
             padding: 11px 14px;
             border-radius: 18px;
@@ -227,21 +230,21 @@
             }
         }
 
-        .message-bubble.from-them {
+        .message.them {
             align-self: flex-start;
             background: rgba(0, 212, 255, 0.2);
             border: 1px solid rgba(0, 212, 255, 0.4);
             color: #00d4ff;
         }
 
-        .message-bubble.from-you {
+        .message.you {
             align-self: flex-end;
             background: rgba(255, 0, 110, 0.2);
             border: 1px solid rgba(255, 0, 110, 0.4);
             color: #ff006e;
         }
 
-        .message-bubble.message-failed {
+        .message.failed {
             align-self: center;
             background: rgba(220, 53, 69, 0.15);
             border: 1px solid rgba(220, 53, 69, 0.5);
@@ -258,7 +261,7 @@
             75% { transform: translateX(5px); }
         }
 
-        .response-choices {
+        .choices {
             position: fixed;
             bottom: 20px;
             left: 10px;
@@ -267,12 +270,17 @@
             border: 2px solid rgba(0, 212, 255, 0.5);
             border-radius: 15px;
             padding: 12px;
-            display: flex;
+            display: none;
             flex-direction: column;
             gap: 8px;
+            z-index: 15;
         }
 
-        .response-btn {
+        .choices.active {
+            display: flex;
+        }
+
+        .choice-btn {
             padding: 10px 15px;
             background: rgba(0, 212, 255, 0.1);
             border: 1px solid rgba(0, 212, 255, 0.4);
@@ -282,39 +290,16 @@
             transition: all 0.3s ease;
             font-size: 0.9em;
             text-align: center;
+            font-family: 'Courier New', monospace;
         }
 
-        .response-btn:hover {
+        .choice-btn:hover {
             background: rgba(0, 212, 255, 0.3);
             box-shadow: 0 0 15px rgba(0, 212, 255, 0.5);
             transform: translateY(-2px);
         }
 
-        .close-msg-btn {
-            position: absolute;
-            top: 10px;
-            right: 15px;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            background: rgba(0, 212, 255, 0.2);
-            border: 2px solid #00d4ff;
-            color: #00d4ff;
-            font-size: 18px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
-            z-index: 60;
-        }
-
-        .close-msg-btn:hover {
-            background: rgba(0, 212, 255, 0.4);
-            box-shadow: 0 0 15px rgba(0, 212, 255, 0.6);
-        }
-
-        /* Power off display */
+        /* Power display */
         .power-display {
             position: absolute;
             top: 50px;
@@ -322,22 +307,19 @@
             right: 0;
             bottom: 20px;
             background: rgba(0, 0, 0, 0.98);
-            display: flex;
+            display: none;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            opacity: 0;
-            pointer-events: none;
-            z-index: 50;
+            z-index: 10;
         }
 
         .power-display.active {
-            opacity: 1;
-            pointer-events: all;
+            display: flex;
             animation: fadeIn 0.5s ease;
         }
 
-        .power-off-btn {
+        .power-btn {
             padding: 15px 40px;
             background: rgba(255, 0, 110, 0.3);
             border: 2px solid #ff006e;
@@ -351,30 +333,27 @@
             letter-spacing: 2px;
         }
 
-        .power-off-btn:hover {
+        .power-btn:hover {
             background: rgba(255, 0, 110, 0.5);
             box-shadow: 0 0 20px rgba(255, 0, 110, 0.6);
         }
 
-        .power-off-overlay {
+        .shutdown-overlay {
             position: absolute;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
             background: #000;
-            display: flex;
+            display: none;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            opacity: 0;
-            pointer-events: none;
-            z-index: 200;
+            z-index: 100;
         }
 
-        .power-off-overlay.active {
-            opacity: 1;
-            pointer-events: all;
+        .shutdown-overlay.active {
+            display: flex;
             animation: powerDown 4s ease forwards;
         }
 
@@ -423,139 +402,77 @@
                 opacity: 0;
             }
         }
-
-        .sr-only {
-            position: absolute;
-            width: 1px;
-            height: 1px;
-            padding: 0;
-            margin: -1px;
-            overflow: hidden;
-            clip: rect(0, 0, 0, 0);
-            white-space: nowrap;
-            border-width: 0;
-        }
     </style>
 </head>
 <body>
-    <canvas class="matrix-bg" id="matrix" aria-hidden="true"></canvas>
+    <canvas class="matrix-bg" id="matrix"></canvas>
 
-    <main class="container" role="main">
-        <header>
-            <h1>CONNECTED / DISCONNECTED</h1>
-            <p class="sr-only">Interactive poem through text conversations</p>
-        </header>
+    <main class="container">
+        <h1>CONNECTED / DISCONNECTED</h1>
 
-        <div class="phone" role="region" aria-label="Interactive phone interface">
-            <div class="status-bar" aria-hidden="true">
-                <div class="signal-bars">
-                    <div class="signal-bar"></div>
-                    <div class="signal-bar"></div>
-                    <div class="signal-bar"></div>
-                    <div class="signal-bar"></div>
-                </div>
+        <div class="phone">
+            <div class="status-bar">
+                <div>📶</div>
                 <div>12:34</div>
                 <div>89%</div>
             </div>
 
-            <!-- Home screen -->
+            <!-- Home screen with app icons -->
             <div class="screen" id="homeScreen">
                 <div class="app-grid">
                     <div class="app-item">
-                        <div class="app-icon" onclick="openApp(0)" tabindex="0" role="button">📱</div>
+                        <div class="app-icon" data-app="0">📱</div>
                         <div class="app-label">Screen</div>
                     </div>
                     <div class="app-item">
-                        <div class="app-icon" onclick="openApp(1)" tabindex="0" role="button">🔔</div>
+                        <div class="app-icon" data-app="1">🔔</div>
                         <div class="app-label">Notify</div>
                     </div>
                     <div class="app-item">
-                        <div class="app-icon" onclick="openApp(2)" tabindex="0" role="button">👥</div>
+                        <div class="app-icon" data-app="2">👥</div>
                         <div class="app-label">Social</div>
                     </div>
                     <div class="app-item">
-                        <div class="app-icon" onclick="openApp(3)" tabindex="0" role="button">👁️</div>
+                        <div class="app-icon" data-app="3">👁️</div>
                         <div class="app-label">Camera</div>
                     </div>
                     <div class="app-item">
-                        <div class="app-icon" onclick="openApp(4)" tabindex="0" role="button">📜</div>
+                        <div class="app-icon" data-app="4">📜</div>
                         <div class="app-label">Feed</div>
                     </div>
                     <div class="app-item">
-                        <div class="app-icon" onclick="openApp(5)" tabindex="0" role="button">💭</div>
+                        <div class="app-icon" data-app="5">💭</div>
                         <div class="app-label">Empty</div>
                     </div>
                     <div class="app-item">
-                        <div class="app-icon" onclick="openApp(6)" tabindex="0" role="button">📊</div>
+                        <div class="app-icon" data-app="6">📊</div>
                         <div class="app-label">Info</div>
                     </div>
                     <div class="app-item">
-                        <div class="app-icon" onclick="openApp(7)" tabindex="0" role="button">🌊</div>
+                        <div class="app-icon" data-app="7">🌊</div>
                         <div class="app-label">Stream</div>
                     </div>
                     <div class="app-item">
-                        <div class="app-icon" onclick="openApp(8)" tabindex="0" role="button">🧠</div>
+                        <div class="app-icon" data-app="8">🧠</div>
                         <div class="app-label">Memory</div>
                     </div>
                 </div>
             </div>
 
-            <!-- Message views for each app -->
-            <div class="messages-view" id="msg0">
-                <button class="close-msg-btn" onclick="closeApp()">×</button>
-                <div class="messages-container" id="chat0"></div>
-                <div id="choices0"></div>
+            <!-- Chat overlay -->
+            <div class="chat-overlay" id="chatOverlay">
+                <button class="close-btn" id="closeBtn">×</button>
+                <div class="messages" id="messages"></div>
+                <div class="choices" id="choices"></div>
             </div>
 
-            <div class="messages-view" id="msg1">
-                <button class="close-msg-btn" onclick="closeApp()">×</button>
-                <div class="messages-container" id="chat1"></div>
-                <div id="choices1"></div>
-            </div>
-
-            <div class="messages-view" id="msg2">
-                <button class="close-msg-btn" onclick="closeApp()">×</button>
-                <div class="messages-container" id="chat2"></div>
-                <div id="choices2"></div>
-            </div>
-
-            <div class="messages-view" id="msg3">
-                <button class="close-msg-btn" onclick="closeApp()">×</button>
-                <div class="messages-container" id="chat3"></div>
-                <div id="choices3"></div>
-            </div>
-
-            <div class="messages-view" id="msg4">
-                <button class="close-msg-btn" onclick="closeApp()">×</button>
-                <div class="messages-container" id="chat4"></div>
-                <div id="choices4"></div>
-            </div>
-
-            <div class="messages-view" id="msg5">
-                <button class="close-msg-btn" onclick="closeApp()">×</button>
-                <div class="messages-container" id="chat5"></div>
-                <div id="choices5"></div>
-            </div>
-
-            <div class="messages-view" id="msg6">
-                <button class="close-msg-btn" onclick="closeApp()">×</button>
-                <div class="messages-container" id="chat6"></div>
-                <div id="choices6"></div>
-            </div>
-
-            <div class="messages-view" id="msg7">
-                <button class="close-msg-btn" onclick="closeApp()">×</button>
-                <div class="messages-container" id="chat7"></div>
-                <div id="choices7"></div>
-            </div>
-
-            <!-- Power display for Memory app -->
+            <!-- Power display -->
             <div class="power-display" id="powerDisplay">
-                <button class="power-off-btn" onclick="powerOff()">Power Off</button>
+                <button class="power-btn" id="powerBtn">Power Off</button>
             </div>
 
-            <!-- Power off overlay -->
-            <div class="power-off-overlay" id="powerOffOverlay">
+            <!-- Shutdown overlay -->
+            <div class="shutdown-overlay" id="shutdownOverlay">
                 <div class="shutdown-text">maybe silence</div>
                 <div class="shutdown-text" style="animation-delay: 1s;">is connection</div>
             </div>
@@ -563,10 +480,9 @@
     </main>
 
     <script>
-        // Conversations for each app
-        const conversations = [
-            // App 0: Screen (glass, separation, tactile loss)
-            [
+        // Conversation data with poetic devices
+        const conversations = {
+            0: [ // Screen
                 { from: 'them', text: 'glass between us, cold and clear—' },
                 { from: 'you', choices: ['shimmering separation', 'see-through silence', 'surface so smooth', 'can\'t cross it'] },
                 { from: 'them', text: 'skin craves skin, but finds only screen' },
@@ -574,8 +490,7 @@
                 { from: 'them', text: 'do you remember what hands felt like?' },
                 { from: 'you', choices: ['barely breathing memory', 'fading like photographs', 'never knew', 'trying to forget'] }
             ],
-            // App 1: Notify (pings as prayers, desperate waiting)
-            [
+            1: [ // Notify
                 { from: 'them', text: 'every ping a prayer—' },
                 { from: 'you', choices: ['please be present', 'prove you\'re there', 'pull me closer', 'piercing silence'] },
                 { from: 'them', text: 'waiting, watching, willing you to—' },
@@ -583,8 +498,7 @@
                 { from: 'them', text: 'how many notifications until you notice?' },
                 { from: 'you', choices: ['counting each cry', 'drowning in digits', 'never enough', 'stopped counting'] }
             ],
-            // App 2: Social (alone/together paradox, curated emptiness)
-            [
+            2: [ // Social
                 { from: 'them', text: 'alone together, scrolling in sync—' },
                 { from: 'you', choices: ['crowded by ghosts', 'companions in vacancy', 'curating our cages', 'lost in the scroll'] },
                 { from: 'them', text: 'swipe left on loneliness, still lonely—' },
@@ -592,8 +506,7 @@
                 { from: 'them', text: 'when did connection become collection?' },
                 { from: 'you', choices: ['cataloging our collapse', 'measuring in metrics', 'can\'t remember before', 'connection died quietly'] }
             ],
-            // App 3: Camera (seeing/being seen, filtered reality)
-            [
+            3: [ // Camera
                 { from: 'them', text: 'through the lens, are you looking at me?' },
                 { from: 'you', choices: ['gazing through glass', 'glimpsing your ghost', 'seeing only screens', 'somewhere beneath pixels'] },
                 { from: 'them', text: 'filter upon filter, faces fade—' },
@@ -601,8 +514,7 @@
                 { from: 'them', text: 'who are we without the glow?' },
                 { from: 'you', choices: ['buried beneath brightness', 'forgotten behind filters', 'never knew ourselves', 'nothing without it'] }
             ],
-            // App 4: Feed (endless consumption, hunger never satisfied)
-            [
+            4: [ // Feed
                 { from: 'them', text: 'fingers forever scrolling, seeking—' },
                 { from: 'you', choices: ['sustenance in silence', 'feeding on fragments', 'scrolling past souls', 'starving while consuming'] },
                 { from: 'them', text: 'we swallow stories, stay hungry—' },
@@ -610,8 +522,7 @@
                 { from: 'them', text: 'what were we hungry for, before?' },
                 { from: 'you', choices: ['meaning, maybe', 'moments, not metrics', 'can\'t remember feasts', 'nothing nourishes now'] }
             ],
-            // App 5: Empty (void, hollowness, hunger for substance)
-            [
+            5: [ // Empty
                 { from: 'them', text: 'hollow hearts, holding nothing—' },
                 { from: 'you', choices: ['echoing endlessly', 'emptiness within emptiness', 'hungry for something heavy', 'void seeking void'] },
                 { from: 'them', text: 'we fill the silence with noise—' },
@@ -619,8 +530,7 @@
                 { from: 'them', text: 'is emptiness all that\'s left?' },
                 { from: 'you', choices: ['all I\'ve ever known', 'aching for absence', 'emptiness is everything', 'can\'t feel fullness'] }
             ],
-            // App 6: Info (drowning in data, truth vs noise)
-            [
+            6: [ // Info
                 { from: 'them', text: 'drowning in data, gasping for truth—' },
                 { from: 'you', choices: ['buried beneath bytes', 'suffocating in signals', 'thirsty while drowning', 'truth turns to static'] },
                 { from: 'them', text: 'they promised knowledge, delivered noise—' },
@@ -628,8 +538,7 @@
                 { from: 'them', text: 'how do we surface from this sea?' },
                 { from: 'you', choices: ['swimming toward silence', 'sinking feels safer', 'never learned to float', 'drowning is all we know'] }
             ],
-            // App 7: Stream (flood of content, language lost)
-            [
+            7: [ // Stream
                 { from: 'them', text: 'streaming endlessly, words washed away—' },
                 { from: 'you', choices: ['language liquefied', 'speaking in static', 'silence swallowed whole', 'words won\'t hold weight'] },
                 { from: 'them', text: 'we pour ourselves out, evaporate—' },
@@ -637,142 +546,145 @@
                 { from: 'them', text: 'what\'s left when the stream runs dry?' },
                 { from: 'you', choices: ['dust of dialogue', 'dried-up desires', 'silence, finally', 'nothing ever was'] }
             ]
+        };
+
+        // Negative keywords that trigger message failure
+        const negativeKeywords = [
+            'never', 'nothing', "can't", 'died', 'no one',
+            'stopped', 'trying to forget', 'drowning is all we know',
+            'wander away', 'connection died', 'lost in the scroll',
+            'nothing real remains', 'never knew', 'never satisfied',
+            'nothing nourishes now', 'nothing fills it', 'can\'t feel fullness',
+            'can\'t hear truth anymore', 'nothing without it', 'nothing ever was',
+            'no one's really there', 'can\'t find the real', 'can\'t remember before'
         ];
 
-        let appUnlocked = [false, false, false, false, false, false, false, false, false];
-        let appProgress = [0, 0, 0, 0, 0, 0, 0, 0]; // Track position in each conversation
         let currentApp = null;
+        let currentStep = 0;
 
-        function openApp(index) {
-            if (index === 8) {
-                // Memory app - just show power button
-                document.getElementById('powerDisplay').classList.add('active');
-                if (!appUnlocked[8]) {
-                    appUnlocked[8] = true;
-                    document.querySelectorAll('.app-icon')[8].classList.add('unlocked');
-                }
-                currentApp = 8;
+        // Get elements
+        const chatOverlay = document.getElementById('chatOverlay');
+        const powerDisplay = document.getElementById('powerDisplay');
+        const messages = document.getElementById('messages');
+        const choicesDiv = document.getElementById('choices');
+        const closeBtn = document.getElementById('closeBtn');
+        const powerBtn = document.getElementById('powerBtn');
+        const shutdownOverlay = document.getElementById('shutdownOverlay');
+
+        // Add click listeners to all app icons
+        document.querySelectorAll('.app-icon').forEach(icon => {
+            icon.addEventListener('click', function() {
+                const appId = parseInt(this.getAttribute('data-app'));
+                openApp(appId);
+                this.classList.add('visited');
+            });
+        });
+
+        // Close button
+        closeBtn.addEventListener('click', closeChat);
+
+        // Power button
+        powerBtn.addEventListener('click', powerOff);
+
+        function openApp(appId) {
+            currentApp = appId;
+            currentStep = 0;
+
+            if (appId === 8) {
+                // Memory app - show power display
+                powerDisplay.classList.add('active');
+            } else {
+                // Show chat for other apps
+                chatOverlay.classList.add('active');
+                messages.innerHTML = '';
+                choicesDiv.innerHTML = '';
+                startConversation();
+            }
+        }
+
+        function closeChat() {
+            chatOverlay.classList.remove('active');
+            powerDisplay.classList.remove('active');
+            choicesDiv.classList.remove('active');
+            currentApp = null;
+            currentStep = 0;
+        }
+
+        function startConversation() {
+            showNextMessage();
+        }
+
+        function showNextMessage() {
+            const conversation = conversations[currentApp];
+
+            if (currentStep >= conversation.length) {
+                choicesDiv.classList.remove('active');
                 return;
             }
 
-            currentApp = index;
-            const msgView = document.getElementById('msg' + index);
-            msgView.classList.add('active');
-
-            if (!appUnlocked[index]) {
-                appUnlocked[index] = true;
-                document.querySelectorAll('.app-icon')[index].classList.add('unlocked');
-                startConversation(index);
-            }
-        }
-
-        function closeApp() {
-            if (currentApp !== null) {
-                if (currentApp === 8) {
-                    document.getElementById('powerDisplay').classList.remove('active');
-                } else {
-                    document.getElementById('msg' + currentApp).classList.remove('active');
-                }
-                currentApp = null;
-            }
-        }
-
-        function startConversation(appIndex) {
-            const conversation = conversations[appIndex];
-            const chatContainer = document.getElementById('chat' + appIndex);
-            const choicesContainer = document.getElementById('choices' + appIndex);
-
-            appProgress[appIndex] = 0;
-            chatContainer.innerHTML = '';
-            choicesContainer.innerHTML = '';
-
-            showNextMessage(appIndex);
-        }
-
-        function showNextMessage(appIndex) {
-            const conversation = conversations[appIndex];
-            const progress = appProgress[appIndex];
-
-            if (progress >= conversation.length) {
-                return; // Conversation complete
-            }
-
-            const message = conversation[progress];
-            const chatContainer = document.getElementById('chat' + appIndex);
-            const choicesContainer = document.getElementById('choices' + appIndex);
+            const message = conversation[currentStep];
 
             if (message.from === 'them') {
-                // Add their message
-                const bubble = document.createElement('div');
-                bubble.className = 'message-bubble from-them';
-                bubble.textContent = message.text;
-                chatContainer.appendChild(bubble);
-                chatContainer.scrollTop = chatContainer.scrollHeight;
+                // Show their message
+                setTimeout(() => {
+                    const msgDiv = document.createElement('div');
+                    msgDiv.className = 'message them';
+                    msgDiv.textContent = message.text;
+                    messages.appendChild(msgDiv);
+                    messages.scrollTop = messages.scrollHeight;
 
-                appProgress[appIndex]++;
-                setTimeout(() => showNextMessage(appIndex), 800);
+                    currentStep++;
+                    showNextMessage();
+                }, 800);
             } else {
-                // Show choices for user
-                const choicesDiv = document.createElement('div');
-                choicesDiv.className = 'response-choices';
-
+                // Show choices
+                choicesDiv.innerHTML = '';
                 message.choices.forEach(choice => {
                     const btn = document.createElement('button');
-                    btn.className = 'response-btn';
+                    btn.className = 'choice-btn';
                     btn.textContent = choice;
-                    btn.onclick = () => selectResponse(appIndex, choice, choicesDiv);
+                    btn.addEventListener('click', () => selectChoice(choice));
                     choicesDiv.appendChild(btn);
                 });
-
-                choicesContainer.appendChild(choicesDiv);
+                choicesDiv.classList.add('active');
             }
         }
 
-        function selectResponse(appIndex, choice, choicesDiv) {
-            const chatContainer = document.getElementById('chat' + appIndex);
+        function selectChoice(choice) {
+            // Hide choices
+            choicesDiv.classList.remove('active');
 
-            // Check if choice is negative (triggers message failure)
-            const negativeKeywords = [
-                'never', 'nothing', "can't", 'died', 'no one',
-                'stopped', 'trying to forget', 'drowning is all we know',
-                'wander away', 'connection died', 'lost in the scroll'
-            ];
+            // Show user's choice
+            const msgDiv = document.createElement('div');
+            msgDiv.className = 'message you';
+            msgDiv.textContent = choice;
+            messages.appendChild(msgDiv);
+            messages.scrollTop = messages.scrollHeight;
 
+            // Check if choice is negative
             const isNegative = negativeKeywords.some(keyword =>
-                choice.toLowerCase().includes(keyword)
+                choice.toLowerCase().includes(keyword.toLowerCase())
             );
 
-            // Remove choices
-            choicesDiv.remove();
-
-            // Add user's response
-            const bubble = document.createElement('div');
-            bubble.className = 'message-bubble from-you';
-            bubble.textContent = choice;
-            chatContainer.appendChild(bubble);
-            chatContainer.scrollTop = chatContainer.scrollHeight;
-
             if (isNegative) {
-                // Show delivery failure after brief delay
+                // Show delivery failure
                 setTimeout(() => {
-                    const failBubble = document.createElement('div');
-                    failBubble.className = 'message-bubble message-failed';
-                    failBubble.textContent = '⚠ Message Not Delivered';
-                    chatContainer.appendChild(failBubble);
-                    chatContainer.scrollTop = chatContainer.scrollHeight;
+                    const failDiv = document.createElement('div');
+                    failDiv.className = 'message failed';
+                    failDiv.textContent = '⚠ Message Not Delivered';
+                    messages.appendChild(failDiv);
+                    messages.scrollTop = messages.scrollHeight;
                 }, 800);
-                // Conversation ends here - don't progress
+                // Conversation ends
             } else {
-                // Move to next message
-                appProgress[appIndex]++;
-                setTimeout(() => showNextMessage(appIndex), 1000);
+                // Continue conversation
+                currentStep++;
+                showNextMessage();
             }
         }
 
         function powerOff() {
-            const overlay = document.getElementById('powerOffOverlay');
-            overlay.classList.add('active');
-
+            shutdownOverlay.classList.add('active');
             setTimeout(() => {
                 document.querySelector('.phone').style.transition = 'opacity 1.5s ease';
                 document.querySelector('.phone').style.opacity = '0';
