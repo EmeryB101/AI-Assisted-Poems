@@ -291,6 +291,62 @@
             transform: translateY(-2px);
         }
 
+        .text-input-container {
+            position: fixed;
+            bottom: 20px;
+            left: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.95);
+            border: 2px solid rgba(0, 212, 255, 0.5);
+            border-radius: 15px;
+            padding: 12px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .text-input {
+            flex: 1;
+            padding: 10px 15px;
+            background: rgba(0, 212, 255, 0.05);
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            border-radius: 12px;
+            color: #00d4ff;
+            font-size: 0.9em;
+            font-family: 'Courier New', monospace;
+            outline: none;
+        }
+
+        .text-input::placeholder {
+            color: rgba(0, 212, 255, 0.4);
+            font-style: italic;
+        }
+
+        .text-input:focus {
+            background: rgba(0, 212, 255, 0.1);
+            border-color: rgba(0, 212, 255, 0.6);
+            box-shadow: 0 0 10px rgba(0, 212, 255, 0.3);
+        }
+
+        .send-btn {
+            padding: 10px 20px;
+            background: rgba(255, 0, 110, 0.3);
+            border: 1px solid #ff006e;
+            border-radius: 12px;
+            color: #ff006e;
+            cursor: pointer;
+            font-size: 0.9em;
+            font-family: 'Courier New', monospace;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .send-btn:hover {
+            background: rgba(255, 0, 110, 0.5);
+            box-shadow: 0 0 15px rgba(255, 0, 110, 0.5);
+        }
+
         .close-msg-btn {
             position: absolute;
             top: 10px;
@@ -498,6 +554,10 @@
                         <div class="app-icon" onclick="openApp(8)" tabindex="0" role="button">🧠</div>
                         <div class="app-label">Memory</div>
                     </div>
+                    <div class="app-item">
+                        <div class="app-icon" onclick="openApp(9)" tabindex="0" role="button">💬</div>
+                        <div class="app-label">Compose</div>
+                    </div>
                 </div>
             </div>
 
@@ -548,6 +608,16 @@
                 <button class="close-msg-btn" onclick="closeApp()">×</button>
                 <div class="messages-container" id="chat7"></div>
                 <div id="choices7"></div>
+            </div>
+
+            <!-- Compose app - free text input -->
+            <div class="messages-view" id="msg9">
+                <button class="close-msg-btn" onclick="closeApp()">×</button>
+                <div class="messages-container" id="chat9"></div>
+                <div class="text-input-container" id="textInput9">
+                    <input type="text" id="userInput9" class="text-input" placeholder="type your response..." maxlength="100">
+                    <button class="send-btn" onclick="sendUserText()">Send</button>
+                </div>
             </div>
 
             <!-- Power display for Memory app -->
@@ -640,9 +710,10 @@
             ]
         ];
 
-        let appUnlocked = [false, false, false, false, false, false, false, false, false];
-        let appProgress = [0, 0, 0, 0, 0, 0, 0, 0]; // Track position in each conversation
+        let appUnlocked = [false, false, false, false, false, false, false, false, false, false];
+        let appProgress = [0, 0, 0, 0, 0, 0, 0, 0, 0]; // Track position in each conversation
         let currentApp = null;
+        let composeStep = 0; // Track conversation step for Compose app
 
         function openApp(index) {
             if (index === 8) {
@@ -653,6 +724,20 @@
                     document.querySelectorAll('.app-icon')[8].classList.add('unlocked');
                 }
                 currentApp = 8;
+                return;
+            }
+
+            if (index === 9) {
+                // Compose app - free text input
+                currentApp = 9;
+                const msgView = document.getElementById('msg9');
+                msgView.classList.add('active');
+
+                if (!appUnlocked[9]) {
+                    appUnlocked[9] = true;
+                    document.querySelectorAll('.app-icon')[9].classList.add('unlocked');
+                    startComposeConversation();
+                }
                 return;
             }
 
@@ -671,6 +756,10 @@
             if (currentApp !== null) {
                 if (currentApp === 8) {
                     document.getElementById('powerDisplay').classList.remove('active');
+                } else if (currentApp === 9) {
+                    document.getElementById('msg9').classList.remove('active');
+                    // Reset text input visibility for next time
+                    document.getElementById('textInput9').style.display = 'flex';
                 } else {
                     document.getElementById('msg' + currentApp).classList.remove('active');
                 }
@@ -769,6 +858,91 @@
                 setTimeout(() => showNextMessage(appIndex), 1000);
             }
         }
+
+        // Compose app functions
+        function startComposeConversation() {
+            composeStep = 0;
+            const chatContainer = document.getElementById('chat9');
+            chatContainer.innerHTML = '';
+
+            // Show first prompt
+            setTimeout(() => {
+                const bubble = document.createElement('div');
+                bubble.className = 'message-bubble from-them';
+                bubble.textContent = 'tell me what you\'re holding onto—';
+                chatContainer.appendChild(bubble);
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+            }, 500);
+        }
+
+        function sendUserText() {
+            const input = document.getElementById('userInput9');
+            const userText = input.value.trim();
+
+            if (!userText) return;
+
+            const chatContainer = document.getElementById('chat9');
+
+            // Add user's message
+            const userBubble = document.createElement('div');
+            userBubble.className = 'message-bubble from-you';
+            userBubble.textContent = userText;
+            chatContainer.appendChild(userBubble);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+
+            // Clear input
+            input.value = '';
+
+            // Get response based on step
+            composeStep++;
+            const response = getComposeResponse(composeStep, userText);
+
+            if (response) {
+                setTimeout(() => {
+                    const bubble = document.createElement('div');
+                    bubble.className = 'message-bubble from-them';
+                    bubble.textContent = response;
+                    chatContainer.appendChild(bubble);
+                    chatContainer.scrollTop = chatContainer.scrollHeight;
+                }, 800);
+            } else {
+                // Conversation complete - hide input
+                setTimeout(() => {
+                    document.getElementById('textInput9').style.display = 'none';
+                    const finalBubble = document.createElement('div');
+                    finalBubble.className = 'message-bubble from-them';
+                    finalBubble.textContent = 'our poem is complete.';
+                    finalBubble.style.fontStyle = 'italic';
+                    finalBubble.style.opacity = '0.7';
+                    chatContainer.appendChild(finalBubble);
+                    chatContainer.scrollTop = chatContainer.scrollHeight;
+                }, 800);
+            }
+        }
+
+        function getComposeResponse(step, userInput) {
+            const responses = [
+                'and what are you letting go?',
+                'between holding and releasing, what remains?',
+                'when silence settles, what do you hear?',
+                'if words could bridge this distance—',
+                'speak the thing you cannot say aloud.'
+            ];
+
+            return responses[step - 1] || null;
+        }
+
+        // Allow Enter key to send message
+        document.addEventListener('DOMContentLoaded', () => {
+            const input = document.getElementById('userInput9');
+            if (input) {
+                input.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        sendUserText();
+                    }
+                });
+            }
+        });
 
         function powerOff() {
             const overlay = document.getElementById('powerOffOverlay');
