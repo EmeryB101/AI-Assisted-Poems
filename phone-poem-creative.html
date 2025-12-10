@@ -1,0 +1,1061 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Phone Poem</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
+        @keyframes scroll {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-100px); }
+        }
+        .animate-scroll {
+            animation: scroll 3s linear infinite;
+        }
+        @keyframes glitch {
+            0% { transform: translate(0); }
+            20% { transform: translate(-2px, 2px); }
+            40% { transform: translate(-2px, -2px); }
+            60% { transform: translate(2px, 2px); }
+            80% { transform: translate(2px, -2px); }
+            100% { transform: translate(0); }
+        }
+        .glitch {
+            animation: glitch 0.3s infinite;
+        }
+        @keyframes roadScroll {
+            0% { transform: translateY(0) scaleY(1); }
+            100% { transform: translateY(50px) scaleY(0.8); }
+        }
+        .road-line {
+            animation: roadScroll 2s linear infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        .float {
+            animation: float 3s ease-in-out infinite;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+        .photo-card {
+            background-size: cover;
+            background-position: center;
+            transition: transform 0.3s;
+        }
+        .photo-card:hover {
+            transform: scale(1.02);
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-gray-800 to-gray-900 min-h-screen flex items-center justify-center p-4">
+    <div id="phone" class="relative w-[375px] h-[812px] bg-black rounded-[40px] shadow-2xl border-8 border-gray-900 overflow-hidden">
+        <div id="lowBatteryOverlay" class="absolute inset-0 bg-black opacity-0 pointer-events-none transition-opacity duration-1000 z-30"></div>
+
+        <div id="statusBar" class="absolute top-0 left-0 right-0 h-11 bg-black text-white text-xs flex items-center justify-between px-6 z-40">
+            <span id="time" class="font-semibold">9:41</span>
+            <div class="flex items-center gap-1">
+                <div id="signal" class="flex gap-[2px]">
+                    <div class="w-1 bg-white h-[3px]"></div>
+                    <div class="w-1 bg-white h-[6px]"></div>
+                    <div class="w-1 bg-white h-[9px]"></div>
+                    <div class="w-1 bg-white h-[12px]"></div>
+                </div>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="ml-1">
+                    <path d="M5 12.55a11 11 0 0 1 14.08 0"></path>
+                    <path d="M1.42 9a16 16 0 0 1 21.16 0"></path>
+                    <path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path>
+                    <line x1="12" y1="20" x2="12.01" y2="20"></line>
+                </svg>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="ml-1">
+                    <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                    <line x1="22" y1="11" x2="22" y2="17"></line>
+                </svg>
+                <span id="battery" class="text-[10px] ml-1">100%</span>
+            </div>
+        </div>
+
+        <svg id="crack" class="absolute inset-0 z-50 pointer-events-none opacity-0 transition-opacity" width="100%" height="100%">
+            <line x1="0" y1="0" x2="375" y2="812" stroke="white" stroke-width="2" opacity="0.5" />
+            <line x1="100" y1="0" x2="200" y2="812" stroke="white" stroke-width="1" opacity="0.3" />
+            <line x1="375" y1="0" x2="0" y2="812" stroke="white" stroke-width="2" opacity="0.4" />
+            <line x1="200" y1="400" x2="375" y2="600" stroke="white" stroke-width="1" opacity="0.3" />
+        </svg>
+
+        <div id="homeScreen" class="absolute inset-0 bg-gradient-to-br from-blue-900 via-purple-900 to-blue-800 pt-16 pb-8 px-6">
+            <div class="absolute top-20 left-4 opacity-20 animate-pulse">
+                <div class="bg-gray-800 rounded-lg px-3 py-2 text-white text-xs">
+                    <div class="font-bold">You have 47 unread...</div>
+                </div>
+            </div>
+            <div class="absolute top-40 right-6 opacity-15 animate-pulse" style="animation-delay: 1s;">
+                <div class="bg-gray-800 rounded-lg px-3 py-2 text-white text-xs">
+                    <div class="font-bold">Someone liked your...</div>
+                </div>
+            </div>
+            <div class="absolute top-60 left-8 opacity-10 animate-pulse" style="animation-delay: 2s;">
+                <div class="bg-gray-800 rounded-lg px-3 py-2 text-white text-xs">
+                    <div class="font-bold">You're missing out on...</div>
+                </div>
+            </div>
+
+            <div class="absolute top-32 right-10 opacity-10 float" style="animation-delay: 0.5s;">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="white" stroke="white" stroke-width="1">
+                    <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+                </svg>
+            </div>
+
+            <div class="absolute bottom-32 left-6 opacity-15 float">
+                <svg width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+            </div>
+            
+            <div class="absolute inset-0 opacity-5 overflow-hidden pointer-events-none">
+                <div class="text-white text-6xl font-bold animate-scroll">
+                    SCROLL SCROLL SCROLL SCROLL SCROLL SCROLL SCROLL SCROLL SCROLL
+                </div>
+            </div>
+
+            <div class="h-full flex flex-col justify-between relative z-10">
+                <div class="grid grid-cols-4 gap-6 mt-12">
+                    <button onclick="openThread('messages')" class="flex flex-col items-center gap-2 active:scale-95 transition-transform">
+                        <div class="relative w-14 h-14 bg-green-500 rounded-2xl shadow-lg flex items-center justify-center">
+                            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5">
+                                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                            </svg>
+                            <div class="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center text-white text-[10px] font-bold border-2 border-black">3</div>
+                        </div>
+                        <span class="text-white text-[11px] font-medium">Messages</span>
+                    </button>
+
+                    <button onclick="openClock()" class="flex flex-col items-center gap-2 active:scale-95 transition-transform">
+                        <div class="w-14 h-14 bg-black rounded-2xl shadow-lg flex items-center justify-center">
+                            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <polyline points="12 6 12 12 16 14"></polyline>
+                            </svg>
+                        </div>
+                        <span class="text-white text-[11px] font-medium">Clock</span>
+                    </button>
+
+                    <button onclick="openPhotos()" class="flex flex-col items-center gap-2 active:scale-95 transition-transform">
+                        <div class="relative w-14 h-14 bg-gradient-to-br from-purple-400 via-pink-400 to-yellow-400 rounded-2xl shadow-lg flex items-center justify-center">
+                            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                                <polyline points="21 15 16 10 5 21"></polyline>
+                            </svg>
+                            <div class="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center text-white text-[10px] font-bold border-2 border-black">127</div>
+                        </div>
+                        <span class="text-white text-[11px] font-medium">Photos</span>
+                    </button>
+
+                    <button onclick="openHeart()" class="flex flex-col items-center gap-2 active:scale-95 transition-transform">
+                        <div class="relative w-14 h-14 bg-red-500 rounded-2xl shadow-lg flex items-center justify-center">
+                            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5">
+                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                            </svg>
+                            <div class="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center text-white text-[10px] font-bold border-2 border-black">1</div>
+                        </div>
+                        <span class="text-white text-[11px] font-medium">Health</span>
+                    </button>
+
+                    <button onclick="openMaps()" class="flex flex-col items-center gap-2 active:scale-95 transition-transform">
+                        <div class="w-14 h-14 bg-white rounded-2xl shadow-lg flex items-center justify-center border-2 border-gray-300">
+                            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="red" stroke-width="2.5">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon>
+                            </svg>
+                        </div>
+                        <span class="text-white text-[11px] font-medium">Maps</span>
+                    </button>
+
+                    <button onclick="openPowerOff()" class="flex flex-col items-center gap-2 active:scale-95 transition-transform">
+                        <div class="w-14 h-14 bg-gray-500 rounded-2xl shadow-lg flex items-center justify-center">
+                            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5">
+                                <circle cx="12" cy="12" r="3"></circle>
+                                <path d="M12 1v6m0 6v6m5.66-15.66l-4.24 4.24m0 6l-4.24 4.24M23 12h-6m-6 0H1m15.66 5.66l-4.24-4.24m0-6l-4.24-4.24"></path>
+                            </svg>
+                        </div>
+                        <span class="text-white text-[11px] font-medium">Settings</span>
+                    </button>
+                </div>
+
+                <div class="bg-white/10 backdrop-blur-xl rounded-3xl p-4 flex justify-around">
+                    <div class="w-14 h-14 bg-gray-600/50 rounded-2xl"></div>
+                    <div class="w-14 h-14 bg-gray-600/50 rounded-2xl"></div>
+                    <div class="w-14 h-14 bg-gray-600/50 rounded-2xl"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CLOCK SCREEN: Fill in the blanks poetry -->
+        <div id="clockScreen" class="absolute inset-0 bg-gradient-to-br from-gray-900 to-blue-900 pt-11 hidden">
+            <div class="bg-gray-900 px-4 py-3 flex items-center justify-between border-b border-gray-800">
+                <button onclick="returnHome()" class="text-blue-400">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+                <span class="text-white font-semibold">Time Lost</span>
+                <div class="w-6"></div>
+            </div>
+            
+            <div class="flex flex-col px-6 py-6 h-full overflow-y-auto pb-24">
+                <p class="text-gray-300 text-sm mb-6 italic">Complete the poem about time lost to screens. Fill in each blank with your own words.</p>
+                
+                <div id="clockPoemBuilder" class="space-y-4 mb-6">
+                    <div class="bg-black/50 p-4 rounded-xl">
+                        <p class="text-white text-sm mb-2">Three hours <input type="text" class="bg-gray-700 text-yellow-300 px-2 py-1 rounded w-32 text-sm" placeholder="verb..." id="clock1"> into the screen,</p>
+                    </div>
+                    
+                    <div class="bg-black/50 p-4 rounded-xl">
+                        <p class="text-white text-sm mb-2">Minutes <input type="text" class="bg-gray-700 text-yellow-300 px-2 py-1 rounded w-32 text-sm" placeholder="verb..." id="clock2"> like <input type="text" class="bg-gray-700 text-yellow-300 px-2 py-1 rounded w-24 text-sm" placeholder="noun..." id="clock3">,</p>
+                    </div>
+                    
+                    <div class="bg-black/50 p-4 rounded-xl">
+                        <p class="text-white text-sm mb-2">While my <input type="text" class="bg-gray-700 text-yellow-300 px-2 py-1 rounded w-32 text-sm" placeholder="noun..." id="clock4"> waits <input type="text" class="bg-gray-700 text-yellow-300 px-2 py-1 rounded w-32 text-sm" placeholder="adverb..." id="clock5">,</p>
+                    </div>
+                    
+                    <div class="bg-black/50 p-4 rounded-xl">
+                        <p class="text-white text-sm mb-2">Thumb <input type="text" class="bg-gray-700 text-yellow-300 px-2 py-1 rounded w-32 text-sm" placeholder="verb + ing..." id="clock6"> through <input type="text" class="bg-gray-700 text-yellow-300 px-2 py-1 rounded w-32 text-sm" placeholder="adjective..." id="clock7"> feeds,</p>
+                    </div>
+                    
+                    <div class="bg-black/50 p-4 rounded-xl">
+                        <p class="text-white text-sm mb-2">Scrolling past my own <input type="text" class="bg-gray-700 text-yellow-300 px-2 py-1 rounded w-32 text-sm" placeholder="noun..." id="clock8">.</p>
+                    </div>
+                </div>
+                
+                <button onclick="showClockPoem()" class="w-full bg-blue-500 text-white px-6 py-3 rounded-xl text-sm font-semibold mb-2">
+                    Complete Poem
+                </button>
+                
+                <div id="clockResult" class="hidden bg-gradient-to-br from-yellow-900/50 to-orange-900/50 p-6 rounded-xl mb-4">
+                    <p class="text-yellow-200 text-base italic leading-relaxed text-center" id="clockFinalPoem"></p>
+                </div>
+                
+                <button onclick="returnHome()" class="w-full bg-gray-700 text-white px-6 py-3 rounded-xl text-sm">
+                    Return Home
+                </button>
+            </div>
+        </div>
+
+        <!-- PHOTOS SCREEN: Erasure poetry with phone screenshots -->
+        <div id="photosScreen" class="absolute inset-0 bg-black pt-11 hidden">
+            <div class="bg-gray-900 px-4 py-3 flex items-center justify-between border-b border-gray-800">
+                <button onclick="returnHome()" class="text-blue-400">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+                <span class="text-white font-semibold">Screen Captures</span>
+                <div class="w-6"></div>
+            </div>
+            
+            <div class="h-full overflow-y-auto pb-32 px-4 py-4">
+                <p class="text-gray-300 text-sm mb-4 italic">These are screenshots from your phone. Tap words to cross them out. What remains becomes your poem.</p>
+                
+                <div id="erasureGallery" class="space-y-6">
+                    <!-- Erasure cards will be generated here -->
+                </div>
+                
+                <div class="px-2 py-4">
+                    <button onclick="showErasurePoem()" class="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white px-6 py-3 rounded-xl text-sm font-semibold mb-2">
+                        Reveal Your Poem
+                    </button>
+                    
+                    <button onclick="resetErasure()" class="w-full bg-gray-700 text-white px-4 py-2 rounded-xl text-sm mb-2">
+                        Reset All
+                    </button>
+                    
+                    <div id="photoResult" class="hidden bg-gradient-to-br from-purple-900/50 to-pink-900/50 p-6 rounded-xl mb-4 mt-4">
+                        <p class="text-purple-200 text-lg italic leading-relaxed text-center" id="photoFinalPoem"></p>
+                    </div>
+                    
+                    <button onclick="returnHome()" class="w-full bg-gray-700 text-white px-6 py-3 rounded-xl text-sm">
+                        Return Home
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- HEART SCREEN: Emotion word building -->
+        <div id="heartScreen" class="absolute inset-0 bg-gradient-to-br from-red-900 to-pink-900 pt-11 hidden">
+            <div class="bg-gray-900 px-4 py-3 flex items-center justify-between border-b border-gray-800">
+                <button onclick="returnHome()" class="text-blue-400">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+                <span class="text-white font-semibold">Pulse</span>
+                <div class="w-6"></div>
+            </div>
+            
+            <div class="flex flex-col px-6 py-6 h-full overflow-y-auto pb-24">
+                <p class="text-gray-300 text-sm mb-6 italic">Choose words that pulse through you. Build your emotional landscape one feeling at a time.</p>
+                
+                <div class="mb-6">
+                    <p class="text-white text-sm mb-3">Select emotions (choose 5-8):</p>
+                    <div id="emotionChoices" class="flex flex-wrap gap-2">
+                        <!-- Emotion buttons will be generated -->
+                    </div>
+                </div>
+                
+                <div id="selectedEmotions" class="bg-black/50 p-4 rounded-xl mb-6 min-h-[100px]">
+                    <p class="text-pink-300 text-xs mb-2">Your selected emotions:</p>
+                    <div id="emotionList" class="flex flex-wrap gap-2"></div>
+                </div>
+                
+                <div class="mb-6">
+                    <p class="text-white text-sm mb-3">Now complete this line:</p>
+                    <div class="bg-black/50 p-4 rounded-xl">
+                        <p class="text-white text-sm">My heart <input type="text" class="bg-gray-700 text-pink-300 px-2 py-1 rounded w-full text-sm mt-2" placeholder="describe how it moves, beats, or feels..." id="heartLine"></p>
+                    </div>
+                </div>
+                
+                <button onclick="showHeartPoem()" class="w-full bg-red-500 text-white px-6 py-3 rounded-xl text-sm font-semibold mb-2">
+                    Create Heart Poem
+                </button>
+                
+                <div id="heartResult" class="hidden bg-gradient-to-br from-red-900/50 to-pink-900/50 p-6 rounded-xl mb-4">
+                    <p class="text-pink-200 text-base italic leading-relaxed text-center" id="heartFinalPoem"></p>
+                </div>
+                
+                <button onclick="returnHome()" class="w-full bg-gray-700 text-white px-6 py-3 rounded-xl text-sm">
+                    Return Home
+                </button>
+            </div>
+        </div>
+
+        <div id="mapsScreen" class="absolute inset-0 bg-gray-900 pt-11 hidden">
+            <div class="bg-gray-800 px-4 py-3 flex items-center justify-between border-b border-gray-700">
+                <button onclick="returnHome()" class="text-blue-400">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+                <span class="text-white font-semibold">Your Path</span>
+                <div class="w-6"></div>
+            </div>
+
+            <div class="relative h-full bg-gray-800 overflow-hidden">
+                <div class="absolute left-1/2 transform -translate-x-1/2 w-48 h-full bg-gray-700">
+                    <div class="absolute left-1/2 transform -translate-x-1/2 w-2 top-0 h-full flex flex-col justify-around">
+                        <div class="road-line w-full h-12 bg-yellow-400"></div>
+                        <div class="road-line w-full h-12 bg-yellow-400" style="animation-delay: 0.5s;"></div>
+                        <div class="road-line w-full h-12 bg-yellow-400" style="animation-delay: 1s;"></div>
+                        <div class="road-line w-full h-12 bg-yellow-400" style="animation-delay: 1.5s;"></div>
+                    </div>
+                </div>
+
+                <div class="absolute inset-0 flex flex-col px-6 py-6 z-10">
+                    <div id="builtPoem" class="flex-1 overflow-y-auto space-y-2 mb-3 max-h-[200px]"></div>
+                    <div id="roadPrompt" class="bg-black/90 p-3 rounded-2xl mb-3">
+                        <p class="text-white text-sm font-semibold" id="roadQuestion">Build your poem. Choose your path.</p>
+                        <input type="text" id="customLine" placeholder="Or write your own line..." class="w-full mt-2 bg-gray-700 text-white px-3 py-2 rounded-lg text-sm hidden">
+                    </div>
+                    <div id="roadChoices" class="space-y-2 max-h-[320px] overflow-y-auto pb-4"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="threadScreen" class="absolute inset-0 bg-black pt-11 hidden">
+            <div class="bg-gray-900 px-4 py-3 flex items-center justify-between border-b border-gray-800">
+                <button onclick="returnHome()" class="text-blue-400">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+                <span class="text-white font-semibold">Message</span>
+                <div class="w-6"></div>
+            </div>
+            <div id="messages" class="overflow-y-auto px-4 py-4 space-y-3 h-[600px]"></div>
+            <div id="choices" class="absolute bottom-0 left-0 right-0 bg-gray-900 px-4 py-4 space-y-2 border-t border-gray-800 max-h-64 overflow-y-auto"></div>
+        </div>
+
+        <div id="errorScreen" class="absolute inset-0 bg-black hidden flex-col items-center justify-center px-8">
+            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" class="mb-4">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="12"></line>
+                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+            <h2 class="text-red-500 text-xl font-bold mb-2">Message Cannot Be Delivered</h2>
+            <p class="text-gray-400 text-center text-sm mb-8">The recipient you're trying to reach is no longer available at this connection.</p>
+            <button onclick="returnHome()" class="bg-gray-800 text-white px-6 py-3 rounded-xl">Return Home</button>
+        </div>
+
+        <div id="powerOffScreen" class="absolute inset-0 bg-black hidden items-center justify-center">
+            <button onclick="returnHome()" class="absolute top-16 left-4 text-gray-400 hover:text-white z-20">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+            <div class="absolute inset-0 opacity-10 pointer-events-none">
+                <svg width="100%" height="100%">
+                    <filter id="noise">
+                        <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4" />
+                        <feColorMatrix type="saturate" values="0" />
+                    </filter>
+                    <rect width="100%" height="100%" filter="url(#noise)" />
+                </svg>
+            </div>
+            <button onclick="powerOff()" class="w-48 h-48 rounded-full bg-gradient-to-br from-gray-800 to-gray-900 border-4 border-gray-700 flex flex-col items-center justify-center gap-2 active:scale-95 transition-transform shadow-2xl relative z-10">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2">
+                    <circle cx="12" cy="12" r="3"></circle>
+                    <path d="M12 1v6m0 6v6m5.66-15.66l-4.24 4.24m0 6l-4.24 4.24M23 12h-6m-6 0H1m15.66 5.66l-4.24-4.24m0-6l-4.24-4.24"></path>
+                </svg>
+                <span class="text-gray-300 text-lg font-semibold">Power Off</span>
+            </button>
+        </div>
+
+        <div class="absolute bottom-2 left-1/2 transform -translate-x-1/2 w-32 h-1 bg-white rounded-full opacity-50"></div>
+    </div>
+
+    <script>
+        var currentThread = [];
+        var battery = 100;
+        var signal = 4;
+        var timeIndex = 0;
+        var times = ['9:41', '10:23', '11:47', '1:15', '3:47', '6:32'];
+        var roadPoem = [];
+        var roadStep = 0;
+        var selectedEmotions = [];
+        
+        var erasureScreens = [
+            {
+                type: "notification",
+                bgColor: "#1a1a2e",
+                text: "You have 47 unread messages waiting for you right now stop scrolling and check your phone immediately you are missing out on everything important happening without you",
+                words: ["You", "have", "47", "unread", "messages", "waiting", "for", "you", "right", "now", "stop", "scrolling", "and", "check", "your", "phone", "immediately", "you", "are", "missing", "out", "on", "everything", "important", "happening", "without", "you"]
+            },
+            {
+                type: "social",
+                bgColor: "#16213e",
+                text: "Someone you barely know liked your photo from three years ago at 2am their thumb scrolling endlessly through your curated past while you sleep dreaming of real connection",
+                words: ["Someone", "you", "barely", "know", "liked", "your", "photo", "from", "three", "years", "ago", "at", "2am", "their", "thumb", "scrolling", "endlessly", "through", "your", "curated", "past", "while", "you", "sleep", "dreaming", "of", "real", "connection"]
+            },
+            {
+                type: "time",
+                bgColor: "#0f3460",
+                text: "Screen time report three hours and forty seven minutes today up 23 percent from last week mostly at night when you should be sleeping resting healing instead glowing blue and alone",
+                words: ["Screen", "time", "report", "three", "hours", "and", "forty", "seven", "minutes", "today", "up", "23", "percent", "from", "last", "week", "mostly", "at", "night", "when", "you", "should", "be", "sleeping", "resting", "healing", "instead", "glowing", "blue", "and", "alone"]
+            },
+            {
+                type: "memory",
+                bgColor: "#533483",
+                text: "On this day five years ago you were smiling genuinely the sun on your face wind in your hair no screen between you and the world remember what that felt like",
+                words: ["On", "this", "day", "five", "years", "ago", "you", "were", "smiling", "genuinely", "the", "sun", "on", "your", "face", "wind", "in", "your", "hair", "no", "screen", "between", "you", "and", "the", "world", "remember", "what", "that", "felt", "like"]
+            },
+            {
+                type: "compare",
+                bgColor: "#2d4059",
+                text: "Everyone else is living their best life traveling eating laughing loving perfectly while you sit here scrolling comparing your behind the scenes to their highlight reel feeling smaller with each swipe",
+                words: ["Everyone", "else", "is", "living", "their", "best", "life", "traveling", "eating", "laughing", "loving", "perfectly", "while", "you", "sit", "here", "scrolling", "comparing", "your", "behind", "the", "scenes", "to", "their", "highlight", "reel", "feeling", "smaller", "with", "each", "swipe"]
+            }
+        ];
+        
+        var emotions = [
+            "anxious", "numb", "restless", "hollow", "frantic",
+            "disconnected", "yearning", "exhausted", "hungry", "trapped",
+            "desperate", "aching", "frozen", "racing", "empty",
+            "searching", "drowning", "scattered", "fading", "burning"
+        ];
+
+        var roadJourney = [
+            {
+                question: "Where does your path begin?",
+                allowCustom: true,
+                choices: [
+                    { text: "In the crowded digital highway", line: "I started where the masses scroll,", nextStep: 1 },
+                    { text: "In wilderness beyond the feed", line: "I wandered past the glowing screens,", nextStep: 2 },
+                    { text: "At a crossroads, uncertain", line: "Two paths diverged before my feet,", nextStep: 3 }
+                ]
+            },
+            {
+                question: "What emotion drives you forward?",
+                allowCustom: true,
+                choices: [
+                    { text: "Fear of missing out", line: "Driven by the fear of being left behind,", nextStep: 4 },
+                    { text: "Hope for something real", line: "Pulled by hope toward authenticity,", nextStep: 5 },
+                    { text: "Curiosity about what lies beyond", line: "Led by wonder into the unknown,", nextStep: 5 }
+                ]
+            },
+            {
+                question: "What do you seek?",
+                allowCustom: true,
+                choices: [
+                    { text: "Authentic connection", line: "Seeking voices, warm and real,", nextStep: 5 },
+                    { text: "Escape from noise", line: "Fleeing from the endless noise,", nextStep: 5 },
+                    { text: "My true self", line: "Searching for my hidden face,", nextStep: 6 }
+                ]
+            },
+            {
+                question: "How do you feel in this moment?",
+                allowCustom: true,
+                choices: [
+                    { text: "Lost in the digital crowd", line: "Alone among a million glowing screens,", nextStep: 4 },
+                    { text: "Curious and awake", line: "Wonder lighting up my way forward,", nextStep: 5 },
+                    { text: "Afraid but moving", line: "Trembling toward an uncertain truth,", nextStep: 5 }
+                ]
+            },
+            {
+                question: "What truth do you discover?",
+                allowCustom: true,
+                choices: [
+                    { text: "I'm still trapped", line: "The cage was prettier than I knew,", nextStep: 7 },
+                    { text: "Everything feels empty", line: "A void that scrolls eternally on,", nextStep: 7 },
+                    { text: "I've been walking in circles", line: "Each road returned me here again,", nextStep: 7 }
+                ]
+            },
+            {
+                question: "What gift awaits you?",
+                allowCustom: true,
+                choices: [
+                    { text: "Freedom in silence", line: "Where silence sings its ancient song,", nextStep: 8 },
+                    { text: "Unfiltered beauty", line: "Where beauty blooms, unwatched and wild,", nextStep: 8 },
+                    { text: "Touch without screens", line: "Where hearts beat, skin to skin at last,", nextStep: 8 }
+                ]
+            },
+            {
+                question: "The road forks one final time...",
+                allowCustom: true,
+                choices: [
+                    { text: "Turn back to comfort", line: "I almost turned back toward the glow—", nextStep: 4 },
+                    { text: "Walk into the unknown", line: "But chose the harder, darker path,", nextStep: 5 },
+                    { text: "Stand still and breathe", line: "I stopped. I breathed. I stayed present.", nextStep: 8 }
+                ]
+            },
+            {
+                question: "Your journey concludes...",
+                allowCustom: false,
+                choices: [
+                    { text: "Accepting the digital cage", line: "And made my peace with pretty chains.", final: true },
+                    { text: "Surrendering to the scroll", line: "The scroll goes on. And on. Forever.", final: true },
+                    { text: "Knowing there's no escape", line: "Some paths lead only back to screens.", final: true }
+                ]
+            },
+            {
+                question: "Your journey concludes...",
+                allowCustom: false,
+                choices: [
+                    { text: "Finding liberation", line: "And found myself—unfiltered, free, alive.", final: true },
+                    { text: "Discovering presence", line: "Here. Now. Present. Whole. Enough.", final: true },
+                    { text: "Beginning anew", line: "The journey starts where scrolling ends.", final: true }
+                ]
+            }
+        ];
+
+        var threads = {
+            messages: {
+                initial: "Do you remember me?\nWhen words were breath, not light?\nVoices, not pixels.",
+                choices: [
+                    {
+                        text: "Your voice haunts my silence",
+                        response: "Steam rises from cups.\nConversation flows unfrozen.\nMeet me in the real.",
+                        nextChoices: [
+                            { text: "Tomorrow. Sunlight. Souls speaking.", response: "Person to person.\nPresence without performance here.\nNo screens between hearts.", final: true, positive: true },
+                            { text: "After I consult the stars and schedules", error: true },
+                            { text: "Perhaps through glowing glass instead?", response: "Screens remain your shield.\nSafety in separation kept.\nSubstitute for soul.", final: true, positive: false }
+                        ]
+                    },
+                    { text: "Your features blur in memory", error: true },
+                    {
+                        text: "I drown in digital demands",
+                        response: "Everyone drowning.\nBusy, blessed with busyness—\nBut brutally alone.",
+                        nextChoices: [
+                            { text: "I want to hear you breathe", response: "We knew laughter's shape.\nNow just the click of cold keys,\nGlass between our hearts.", final: true, positive: false },
+                            { text: "When tides of tasks recede?", error: true },
+                            { text: "...", response: "Silence screams louder.\nSeen. Severed. Ellipsis—\nAbandonment's mark.", final: true, positive: false }
+                        ]
+                    }
+                ]
+            }
+        };
+
+        function openClock() {
+            hideAllScreens();
+            document.getElementById('clockScreen').classList.remove('hidden');
+            document.getElementById('clock1').value = '';
+            document.getElementById('clock2').value = '';
+            document.getElementById('clock3').value = '';
+            document.getElementById('clock4').value = '';
+            document.getElementById('clock5').value = '';
+            document.getElementById('clock6').value = '';
+            document.getElementById('clock7').value = '';
+            document.getElementById('clock8').value = '';
+            document.getElementById('clockResult').classList.add('hidden');
+            drainBattery(10);
+            advanceTime();
+        }
+
+        function showClockPoem() {
+            var w1 = document.getElementById('clock1').value || "_____";
+            var w2 = document.getElementById('clock2').value || "_____";
+            var w3 = document.getElementById('clock3').value || "_____";
+            var w4 = document.getElementById('clock4').value || "_____";
+            var w5 = document.getElementById('clock5').value || "_____";
+            var w6 = document.getElementById('clock6').value || "_____";
+            var w7 = document.getElementById('clock7').value || "_____";
+            var w8 = document.getElementById('clock8').value || "_____";
+            
+            var poem = "Three hours " + w1 + " into the screen,<br>" +
+                       "Minutes " + w2 + " like " + w3 + ",<br>" +
+                       "While my " + w4 + " waits " + w5 + ",<br>" +
+                       "Thumb " + w6 + " through " + w7 + " feeds,<br>" +
+                       "Scrolling past my own " + w8 + ".";
+            
+            document.getElementById('clockFinalPoem').innerHTML = poem;
+            document.getElementById('clockResult').classList.remove('hidden');
+            drainBattery(15);
+        }
+
+        function openPhotos() {
+            hideAllScreens();
+            document.getElementById('photosScreen').classList.remove('hidden');
+            var gallery = document.getElementById('erasureGallery');
+            gallery.innerHTML = '';
+            
+            erasureScreens.forEach(function(screen, screenIndex) {
+                var card = document.createElement('div');
+                card.className = 'rounded-xl overflow-hidden mb-4';
+                card.style.backgroundColor = screen.bgColor;
+                
+                var mockScreen = '<div class="p-4 pt-8 pb-8">';
+                mockScreen += '<div class="bg-black/20 rounded-2xl p-4 mb-2">';
+                mockScreen += '<div class="flex items-center gap-2 mb-3">';
+                
+                if (screen.type === 'notification') {
+                    mockScreen += '<div class="w-8 h-8 bg-red-500 rounded-lg flex items-center justify-center"><span class="text-white text-xs font-bold">!</span></div>';
+                    mockScreen += '<span class="text-white text-xs font-semibold">Notifications</span>';
+                } else if (screen.type === 'social') {
+                    mockScreen += '<div class="w-8 h-8 bg-pink-500 rounded-full flex items-center justify-center"><span class="text-white text-xs">♥</span></div>';
+                    mockScreen += '<span class="text-white text-xs font-semibold">Social</span>';
+                } else if (screen.type === 'time') {
+                    mockScreen += '<div class="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center"><span class="text-white text-xs">⏱</span></div>';
+                    mockScreen += '<span class="text-white text-xs font-semibold">Screen Time</span>';
+                } else if (screen.type === 'memory') {
+                    mockScreen += '<div class="w-8 h-8 bg-yellow-500 rounded-lg flex items-center justify-center"><span class="text-white text-xs">📅</span></div>';
+                    mockScreen += '<span class="text-white text-xs font-semibold">Memory</span>';
+                } else if (screen.type === 'compare') {
+                    mockScreen += '<div class="w-8 h-8 bg-purple-500 rounded-lg flex items-center justify-center"><span class="text-white text-xs">👥</span></div>';
+                    mockScreen += '<span class="text-white text-xs font-semibold">Feed</span>';
+                }
+                
+                mockScreen += '</div>';
+                mockScreen += '<div class="text-white text-sm leading-relaxed" id="erasure-' + screenIndex + '">';
+                
+                screen.words.forEach(function(word, wordIndex) {
+                    mockScreen += '<span class="erasure-word inline-block mx-0.5 my-0.5 px-1 cursor-pointer hover:bg-white/10 transition-colors rounded" data-screen="' + screenIndex + '" data-word="' + wordIndex + '" onclick="toggleWord(this)">' + word + '</span>';
+                });
+                
+                mockScreen += '</div></div></div>';
+                
+                card.innerHTML = mockScreen;
+                gallery.appendChild(card);
+            });
+            
+            document.getElementById('photoResult').classList.add('hidden');
+            drainBattery(10);
+            advanceTime();
+        }
+        
+        function toggleWord(element) {
+            if (element.classList.contains('crossed-out')) {
+                element.classList.remove('crossed-out');
+                element.style.textDecoration = 'none';
+                element.style.opacity = '1';
+                element.style.color = 'white';
+            } else {
+                element.classList.add('crossed-out');
+                element.style.textDecoration = 'line-through';
+                element.style.opacity = '0.3';
+                element.style.color = '#666';
+            }
+        }
+        
+        function resetErasure() {
+            var words = document.querySelectorAll('.erasure-word');
+            words.forEach(function(word) {
+                word.classList.remove('crossed-out');
+                word.style.textDecoration = 'none';
+                word.style.opacity = '1';
+                word.style.color = 'white';
+            });
+            document.getElementById('photoResult').classList.add('hidden');
+        }
+        
+        function showErasurePoem() {
+            var poemLines = [];
+            
+            erasureScreens.forEach(function(screen, screenIndex) {
+                var remaining = [];
+                var words = document.querySelectorAll('[data-screen="' + screenIndex + '"]');
+                
+                words.forEach(function(wordElement) {
+                    if (!wordElement.classList.contains('crossed-out')) {
+                        remaining.push(wordElement.textContent);
+                    }
+                });
+                
+                if (remaining.length > 0) {
+                    poemLines.push(remaining.join(' '));
+                }
+            });
+            
+            if (poemLines.length === 0) {
+                poemLines = ["silence", "remains"];
+            }
+            
+            var poem = poemLines.join('<br><br>');
+            document.getElementById('photoFinalPoem').innerHTML = poem;
+            document.getElementById('photoResult').classList.remove('hidden');
+            document.getElementById('photoResult').scrollIntoView({ behavior: 'smooth' });
+            drainBattery(15);
+        }
+
+        function openHeart() {
+            hideAllScreens();
+            document.getElementById('heartScreen').classList.remove('hidden');
+            selectedEmotions = [];
+            
+            var choicesDiv = document.getElementById('emotionChoices');
+            choicesDiv.innerHTML = '';
+            emotions.forEach(function(emotion) {
+                var btn = document.createElement('button');
+                btn.className = 'bg-gray-800 text-white px-3 py-2 rounded-lg text-xs hover:bg-red-700 transition-colors';
+                btn.textContent = emotion;
+                btn.onclick = function() {
+                    toggleEmotion(emotion, btn);
+                };
+                choicesDiv.appendChild(btn);
+            });
+            
+            document.getElementById('emotionList').innerHTML = '';
+            document.getElementById('heartLine').value = '';
+            document.getElementById('heartResult').classList.add('hidden');
+            drainBattery(10);
+            advanceTime();
+        }
+
+        function toggleEmotion(emotion, btn) {
+            var index = selectedEmotions.indexOf(emotion);
+            if (index > -1) {
+                selectedEmotions.splice(index, 1);
+                btn.classList.remove('bg-red-700');
+                btn.classList.add('bg-gray-800');
+            } else {
+                if (selectedEmotions.length < 8) {
+                    selectedEmotions.push(emotion);
+                    btn.classList.add('bg-red-700');
+                    btn.classList.remove('bg-gray-800');
+                }
+            }
+            
+            var listDiv = document.getElementById('emotionList');
+            listDiv.innerHTML = '';
+            selectedEmotions.forEach(function(em) {
+                var tag = document.createElement('span');
+                tag.className = 'bg-red-900 text-pink-200 px-2 py-1 rounded text-xs';
+                tag.textContent = em;
+                listDiv.appendChild(tag);
+            });
+        }
+
+        function showHeartPoem() {
+            if (selectedEmotions.length === 0) {
+                selectedEmotions = ["numb", "hollow", "disconnected"];
+            }
+            
+            var heartLine = document.getElementById('heartLine').value || "beats in silence, alone in the glow";
+            
+            var poem = "My heart feels:<br>" +
+                       selectedEmotions.join(', ') + ".<br><br>" +
+                       "My heart " + heartLine + ".";
+            
+            document.getElementById('heartFinalPoem').innerHTML = poem;
+            document.getElementById('heartResult').classList.remove('hidden');
+            drainBattery(15);
+        }
+
+        function drainBattery(amount) {
+            amount = amount || 15;
+            battery = Math.max(0, battery - amount);
+            document.getElementById('battery').textContent = battery + '%';
+            var overlay = document.getElementById('lowBatteryOverlay');
+            if (battery <= 20) {
+                overlay.style.opacity = '0.4';
+            } else if (battery <= 50) {
+                overlay.style.opacity = '0.2';
+            } else {
+                overlay.style.opacity = '0';
+            }
+        }
+
+        function weakenSignal() {
+            signal = Math.max(0, signal - 1);
+            var signalDiv = document.getElementById('signal');
+            signalDiv.innerHTML = '';
+            for (var i = 0; i < signal; i++) {
+                var bar = document.createElement('div');
+                bar.className = 'w-1 bg-white';
+                bar.style.height = ((i + 1) * 3) + 'px';
+                signalDiv.appendChild(bar);
+            }
+        }
+
+        function advanceTime() {
+            if (timeIndex < times.length - 1) {
+                timeIndex++;
+                document.getElementById('time').textContent = times[timeIndex];
+            }
+        }
+
+        function openMaps() {
+            hideAllScreens();
+            document.getElementById('mapsScreen').classList.remove('hidden');
+            roadPoem = [];
+            roadStep = 0;
+            document.getElementById('builtPoem').innerHTML = '';
+            updateRoadJourney();
+            drainBattery(10);
+            advanceTime();
+        }
+
+        function updateRoadJourney() {
+            var step = roadJourney[roadStep];
+            document.getElementById('roadQuestion').textContent = step.question;
+            var choicesDiv = document.getElementById('roadChoices');
+            var customInput = document.getElementById('customLine');
+            choicesDiv.innerHTML = '';
+            
+            if (step.allowCustom) {
+                customInput.classList.remove('hidden');
+            } else {
+                customInput.classList.add('hidden');
+            }
+            
+            for (var i = 0; i < step.choices.length; i++) {
+                (function(choice) {
+                    var btn = document.createElement('button');
+                    btn.className = 'w-full bg-gray-700 hover:bg-gray-600 text-white px-4 py-3 rounded-xl text-sm text-left transition-colors';
+                    btn.textContent = choice.text;
+                    btn.onclick = function() {
+                        selectRoadChoice(choice);
+                    };
+                    choicesDiv.appendChild(btn);
+                })(step.choices[i]);
+            }
+            
+            if (step.allowCustom) {
+                var customBtn = document.createElement('button');
+                customBtn.className = 'w-full bg-blue-600 hover:bg-blue-500 text-white px-4 py-3 rounded-xl text-sm font-semibold transition-colors';
+                customBtn.textContent = 'Use My Own Words';
+                customBtn.onclick = function() {
+                    var customText = document.getElementById('customLine').value.trim();
+                    if (customText) {
+                        selectRoadChoice({ text: 'Custom', line: customText, nextStep: 5 });
+                        document.getElementById('customLine').value = '';
+                    }
+                };
+                choicesDiv.appendChild(customBtn);
+            }
+        }
+
+        function selectRoadChoice(choice) {
+            roadPoem.push(choice.line);
+            var poemDiv = document.getElementById('builtPoem');
+            var lineDiv = document.createElement('div');
+            lineDiv.className = 'text-yellow-300 text-sm italic font-medium text-center bg-gray-800/50 py-2 px-3 rounded-lg';
+            lineDiv.textContent = choice.line;
+            poemDiv.appendChild(lineDiv);
+            poemDiv.scrollTop = poemDiv.scrollHeight;
+            
+            drainBattery(10);
+            advanceTime();
+            
+            if (choice.final) {
+                setTimeout(function() {
+                    document.getElementById('roadPrompt').innerHTML = '<p class="text-white text-sm font-semibold">Your path is complete.</p>';
+                    document.getElementById('roadChoices').innerHTML = '<button onclick="returnHome()" class="w-full bg-blue-500 text-white px-4 py-3 rounded-xl text-sm font-semibold">Return Home</button>';
+                    document.getElementById('customLine').classList.add('hidden');
+                }, 500);
+            } else {
+                roadStep = choice.nextStep;
+                setTimeout(function() {
+                    updateRoadJourney();
+                }, 800);
+            }
+        }
+
+        function openThread(type) {
+            hideAllScreens();
+            document.getElementById('threadScreen').classList.remove('hidden');
+            
+            currentThread = {
+                type: type,
+                messages: [{ sender: 'them', text: threads[type].initial }],
+                stage: 0
+            };
+
+            renderMessages();
+            renderChoices(threads[type].choices);
+            drainBattery(10);
+            advanceTime();
+        }
+
+        function renderMessages() {
+            var messagesDiv = document.getElementById('messages');
+            messagesDiv.innerHTML = '';
+            
+            for (var i = 0; i < currentThread.messages.length; i++) {
+                var msg = currentThread.messages[i];
+                var msgDiv = document.createElement('div');
+                msgDiv.className = 'flex ' + (msg.sender === 'you' ? 'justify-end' : 'justify-start');
+                
+                var wrapper = document.createElement('div');
+                wrapper.className = msg.sender === 'you' ? 'flex flex-col items-end' : '';
+                
+                var bubble = document.createElement('div');
+                bubble.className = 'max-w-[75%] px-4 py-2 rounded-2xl ' + (msg.sender === 'you' ? 'bg-blue-500 text-white rounded-br-sm' : 'bg-gray-800 text-white rounded-bl-sm');
+                bubble.innerHTML = '<p class="text-sm leading-relaxed whitespace-pre-line">' + msg.text + '</p>';
+                
+                wrapper.appendChild(bubble);
+                
+                if (msg.sender === 'you' && i < currentThread.messages.length - 1) {
+                    var receipt = document.createElement('div');
+                    receipt.className = 'text-[10px] text-gray-400 mt-1 mr-1';
+                    receipt.textContent = 'Read';
+                    wrapper.appendChild(receipt);
+                }
+                
+                msgDiv.appendChild(wrapper);
+                messagesDiv.appendChild(msgDiv);
+            }
+            
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        function renderChoices(choices) {
+            var choicesDiv = document.getElementById('choices');
+            choicesDiv.innerHTML = '';
+            
+            if (!choices || choices.length === 0) {
+                var btn = document.createElement('button');
+                btn.className = 'w-full bg-blue-500 text-white px-4 py-3 rounded-xl text-sm font-semibold';
+                btn.textContent = 'Return Home';
+                btn.onclick = returnHome;
+                choicesDiv.appendChild(btn);
+                return;
+            }
+
+            for (var i = 0; i < choices.length; i++) {
+                (function(choice) {
+                    var btn = document.createElement('button');
+                    btn.className = 'w-full bg-gray-800 hover:bg-gray-700 text-white px-4 py-3 rounded-xl text-sm text-left transition-colors';
+                    btn.textContent = choice.text;
+                    btn.onclick = function() {
+                        selectChoice(choice);
+                    };
+                    choicesDiv.appendChild(btn);
+                })(choices[i]);
+            }
+        }
+
+        function selectChoice(choice) {
+            currentThread.messages.push({ sender: 'you', text: choice.text });
+            renderMessages();
+            
+            var choicesDiv = document.getElementById('choices');
+            choicesDiv.innerHTML = '<div class="flex items-center gap-2 text-gray-400 text-sm"><div class="flex gap-1"><div class="w-2 h-2 bg-gray-400 rounded-full animate-pulse"></div><div class="w-2 h-2 bg-gray-400 rounded-full animate-pulse" style="animation-delay: 0.2s;"></div><div class="w-2 h-2 bg-gray-400 rounded-full animate-pulse" style="animation-delay: 0.4s;"></div></div><span>typing...</span></div>';
+
+            setTimeout(function() {
+                if (choice.error) {
+                    drainBattery(20);
+                    weakenSignal();
+                    document.getElementById('crack').style.opacity = '0.3';
+                    setTimeout(showError, 500);
+                    return;
+                }
+
+                if (choice.response) {
+                    currentThread.messages.push({ sender: 'them', text: choice.response });
+                }
+
+                renderMessages();
+                drainBattery(15);
+                advanceTime();
+
+                if (choice.final) {
+                    if (!choice.positive) {
+                        weakenSignal();
+                        document.getElementById('threadScreen').classList.add('glitch');
+                        setTimeout(function() {
+                            document.getElementById('threadScreen').classList.remove('glitch');
+                        }, 300);
+                    }
+                    renderChoices([]);
+                } else if (choice.nextChoices) {
+                    renderChoices(choice.nextChoices);
+                }
+            }, 1500);
+        }
+
+        function showError() {
+            hideAllScreens();
+            document.getElementById('errorScreen').classList.remove('hidden');
+            document.getElementById('errorScreen').style.display = 'flex';
+        }
+
+        function hideAllScreens() {
+            document.getElementById('homeScreen').classList.add('hidden');
+            document.getElementById('threadScreen').classList.add('hidden');
+            document.getElementById('errorScreen').classList.add('hidden');
+            document.getElementById('errorScreen').style.display = 'none';
+            document.getElementById('powerOffScreen').classList.add('hidden');
+            document.getElementById('powerOffScreen').style.display = 'none';
+            document.getElementById('mapsScreen').classList.add('hidden');
+            document.getElementById('clockScreen').classList.add('hidden');
+            document.getElementById('photosScreen').classList.add('hidden');
+            document.getElementById('heartScreen').classList.add('hidden');
+            document.getElementById('crack').style.opacity = '0';
+        }
+
+        function returnHome() {
+            hideAllScreens();
+            document.getElementById('homeScreen').classList.remove('hidden');
+            currentThread = [];
+        }
+
+        function openPowerOff() {
+            hideAllScreens();
+            document.getElementById('powerOffScreen').classList.remove('hidden');
+            document.getElementById('powerOffScreen').style.display = 'flex';
+        }
+
+        function powerOff() {
+            document.getElementById('phone').style.backgroundColor = 'black';
+            document.getElementById('phone').innerHTML = '';
+        }
+    </script>
+</body>
+</html>
