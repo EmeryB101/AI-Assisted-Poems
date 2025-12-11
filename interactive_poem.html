@@ -63,6 +63,54 @@
             opacity: 0.6;
         }
 
+        /* Scanline overlay */
+        .scanlines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 10;
+            background: repeating-linear-gradient(
+                0deg,
+                rgba(0, 0, 0, 0.15),
+                rgba(0, 0, 0, 0.15) 1px,
+                transparent 1px,
+                transparent 2px
+            );
+            opacity: 0.3;
+            animation: scanlineMove 8s linear infinite;
+        }
+
+        @keyframes scanlineMove {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(4px); }
+        }
+
+        /* Static noise overlay */
+        .static-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 15;
+            opacity: 0;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200"><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(%23noise)" opacity="0.15"/></svg>');
+            animation: staticFlicker 0.2s infinite;
+        }
+
+        .static-overlay.active {
+            opacity: 0.4;
+        }
+
+        @keyframes staticFlicker {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.5; }
+        }
+
         /* Small crying emoji in corner */
         .emoji-face {
             position: fixed;
@@ -144,31 +192,57 @@
             0% {
                 opacity: 1;
                 filter: blur(0);
+                transform: translate(0);
+            }
+            10% {
+                opacity: 0.9;
+                transform: translateX(-3px);
+                filter: hue-rotate(45deg);
             }
             20% {
                 opacity: 0.8;
-                transform: translateX(-5px);
+                transform: translateX(-5px) skew(-2deg);
                 filter: hue-rotate(90deg);
+                text-shadow:
+                    -2px 0 red,
+                    2px 0 cyan,
+                    0 0 10px rgba(231, 76, 60, 0.5);
             }
             40% {
                 opacity: 0.5;
-                transform: translateX(5px);
+                transform: translateX(5px) skew(2deg);
                 filter: hue-rotate(180deg) blur(1px);
+                text-shadow:
+                    -3px 0 red,
+                    3px 0 cyan,
+                    0 0 15px rgba(231, 76, 60, 0.7);
             }
             60% {
                 opacity: 0.3;
-                transform: translateX(-3px);
+                transform: translateX(-3px) scale(1.05, 0.95);
                 filter: hue-rotate(270deg) blur(2px);
+                text-shadow:
+                    -4px 0 red,
+                    4px 0 cyan,
+                    0 2px 5px rgba(0, 0, 0, 0.8);
             }
             80% {
                 opacity: 0.15;
+                transform: scale(0.95) skew(-5deg);
                 filter: hue-rotate(360deg) blur(3px);
+                text-shadow:
+                    -5px 0 red,
+                    5px 0 cyan,
+                    0 0 20px rgba(231, 76, 60, 0.5);
             }
             100% {
-                opacity: 0.1;
-                transform: scale(0.8);
-                filter: blur(4px);
-                text-shadow: 0 0 20px rgba(231, 76, 60, 0.5);
+                opacity: 0.05;
+                transform: scale(0.8) translateY(10px);
+                filter: blur(5px) grayscale(100%);
+                text-shadow:
+                    0 0 30px rgba(231, 76, 60, 0.3),
+                    -6px 0 rgba(255, 0, 0, 0.3),
+                    6px 0 rgba(0, 255, 255, 0.3);
             }
         }
 
@@ -176,18 +250,59 @@
             0%, 100% {
                 transform: translate(0, 0);
                 filter: hue-rotate(0deg);
+                text-shadow: none;
+            }
+            10% {
+                transform: translate(-3px, 2px) skew(-1deg);
+                filter: hue-rotate(45deg);
+                text-shadow:
+                    -2px 0 red,
+                    2px 0 cyan;
             }
             25% {
                 transform: translate(-2px, 2px);
                 filter: hue-rotate(90deg);
+                text-shadow:
+                    -3px 0 red,
+                    3px 0 cyan,
+                    0 0 10px rgba(231, 76, 60, 0.8);
+            }
+            40% {
+                transform: translate(3px, -1px) skew(1deg);
+                filter: hue-rotate(135deg);
+                text-shadow:
+                    -2px 0 red,
+                    2px 0 cyan;
             }
             50% {
                 transform: translate(2px, -2px);
                 filter: hue-rotate(180deg);
+                text-shadow:
+                    -4px 0 red,
+                    4px 0 cyan,
+                    0 0 15px rgba(93, 173, 226, 0.8);
+            }
+            65% {
+                transform: translate(-1px, 1px) skew(-1deg);
+                filter: hue-rotate(225deg);
+                text-shadow:
+                    -2px 0 red,
+                    2px 0 cyan;
             }
             75% {
                 transform: translate(-2px, -2px);
                 filter: hue-rotate(270deg);
+                text-shadow:
+                    -3px 0 red,
+                    3px 0 cyan,
+                    0 0 12px rgba(241, 196, 15, 0.8);
+            }
+            90% {
+                transform: translate(1px, 1px) skew(1deg);
+                filter: hue-rotate(315deg);
+                text-shadow:
+                    -2px 0 red,
+                    2px 0 cyan;
             }
         }
 
@@ -286,6 +401,17 @@
             animation: fadeIn 1s ease-out 8s forwards;
         }
 
+        .design-instructions {
+            margin-top: 60px;
+            font-size: 0.9em;
+            color: #7db8d9;
+            font-style: italic;
+            opacity: 0;
+            animation: fadeIn 1s ease-out 10s forwards;
+            border-top: 1px solid rgba(93, 173, 226, 0.3);
+            padding-top: 20px;
+        }
+
         /* Screen reader only text */
         .sr-only {
             position: absolute;
@@ -341,6 +467,8 @@
 </head>
 <body>
     <canvas class="tears-canvas" id="tears-canvas"></canvas>
+    <div class="scanlines" aria-hidden="true"></div>
+    <div class="static-overlay" id="static-overlay" aria-hidden="true"></div>
     <a href="#main-content" class="skip-link">Skip to poem content</a>
 
     <main class="container" id="main-content" role="main">
@@ -395,6 +523,10 @@
             <p><span class="yellow-text">Connection.exe</span> has failed.</p>
             <p class="sr-only">This represents the failure of digital technology to provide genuine human connection</p>
         </footer>
+
+        <div class="design-instructions">
+            <p>Click lines to corrupt data and watch the digital decay unfold. Hover over highlighted words to trigger glitch effects.</p>
+        </div>
     </main>
 
     <script>
@@ -511,6 +643,13 @@
                     if (this.classList.contains('disconnected')) return;
 
                     this.classList.add('clicked');
+
+                    // Activate static overlay for glitch effect
+                    const staticOverlay = document.getElementById('static-overlay');
+                    staticOverlay.classList.add('active');
+                    setTimeout(() => {
+                        staticOverlay.classList.remove('active');
+                    }, 1200);
 
                     // Create massive tear shower (emotional breakdown from corruption)
                     const rect = this.getBoundingClientRect();

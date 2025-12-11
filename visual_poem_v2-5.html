@@ -1108,6 +1108,7 @@
                 this.width = 0;
                 this.height = 0;
                 this.lastHovered = false;
+                this.zIndex = 0; // For drawing order
             }
 
             checkHover(mx, my) {
@@ -1115,24 +1116,33 @@
                 const dy = my - this.y;
                 const dist = Math.sqrt(dx * dx + dy * dy);
                 const hitRadius = Math.max(this.width, this.height) / 2 + 40; // Much larger hit area
-                
+
                 const wasHovered = this.hovered;
-                
+
                 if (dist < hitRadius) {
                     this.hovered = true;
                     this.hoverIntensity = Math.min(1, this.hoverIntensity + 0.2);
-                    
-                    // Push other words away when this word is hovered
-                    if (this.hoverIntensity > 0.7) {
+                    this.zIndex = 1000; // Bring hovered word to front
+
+                    // Push other words away when this word is hovered - ENHANCED
+                    if (this.hoverIntensity > 0.5) { // Push starts earlier
                         particles.forEach(other => {
                             if (other !== this && !other.exploded) {
                                 const dx = other.x - this.x;
                                 const dy = other.y - this.y;
                                 const dist = Math.sqrt(dx * dx + dy * dy);
-                                if (dist < 200 && dist > 0) { // Larger push radius (was 150)
-                                    const force = (200 - dist) / 200 * 4; // Much stronger push (was 2)
-                                    other.x += (dx / dist) * force;
-                                    other.y += (dy / dist) * force;
+                                if (dist < 300 && dist > 0) { // Much larger push radius for better separation
+                                    const force = (300 - dist) / 300 * 8; // Stronger push force
+                                    const minDist = 120; // Minimum distance to maintain
+                                    if (dist < minDist) {
+                                        // Extra strong push if too close
+                                        const extraForce = (minDist - dist) / minDist * 12;
+                                        other.x += (dx / dist) * (force + extraForce);
+                                        other.y += (dy / dist) * (force + extraForce);
+                                    } else {
+                                        other.x += (dx / dist) * force;
+                                        other.y += (dy / dist) * force;
+                                    }
                                 }
                             }
                         });
@@ -1146,6 +1156,7 @@
                 } else {
                     this.hovered = false;
                     this.hoverIntensity = Math.max(0, this.hoverIntensity - 0.1);
+                    this.zIndex = 0; // Return to normal layer
                     if (this.hoverIntensity < 0.3) {
                         this.lastHovered = false;
                     }
@@ -1625,8 +1636,10 @@
                 conn.update();
                 conn.draw();
             });
-            
-            particles.forEach(particle => {
+
+            // Sort particles by z-index to draw hovered words on top
+            const sortedParticles = [...particles].sort((a, b) => a.zIndex - b.zIndex);
+            sortedParticles.forEach(particle => {
                 particle.update(time);
                 particle.draw();
             });
