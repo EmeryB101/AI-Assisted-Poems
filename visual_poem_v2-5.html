@@ -322,20 +322,76 @@
             80% { transform: translate(2px, -2px); }
             100% { transform: translate(0); }
         }
+
+        /* Accessibility improvements */
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 0;
+            background: rgba(100, 200, 255, 0.95);
+            color: #000;
+            padding: 8px 12px;
+            text-decoration: none;
+            z-index: 10000;
+            font-weight: bold;
+            border-radius: 0 0 4px 0;
+        }
+
+        .skip-link:focus {
+            top: 0;
+            outline: 3px solid #fff;
+            outline-offset: 2px;
+        }
+
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border-width: 0;
+        }
+
+        /* Focus indicators for keyboard navigation */
+        .pause-btn:focus {
+            outline: 3px solid rgba(100, 200, 255, 0.9);
+            outline-offset: 3px;
+        }
+
+        button:focus-visible {
+            outline: 3px solid rgba(100, 200, 255, 0.9);
+            outline-offset: 3px;
+        }
     </style>
 </head>
 <body>
-    <div class="canvas-container">
-        <div class="title">CONNECTED · DISCONNECTED</div>
-        <div class="controls">
-            <button class="pause-btn" id="pauseBtn">PAUSE</button>
+    <a href="#main-content" class="skip-link">Skip to interactive poem</a>
+
+    <main id="main-content" role="main">
+        <div class="canvas-container" role="application" aria-label="Connected/Disconnected - Interactive Visual Poem">
+            <h1 class="title" id="poem-title">CONNECTED · DISCONNECTED</h1>
+
+            <div class="sr-only" aria-live="polite" id="screen-reader-description">
+                An interactive visual poem exploring connection and isolation in the digital age.
+                Words float in a heart shape pattern. Hover over any word to read its associated poem.
+                Press the pause button or spacebar to pause the animation. Click a hovered word to push it away.
+                The poem contains 29 interactive words including: touch, screen, alone, together, longing, and more.
+            </div>
+
+            <div class="controls">
+                <button class="pause-btn" id="pauseBtn" aria-label="Pause animation" aria-pressed="false">PAUSE</button>
+            </div>
+
+            <canvas id="visualPoem" aria-hidden="true"></canvas>
+            <div class="cursor" id="cursor" aria-hidden="true"></div>
+            <div class="word-info" id="wordInfo" role="status" aria-live="polite"></div>
+            <div class="poem-display" id="poemDisplay" role="region" aria-label="Poem text display" aria-live="polite"></div>
+            <div class="instructions">Hover over any word to freeze it and see its poem · Click to release · SPACE to pause</div>
         </div>
-        <canvas id="visualPoem"></canvas>
-        <div class="cursor" id="cursor"></div>
-        <div class="word-info" id="wordInfo"></div>
-        <div class="poem-display" id="poemDisplay"></div>
-        <div class="instructions">Hover over any word to freeze it and see its poem · Click to release · SPACE to pause</div>
-    </div>
+    </main>
 
     <script>
         const canvas = document.getElementById('visualPoem');
@@ -1522,6 +1578,8 @@
             isPaused = !isPaused;
             pauseBtn.textContent = isPaused ? 'RESUME' : 'PAUSE';
             pauseBtn.classList.toggle('paused');
+            pauseBtn.setAttribute('aria-pressed', isPaused ? 'true' : 'false');
+            pauseBtn.setAttribute('aria-label', isPaused ? 'Resume animation' : 'Pause animation');
         });
 
         document.addEventListener('keydown', (e) => {
@@ -1530,6 +1588,8 @@
                 isPaused = !isPaused;
                 pauseBtn.textContent = isPaused ? 'RESUME' : 'PAUSE';
                 pauseBtn.classList.toggle('paused');
+                pauseBtn.setAttribute('aria-pressed', isPaused ? 'true' : 'false');
+                pauseBtn.setAttribute('aria-label', isPaused ? 'Resume animation' : 'Pause animation');
             }
         });
 
